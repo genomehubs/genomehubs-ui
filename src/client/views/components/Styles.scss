@@ -1,0 +1,305 @@
+@import 'web-fonts';
+@import 'colors';
+@import 'themes';
+
+@mixin placeholderColor($color) {
+  &placeholder {
+    color: $color;
+    transition: color .3s ease-in 0s;
+  }
+}
+
+html,
+body,
+.app {
+  height: 100%;
+  min-width: 800px;
+  overflow: auto;
+  overscroll-behavior: none;
+  width: 100%;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+* {
+  @include themify($themes) {
+    background: themed('secondary');
+    color: themed('primary');
+    font-family: themed('bodyFont');
+    font-size: themed('bodyFontSize');
+    transition: all .3s ease-in 0s;
+
+    header {
+      // background: mix(themed('primary'),themed('secondary'),50%);
+      // color: themed('secondary');
+      border-bottom: 1px solid themed('primary');
+      flex: none;
+      z-index: 1;
+
+      .siteName {
+        cursor: pointer;
+        font-family: themed('titleFont');
+        font-size: 120%;
+        line-height: 2em;
+        margin: 0;
+        margin-left: .5em;
+        padding: 0;
+      }
+
+      .tabHolder {
+        display: inline-block;
+        float: right;
+      }
+
+      .tab {
+        background-color: themed('secondary');
+        border: 1px solid themed('primary');
+        border-bottom: 0;
+        border-top: 0;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: inline-block;
+        height: 2em;
+        line-height: 2em;
+        margin-right: -1px;
+        padding: 0 .5em;
+
+        &Highlight,
+        &:hover {
+          background-color: themed('highlight');
+          color: themed('secondary');
+        }
+      }
+    }
+
+    footer {
+      border-top: 1px solid themed('primary');
+      flex: none;
+      line-height: 2em;
+      min-height: 2em;
+      text-align: center;
+
+      .link {
+        text-decoration: underline;
+      }
+    }
+
+    .searchBox {
+      @include placeholderColor(mix(themed('primary'), themed('secondary'), 65%));
+      background-color: mix(themed('primary'), themed('secondary'), 5%);
+      border: 2px solid mix(themed('primary'), themed('secondary'), 15%);
+      font-family: themed('titleFont');
+      font-size: 2em;
+      margin: .5em;
+      max-width: 80%;
+      outline: none;
+      padding: .25em;
+      text-align: center;
+      width: 600px;
+
+      &:focus {
+        @include placeholderColor(themed('secondary'));
+        background-color: themed('secondary');
+        border-color: themed('primary');
+      }
+
+      &:hover {
+        @include placeholderColor(mix(themed('primary'), themed('secondary'), 35%));
+        background-color: themed('secondary');
+        border-color: themed('primary');
+      }
+    }
+
+    .infoPanel {
+      background-color: transparent;
+      margin: 1em 0;
+      width: 80%;
+
+      &4Column {
+        .infoPane {
+          height: calc(calc(100vh - 17em) / 2);
+          width: calc(calc(100% - 6em) / 4);
+        }
+      }
+
+      &3Column {
+        .infoPane {
+          height: calc(calc(100vh - 17em) / 2);
+          min-height: 180px;
+          width: calc(calc(100% - 4em) / 3);
+        }
+      }
+
+      &2Column {
+        .infoPane {
+          height: calc(calc(100vh - 19em) / 3);
+          min-height: 180px;
+          width: calc(calc(100% - 2em) / 2);
+        }
+      }
+
+      &1Column {
+        .infoPane {
+          height: calc(calc(100vh - 17em) / 2);
+          width: 100%;
+        }
+      }
+
+    }
+
+    .infoPane {
+      background: mix(themed('primary'), themed('secondary'), 5%);
+      border: 2px solid themed('secondary');
+      color: mix(themed('primary'), themed('secondary'), 85%);
+      cursor: pointer;
+      margin: 0 1em;
+      transition: all 0s ease-in 0s;
+
+      &:hover {
+        background: themed('secondary');
+        border-color: themed('primary');
+        color: themed('primary');
+      }
+
+      &Default {
+        // height: calc(100vh / 4);
+        // max-height: 250px;
+        // min-height: 141px;
+      }
+
+      &Header {
+        background-color: transparent;
+        flex: 0 1 4em;
+        font-family: themed('titleFont');
+        font-size: 120%;
+        line-height: 4em;
+        padding-left: 2em;
+        width: 100%;
+      }
+
+      &Content {
+        background-color: transparent;
+        background-position: center;
+        background-size: cover;
+        flex: 1 1 auto;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      &Description {
+        background: rgba(themed('secondary'), .75);
+        box-sizing: border-box;
+        opacity: 0;
+        padding: 1em;
+      }
+
+      &HoverReveal {
+        opacity: 1;
+      }
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: themed('titleFont');
+    }
+
+    h1 {
+      font-size: 2em;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .fillParent {
+      height: 100%;
+      position: relative;
+      width: 100%;
+    }
+
+    .fullWidth {
+      position: relative;
+      width: 100%;
+    }
+
+    .flexCenter {
+      display: flex;
+      flex-direction: column;
+
+      &Horizontal,
+      &Both {
+        align-items: center;
+      }
+
+      &Vertical,
+      &Both {
+        justify-content: center;
+      }
+    }
+
+    .flexRow {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .landing {
+      min-height: calc(100% - 2em);
+      overflow: auto;
+      width: 100%;
+    }
+
+    .infoPage {
+      box-sizing: border-box;
+      min-height: calc(100% - 2em);
+      overflow: auto;
+      padding: 1em;
+      width: 100%;
+    }
+
+
+
+
+    .floatRight {
+      float: right;
+    }
+
+    // .solidBackground {
+    //   background-color: $darkColor
+    // }
+
+    header {
+      font-family: themed('bodyFont');
+      height: 2em;
+      // left: 0;
+      min-width: 100%;
+      overflow: visible;
+      // position: absolute;
+      // top: 0;
+      width: 100%;
+    }
+
+    main {
+      flex: 1 1 auto;
+      padding-top: 1em;
+    }
+
+    .searchBox {
+      font-family: themed('titleFont');
+      font-size: 2em;
+      padding: .25em;
+
+      &::selection {
+        outline: none;
+      }
+    }
+
+
+  }
+}
