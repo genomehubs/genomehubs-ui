@@ -1,11 +1,11 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from "react";
+import { connect } from "react-redux";
 import {
   getViews,
   chooseView,
   getParsedQueryString,
   getHashString,
-} from '../reducers/location';
+} from "../reducers/location";
 
 const withLocation = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const ToggleSwitch = ({ id, styles, checked, text, onChange, disabled }) => {
   return (
     <div className={styles.toggleSwitch}>
       <input
-        type='checkbox'
+        type="checkbox"
         className={styles.toggleSwitchCheckbox}
         name={id}
         id={id}
@@ -14,13 +14,13 @@ const ToggleSwitch = ({ id, styles, checked, text, onChange, disabled }) => {
       />
       <label
         className={styles.toggleSwitchLabel}
-        htmlFor='toggleSwitch'
+        htmlFor="toggleSwitch"
         onClick={onChange}
       >
         <span
           className={
             styles.toggleSwitchInner +
-            (checked ? ' ' + styles.toggleSwitchInnerChecked : '')
+            (checked ? " " + styles.toggleSwitchInnerChecked : "")
           }
           data-yes={text[0]}
           data-no={text[1]}
@@ -28,7 +28,7 @@ const ToggleSwitch = ({ id, styles, checked, text, onChange, disabled }) => {
         <span
           className={
             styles.toggleSwitchSwitch +
-            (checked ? ' ' + styles.toggleSwitchSwitchChecked : '')
+            (checked ? " " + styles.toggleSwitchSwitchChecked : "")
           }
         />
       </label>

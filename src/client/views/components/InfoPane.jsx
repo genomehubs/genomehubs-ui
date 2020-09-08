@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { compose } from 'recompose';
-import classnames from 'classnames';
-import withLocation from '../hocs/withLocation';
-import styles from './Styles.scss';
-import SearchBox from './SearchBox';
+import React, { useState } from "react";
+import { compose } from "recompose";
+import classnames from "classnames";
+import withLocation from "../hocs/withLocation";
+import styles from "./Styles.scss";
+import SearchBox from "./SearchBox";
 
 const importAll = (r) => {
   let images = {};
   r.keys().map((item, index) => {
-    images[item.replace('./', '')] = r(item).default;
+    images[item.replace("./", "")] = r(item).default;
   });
   return images;
 };
 
-const images = importAll(require.context('./img', false, /\.(png|jpe?g|svg)$/));
+const images = importAll(require.context("./img", false, /\.(png|jpe?g|svg)$/));
 
 const InfoPane = (props) => {
   const [hover, setHover] = useState(false);
@@ -33,7 +33,7 @@ const InfoPane = (props) => {
   if (props.image) {
     placeholder = props.image;
   } else {
-    placeholder = 'placeholder.png';
+    placeholder = "placeholder.png";
   }
   let desc_css = classnames(styles.fillParent, styles.infoPaneDescription, {
     [styles.infoPaneHoverReveal]: hover,
@@ -50,7 +50,7 @@ const InfoPane = (props) => {
         className={styles.infoPaneContent}
         style={{ backgroundImage: `url(${images[placeholder]})` }}
       >
-        <div className={desc_css}>{props.text || ''}</div>
+        <div className={desc_css}>{props.text || ""}</div>
       </div>
     </div>
   );

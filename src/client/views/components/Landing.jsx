@@ -1,12 +1,12 @@
-import React, { useRef } from 'react';
-import { compose } from 'recompose';
-import classnames from 'classnames';
-import useResize from '../hooks/useResize';
-import withLocation from '../hocs/withLocation';
-import withPanes from '../hocs/withPanes';
-import styles from './Styles.scss';
-import SearchBox from './SearchBox';
-import InfoPanel from './InfoPanel';
+import React, { useRef } from "react";
+import { compose } from "recompose";
+import classnames from "classnames";
+import useResize from "../hooks/useResize";
+import withLocation from "../hocs/withLocation";
+import withPanes from "../hocs/withPanes";
+import styles from "./Styles.scss";
+import SearchBox from "./SearchBox";
+import InfoPanel from "./InfoPanel";
 
 const Landing = (props) => {
   let css = classnames(

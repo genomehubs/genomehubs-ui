@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const useResize = (myRef) => {
   const getDimensions = () => ({
@@ -17,10 +17,10 @@ const useResize = (myRef) => {
       setDimensions(getDimensions());
     }
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [myRef]);
 

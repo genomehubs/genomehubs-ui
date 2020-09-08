@@ -1,6 +1,6 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { getTheme, setTheme } from '../reducers/color';
+import React from "react";
+import { connect } from "react-redux";
+import { getTheme, setTheme } from "../reducers/color";
 
 const withTheme = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({

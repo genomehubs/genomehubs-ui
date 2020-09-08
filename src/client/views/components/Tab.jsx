@@ -1,9 +1,9 @@
-import React from 'react';
-import { compose } from 'recompose';
-import classnames from 'classnames';
-import withLocation from '../hocs/withLocation';
-import styles from './Styles.scss';
-import SearchBox from './SearchBox';
+import React from "react";
+import { compose } from "recompose";
+import classnames from "classnames";
+import withLocation from "../hocs/withLocation";
+import styles from "./Styles.scss";
+import SearchBox from "./SearchBox";
 
 const Tab = (props) => {
   // {paneWidth, title, image, text, fullText}

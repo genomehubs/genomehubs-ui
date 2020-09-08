@@ -14,25 +14,25 @@
 
 @function wf-url-encode($string) {
   $replacements: (
-    '!': '%21',
-    '#': '%23',
-    '$': '%24',
-    '&': '%26',
-    '\'': '%27',
-    '(': '%28',
-    ')': '%29',
-    '*': '%2A',
-    '+': '%2B',
-    ',': '%2C',
-    '/': '%2F',
-    ':': '%3A',
-    ';': '%3B',
-    '=': '%3D',
-    '?': '%3F',
-    '@': '%40',
-    '[': '%5B',
-    ']': '%5D',
-    ' ': '%20'
+    "!": "%21",
+    "#": "%23",
+    "$": "%24",
+    "&": "%26",
+    "'": "%27",
+    "(": "%28",
+    ")": "%29",
+    "*": "%2A",
+    "+": "%2B",
+    ",": "%2C",
+    "/": "%2F",
+    ":": "%3A",
+    ";": "%3B",
+    "=": "%3D",
+    "?": "%3F",
+    "@": "%40",
+    "[": "%5B",
+    "]": "%5D",
+    " ": "%20",
   );
 
   @each $from, $to in $replacements {
@@ -42,8 +42,8 @@
   @return $string;
 }
 
-@function wf-implode($list, $separator: ',') {
-  $string: '';
+@function wf-implode($list, $separator: ",") {
+  $string: "";
   @for $i from 1 through length($list) {
     $el: nth($list, $i);
     $string: $string + $el;
@@ -55,25 +55,25 @@
 }
 
 @function wf-serialize($fonts) {
-  @if type-of($fonts) == 'list' or type-of($fonts) == 'arglist' {
+  @if type-of($fonts) == "list" or type-of($fonts) == "arglist" {
     $serialized: ();
     @each $font in $fonts {
       $serialized: append($serialized, wf-serialize($font));
     }
-    @return wf-implode($serialized, '|');
+    @return wf-implode($serialized, "|");
   }
 
-  @if type-of($fonts) == 'map' {
+  @if type-of($fonts) == "map" {
     $serialized: ();
     @each $family, $variants in $fonts {
-      $variants: wf-implode($variants, ',');
-      $variants: wf-str-replace($variants, ' ', '');
-      $serialized: append($serialized, '#{$family}:#{$variants}');
+      $variants: wf-implode($variants, ",");
+      $variants: wf-str-replace($variants, " ", "");
+      $serialized: append($serialized, "#{$family}:#{$variants}");
     }
     @return wf-serialize($serialized);
   }
 
-  @if type-of($fonts) == 'string' {
+  @if type-of($fonts) == "string" {
     @return wf-url-encode($fonts);
   }
 
@@ -81,19 +81,19 @@
 }
 
 @function wf-protocol() {
-  $webFontsProtocol: '' !global !default;
+  $webFontsProtocol: "" !default !global;
   $protocol: $webFontsProtocol;
   @if str-length($protocol) > 0 {
-    $protocol: $protocol + ':';
+    $protocol: $protocol + ":";
   }
   @return $protocol;
 }
 
 @function wf-query-string-encode($params) {
-  $queryString: '';
+  $queryString: "";
   @each $key, $value in $params {
-    $queryString: $queryString + wf-url-encode($key) + '=';
-    $queryString: $queryString + wf-url-encode($value) + '&';
+    $queryString: $queryString + wf-url-encode($key) + "=";
+    $queryString: $queryString + wf-url-encode($value) + "&";
   }
   // remove trailing ampersand
   $queryString: str-slice($queryString, 1, -2);
@@ -101,14 +101,19 @@
 }
 
 @function wf-params-string($fonts) {
-  $webFontsParams: () !global !default;
-  $params: map-merge((family: wf-serialize($fonts)), $webFontsParams);
+  $webFontsParams: () !default !global;
+  $params: map-merge(
+    (
+      family: wf-serialize($fonts),
+    ),
+    $webFontsParams
+  );
   @return wf-query-string-encode($params);
 }
 
 @function web-fonts-url($fonts...) {
   $protocol: wf-protocol();
   $queryString: wf-params-string($fonts);
-  $url: '#{$protocol}//fonts.googleapis.com/css?#{$queryString}';
+  $url: "#{$protocol}//fonts.googleapis.com/css?#{$queryString}";
   @return $url;
 }

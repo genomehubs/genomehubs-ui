@@ -1,9 +1,9 @@
-import React from 'react';
-import { compose } from 'recompose';
-import classnames from 'classnames';
-import styles from './Preferences.scss';
-import withExpansion from '../hocs/withExpansion';
-import PreferedTheme from './PreferedTheme';
+import React from "react";
+import { compose } from "recompose";
+import classnames from "classnames";
+import styles from "./Preferences.scss";
+import withExpansion from "../hocs/withExpansion";
+import PreferedTheme from "./PreferedTheme";
 
 const PreferencePane = (props) => {
   return (

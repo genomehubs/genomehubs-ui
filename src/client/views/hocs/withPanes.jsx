@@ -1,6 +1,6 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { getPanes } from '../reducers/panes';
+import React from "react";
+import { connect } from "react-redux";
+import { getPanes } from "../reducers/panes";
 
 const withPanes = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({

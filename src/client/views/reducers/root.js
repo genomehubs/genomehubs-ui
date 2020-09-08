@@ -1,9 +1,9 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 
-import { locationReducers } from './location';
-import { colorReducers } from './color';
-import { paneReducers } from './panes';
-import { trackingReducers } from './tracking';
+import { locationReducers } from "./location";
+import { colorReducers } from "./color";
+import { paneReducers } from "./panes";
+import { trackingReducers } from "./tracking";
 
 const allReducers = Object.assign(
   {},
@@ -16,7 +16,7 @@ const allReducers = Object.assign(
 const appReducer = combineReducers(allReducers);
 
 const rootReducer = (state, action) => {
-  if (action.type === 'REFRESH') {
+  if (action.type === "REFRESH") {
     let cookieConsent = state.cookieConsent;
     let analytics = state.analytics;
     let pathname = state.pathname;

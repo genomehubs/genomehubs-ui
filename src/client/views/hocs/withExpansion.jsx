@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import { CSSTransition } from 'react-transition-group';
-import styles from './withExpansion.scss';
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
+import { CSSTransition } from "react-transition-group";
+import styles from "./withExpansion.scss";
 
 const withExpansion = (WrappedComponent) => (props) => {
   return (

@@ -1,13 +1,12 @@
-@import 'web-fonts';
-@import 'colors';
-@import 'themes';
+@import "web-fonts";
+@import "colors";
+@import "themes";
 
 * {
   @include themify($themes) {
-    $labelColor: themed('primary');
-    $toggleColor: themed('highlight');
-    $textColor: themed('secondary');
-
+    $labelColor: themed("primary");
+    $toggleColor: themed("highlight");
+    $textColor: themed("secondary");
 
     .preferenceOuter {
       float: right;
@@ -28,12 +27,12 @@
         cursor: pointer;
         height: 2em;
         line-height: 2em;
-        padding-right: .5em;
+        padding-right: 0.5em;
         text-align: right;
       }
 
       .preferencePane {
-        border: .5px solid rgba($labelColor, .75);
+        border: 0.5px solid rgba($labelColor, 0.75);
         border-right: 0;
         border-top: 0;
         font-size: 1.25em;
@@ -67,7 +66,7 @@
       &Inner {
         display: block;
         margin-left: -100%;
-        transition: margin .3s ease-in 0s;
+        transition: margin 0.3s ease-in 0s;
         width: 200%;
 
         &:before,
@@ -141,7 +140,7 @@
         .toggleSwitchInner {
           &:after,
           &:before {
-            content: '';
+            content: "";
             height: 20px;
             line-height: 20px;
           }
@@ -154,15 +153,14 @@
         }
       }
       @media screen and (max-width: 991px) {
-        transform: scale(.9);
+        transform: scale(0.9);
       }
       @media screen and (max-width: 767px) {
-        transform: scale(.825);
+        transform: scale(0.825);
       }
       @media screen and (max-width: 575px) {
-        transform: scale(.75);
+        transform: scale(0.75);
       }
     }
-
   }
 }

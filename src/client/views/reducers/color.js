@@ -1,20 +1,20 @@
-import { createAction, handleAction, handleActions } from 'redux-actions';
-import { createSelector, createSelectorCreator } from 'reselect';
-import immutableUpdate from 'immutable-update';
-import deep from 'deep-get-set';
-import shallow from 'shallowequal';
-import store from '../store';
-import { byIdSelectorCreator } from './selectorCreators';
-import { queryToStore, colorToRGB, qsDefault, userColors } from '../querySync';
-import { getQueryValue } from '../reducers/location';
+import { createAction, handleAction, handleActions } from "redux-actions";
+import { createSelector, createSelectorCreator } from "reselect";
+import immutableUpdate from "immutable-update";
+import deep from "deep-get-set";
+import shallow from "shallowequal";
+import store from "../store";
+import { byIdSelectorCreator } from "./selectorCreators";
+import { queryToStore, colorToRGB, qsDefault, userColors } from "../querySync";
+import { getQueryValue } from "../reducers/location";
 
-export const addPalette = createAction('ADD_PALETTE');
-export const editPalette = createAction('EDIT_PALETTE');
+export const addPalette = createAction("ADD_PALETTE");
+export const editPalette = createAction("EDIT_PALETTE");
 
 const qsPalette = () => {
   let colors = userColors.slice(0);
   for (let i = 0; i < colors.length; i++) {
-    let qsColor = qsDefault('color' + i);
+    let qsColor = qsDefault("color" + i);
     if (qsColor) {
       colors[i] = colorToRGB(qsColor) || colors[i];
     }
@@ -45,30 +45,30 @@ export const palettes = handleActions(
   {
     byId: {
       default: [
-        'rgb(166,206,227)',
-        'rgb(31,120,180)',
-        'rgb(178,223,138)',
-        'rgb(51,160,44)',
-        'rgb(251,154,153)',
-        'rgb(227,26,28)',
-        'rgb(253,191,111)',
-        'rgb(255,127,0)',
-        'rgb(202,178,214)',
-        'rgb(106,61,154)',
+        "rgb(166,206,227)",
+        "rgb(31,120,180)",
+        "rgb(178,223,138)",
+        "rgb(51,160,44)",
+        "rgb(251,154,153)",
+        "rgb(227,26,28)",
+        "rgb(253,191,111)",
+        "rgb(255,127,0)",
+        "rgb(202,178,214)",
+        "rgb(106,61,154)",
       ],
       user: qsPalette(),
     },
-    allIds: ['default', 'user'],
+    allIds: ["default", "user"],
   }
 );
 
 export const getSelectedPalette = (state) => state.selectedPalette;
 
-export const selectPalette = createAction('SELECT_PALETTE');
+export const selectPalette = createAction("SELECT_PALETTE");
 export const selectedPalette = handleAction(
-  'SELECT_PALETTE',
+  "SELECT_PALETTE",
   (state, action) => action.payload,
-  qsDefault('palette')
+  qsDefault("palette")
 );
 
 export const choosePalette = (palette) => {
@@ -99,13 +99,13 @@ export const getColorPalette = createSelector(
 );
 
 export const getUserPalette = createSelector(getAllPalettes, (palettes) => {
-  let id = 'user';
+  let id = "user";
   let colors = palettes ? palettes.byId[id] : [];
   return { id, colors };
 });
 
 export const getDefaultPalette = createSelector(getAllPalettes, (palettes) => {
-  let id = 'default';
+  let id = "default";
   let colors = palettes ? palettes.byId[id] : [];
   return { id, colors };
 });
@@ -113,31 +113,31 @@ export const getDefaultPalette = createSelector(getAllPalettes, (palettes) => {
 /* Coolors Exported Palette - coolors.co/d7cdcc-ffffff-59656f-9c528b-1d1e2c */
 /* RGB */
 export const schemeColors = {
-  darkColor: 'rgb(49, 50, 63)',
-  lightColor: 'rgb(255, 255, 255)',
-  shadeColor: 'rgb(89, 101, 111)',
-  deepColor: 'rgb(65,74,81)',
-  highlightColor: 'rgb(156, 82, 139)',
-  halfHighlightColor: 'rgba(156, 82, 139, 0.5)',
-  paleColor: 'rgb(215, 205, 204)',
-  brightColor: 'rgb(255,255,30)',
-  clearColor: 'rgba(255,255,255,0)',
+  darkColor: "rgb(49, 50, 63)",
+  lightColor: "rgb(255, 255, 255)",
+  shadeColor: "rgb(89, 101, 111)",
+  deepColor: "rgb(65,74,81)",
+  highlightColor: "rgb(156, 82, 139)",
+  halfHighlightColor: "rgba(156, 82, 139, 0.5)",
+  paleColor: "rgb(215, 205, 204)",
+  brightColor: "rgb(255,255,30)",
+  clearColor: "rgba(255,255,255,0)",
 };
 
-export const setColorScheme = createAction('SET_COLOR_SCHEME');
+export const setColorScheme = createAction("SET_COLOR_SCHEME");
 export const colorScheme = handleAction(
-  'SET_COLOR_SCHEME',
+  "SET_COLOR_SCHEME",
   (state, action) => action.payload,
   schemeColors
 );
 
 export const getColorScheme = (state) => state.colorScheme;
 
-export const setTheme = createAction('SET_THEME');
+export const setTheme = createAction("SET_THEME");
 export const theme = handleAction(
-  'SET_THEME',
+  "SET_THEME",
   (state, action) => action.payload,
-  'Light'
+  "Light"
 );
 export const getTheme = (state) => state.theme;
 

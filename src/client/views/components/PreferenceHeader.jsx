@@ -1,6 +1,6 @@
-import React from 'react';
-import classnames from 'classnames';
-import styles from './Preferences.scss';
+import React from "react";
+import classnames from "classnames";
+import styles from "./Preferences.scss";
 
 const PreferenceHeader = ({ onClick }) => {
   return (

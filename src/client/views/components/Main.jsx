@@ -1,14 +1,14 @@
-import React from 'react';
-import { compose } from 'recompose';
-import classnames from 'classnames';
-import withLocation from '../hocs/withLocation';
-import styles from './Styles.scss';
-import Landing from './Landing';
-import InfoPage from './InfoPage';
+import React from "react";
+import { compose } from "recompose";
+import classnames from "classnames";
+import withLocation from "../hocs/withLocation";
+import styles from "./Styles.scss";
+import Landing from "./Landing";
+import InfoPage from "./InfoPage";
 
 const Main = (props) => {
   let content;
-  if (props.views.primary == 'landing') {
+  if (props.views.primary == "landing") {
     content = <Landing />;
   } else {
     content = <InfoPage />;

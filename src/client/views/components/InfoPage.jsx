@@ -1,9 +1,9 @@
-import React from 'react';
-import { compose } from 'recompose';
-import classnames from 'classnames';
-import styles from './Styles.scss';
-import withLocation from '../hocs/withLocation';
-import withPanes from '../hocs/withPanes';
+import React from "react";
+import { compose } from "recompose";
+import classnames from "classnames";
+import styles from "./Styles.scss";
+import withLocation from "../hocs/withLocation";
+import withPanes from "../hocs/withPanes";
 
 const InfoPage = (props) => {
   if (!props.views.primary) {

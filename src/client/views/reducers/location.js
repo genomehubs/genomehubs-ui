@@ -1,39 +1,39 @@
-import { createAction, handleAction, handleActions } from 'redux-actions';
-import { createSelector } from 'reselect';
-import store from '../store';
-import qs from 'qs';
-import { queryToStore, qsDefault } from '../querySync';
-import { byIdSelectorCreator } from './selectorCreators';
-import history from './history';
-import { getAnalytics, trackPage } from './tracking';
+import { createAction, handleAction, handleActions } from "redux-actions";
+import { createSelector } from "reselect";
+import store from "../store";
+import qs from "qs";
+import { queryToStore, qsDefault } from "../querySync";
+import { byIdSelectorCreator } from "./selectorCreators";
+import history from "./history";
+import { getAnalytics, trackPage } from "./tracking";
 
-const basename = BASENAME || '';
+const basename = BASENAME || "";
 
-export const setPathname = createAction('SET_PATHNAME');
+export const setPathname = createAction("SET_PATHNAME");
 export const pathname = handleAction(
-  'SET_PATHNAME',
+  "SET_PATHNAME",
   (state, action) => action.payload,
   document.location.pathname
-    .replace(new RegExp('^' + basename), '')
-    .replace('notfound', '') || ''
+    .replace(new RegExp("^" + basename), "")
+    .replace("notfound", "") || ""
 );
 export const getPathname = (state) => {
   return state.pathname;
 };
 
 const options = [
-  'about',
-  'assemblies',
-  'landing',
-  'notfound',
-  'search',
-  'tools',
-  'trees',
-  'tutorials',
+  "about",
+  "assemblies",
+  "landing",
+  "notfound",
+  "search",
+  "tools",
+  "trees",
+  "tutorials",
 ];
 
 export const getViews = createSelector(getPathname, (pathname) => {
-  let path = pathname.replace(/^\//, '').replace(/\/$/, '').split('/');
+  let path = pathname.replace(/^\//, "").replace(/\/$/, "").split("/");
   let views = {};
   let nextView = undefined;
   let primary = undefined;
@@ -45,7 +45,7 @@ export const getViews = createSelector(getPathname, (pathname) => {
       nextView = path[i];
     }
   }
-  views.primary = primary || 'landing';
+  views.primary = primary || "landing";
   return views;
 });
 
@@ -60,11 +60,11 @@ export const getSearchTerm = createSelector(getViews, (views) =>
 );
 
 export const viewsToPathname = (views) => {
-  let pathname = '';
+  let pathname = "";
   options.forEach((view) => {
     if (views[view]) {
-      if (view == 'landing') {
-        pathname = '/';
+      if (view == "landing") {
+        pathname = "/";
       } else if (views[view]) {
         pathname = view;
       }
@@ -96,7 +96,7 @@ export const updatePathname = (update = {}, remove = {}) => {
       history.push({ pathname, hash, search });
       if (getAnalytics(state)) {
         trackPage(
-          pathname + (search ? `?${search}` : '') + (hash ? `#${hash}` : '')
+          pathname + (search ? `?${search}` : "") + (hash ? `#${hash}` : "")
         );
       }
       dispatch(setPathname(pathname));
@@ -110,25 +110,25 @@ export const chooseView = (view) => {
   };
 };
 
-export const setQueryString = createAction('SET_QUERY_STRING');
+export const setQueryString = createAction("SET_QUERY_STRING");
 export const queryString = handleAction(
-  'SET_QUERY_STRING',
+  "SET_QUERY_STRING",
   (state, action) => action.payload,
-  (document.location.search || '').replace('?', '')
+  (document.location.search || "").replace("?", "")
 );
-export const getQueryString = (state) => state.queryString || '';
+export const getQueryString = (state) => state.queryString || "";
 
 export const getParsedQueryString = createSelector(getQueryString, (str) =>
   qs.parse(str)
 );
 
-export const setHashString = createAction('SET_HASH_VALUE');
+export const setHashString = createAction("SET_HASH_VALUE");
 export const hashString = handleAction(
-  'SET_HASH_VALUE',
+  "SET_HASH_VALUE",
   (state, action) => action.payload,
-  (document.location.hash || '').replace('#', '')
+  (document.location.hash || "").replace("#", "")
 );
-export const getHashString = (state) => state.hashString || '';
+export const getHashString = (state) => state.hashString || "";
 
 export const toggleHash = (value) => {
   return function (dispatch) {
@@ -136,10 +136,10 @@ export const toggleHash = (value) => {
     let currentHash = getHashString(state);
     let currentQuery = getQueryString(state);
     if (currentHash && currentHash == value) {
-      history.push({ hash: '', search: currentQuery });
-      dispatch(setHashString(''));
+      history.push({ hash: "", search: currentQuery });
+      dispatch(setHashString(""));
     } else {
-      history.push({ hash: '#' + value, search: currentQuery });
+      history.push({ hash: "#" + value, search: currentQuery });
       dispatch(setHashString(value));
     }
   };
@@ -168,16 +168,16 @@ window.onpopstate = (e) => {
     store.dispatch(loadDataset(newDataset));
   }
   let currentQuery = getQueryString(state);
-  let str = document.location.search.replace(/^\?/, '');
+  let str = document.location.search.replace(/^\?/, "");
   let values = qs.parse(str);
   store.dispatch(
-    queryToStore({ values, searchReplace: true, currentQuery, action: 'POP' })
+    queryToStore({ values, searchReplace: true, currentQuery, action: "POP" })
   );
   store.dispatch(setQueryString(str));
 };
 
-export const parseQueryString = createSelector(getQueryString, (str = '') =>
-  qs.parse(str.replace('?', ''))
+export const parseQueryString = createSelector(getQueryString, (str = "") =>
+  qs.parse(str.replace("?", ""))
 );
 
 const createSelectorForQueryValue = byIdSelectorCreator();
@@ -190,7 +190,7 @@ export const getQueryValue = createSelector(
   getQueryId,
   parseQueryString,
   (id, parsed) => {
-    return parsed[id] || '';
+    return parsed[id] || "";
   }
 );
 
