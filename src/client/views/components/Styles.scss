@@ -34,6 +34,52 @@ body,
     font-size: themed("bodyFontSize");
     transition: all 0.3s ease-in 0s;
 
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: themed("titleFont");
+    }
+
+    h1 {
+      font-size: 2em;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .fillParent {
+      height: 100%;
+      position: relative;
+      width: 100%;
+    }
+
+    .fullWidth {
+      position: relative;
+      width: 100%;
+    }
+
+    .flexCenter {
+      display: flex;
+      flex-direction: column;
+
+      &Horizontal,
+      &Both {
+        align-items: center;
+      }
+
+      &Vertical,
+      &Both {
+        justify-content: center;
+      }
+    }
+
+    .flexRow {
+      display: flex;
+      flex-direction: row;
+    }
+
     header {
       // background: mix(themed('primary'),themed('secondary'),50%);
       // color: themed('secondary');
@@ -206,50 +252,106 @@ body,
       }
     }
 
-    h1,
-    h2,
-    h3,
-    h4 {
-      font-family: themed("titleFont");
-    }
+    .resultPanel {
+      border-top: solid 0.25px rgba(themed("primary"), 0.25);
+      box-sizing: border-box;
+      color: themed("primary");
+      margin: 0 0 1em 0;
+      padding: 0.25em;
+      transition: all 0s ease-in 0s;
 
-    h1 {
-      font-size: 2em;
-    }
-
-    a {
-      text-decoration: none;
-    }
-
-    .fillParent {
-      height: 100%;
-      position: relative;
-      width: 100%;
-    }
-
-    .fullWidth {
-      position: relative;
-      width: 100%;
-    }
-
-    .flexCenter {
-      display: flex;
-      flex-direction: column;
-
-      &Horizontal,
-      &Both {
-        align-items: center;
+      .identifier {
+        &Prefix {
+          color: rgba(themed("primary"), 0.75);
+          font-size: 0.8em;
+          line-height: 1em;
+        }
       }
 
-      &Vertical,
-      &Both {
-        justify-content: center;
+      .title {
+        font-family: themed("titleFont");
+        font-size: 1.25em;
       }
-    }
 
-    .flexRow {
-      display: flex;
-      flex-direction: row;
+      .field {
+        border: solid 0.5px rgba(themed("primary"), 0.25);
+        box-sizing: border-box;
+        margin: 0.25em;
+
+        &Name {
+          background-color: rgba(themed("primary"), 0.25);
+          font-size: 0.8em;
+          line-height: 1.25em;
+          padding: 0.25em;
+          text-align: center;
+        }
+        &Value {
+          font-size: 1.2em;
+          padding: 0.25em;
+
+          .confidence {
+            float: left;
+            padding-right: 0.58em;
+            height: 1.3em;
+            position: relative;
+
+            .one,
+            .two,
+            .three {
+              height: 0.33em;
+              width: 0.33em;
+              position: absolute;
+              background-color: rgba(themed("primary"), 0.25);
+              &High {
+                background-color: green;
+              }
+            }
+            .one,
+            .two {
+              &Medium {
+                background-color: orange;
+              }
+            }
+            .one {
+              bottom: 0;
+              &Low {
+                background-color: red;
+              }
+            }
+            .two {
+              bottom: 0.33em;
+            }
+            .three {
+              bottom: 0.66em;
+            }
+          }
+        }
+        &Count {
+          color: rgba(themed("primary"), 0.75);
+          font-size: 0.8em;
+          padding: 0 0.25em 0.25em 0.25em;
+          margin-top: -0.25em;
+          text-align: right;
+        }
+      }
+
+      .arrow {
+        border: solid rgba(themed("primary"), 0.75);
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 3px;
+        cursor: pointer;
+        &Right {
+          transform: rotate(-45deg);
+        }
+
+        &Large {
+          float: right;
+          margin-top: 0.8em;
+          margin-left: 2em;
+          padding: 0.5em;
+        }
+      }
     }
 
     .landing {
@@ -297,6 +399,37 @@ body,
 
       &::selection {
         outline: none;
+        background-color: themed("faintHighlight");
+      }
+    }
+
+    .completion {
+      font-family: themed("titleFont");
+      font-size: 1.25em;
+      margin: 0 10%;
+      position: relative;
+      z-index: 10;
+      // padding: 1em 0;
+
+      background-color: themed("secondary");
+      color: themed("primary");
+
+      .term {
+        border-bottom: solid 0.25px grey;
+        cursor: pointer;
+        padding: 0 1em;
+        &:hover {
+          background-color: themed("faintHighlight");
+        }
+        .value,
+        .extra {
+          background: none;
+        }
+        .extra {
+          width: 25%;
+          text-align: left;
+          float: right;
+        }
       }
     }
   }

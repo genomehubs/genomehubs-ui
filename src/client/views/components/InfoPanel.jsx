@@ -1,8 +1,6 @@
 import React from "react";
-import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
-import SearchBox from "./SearchBox";
 import InfoPane from "./InfoPane";
 
 const InfoPanel = (props) => {

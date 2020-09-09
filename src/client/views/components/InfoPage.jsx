@@ -4,6 +4,7 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import withLocation from "../hocs/withLocation";
 import withPanes from "../hocs/withPanes";
+import SearchPage from "./SearchPage";
 
 const InfoPage = (props) => {
   if (!props.views.primary) {
@@ -14,6 +15,9 @@ const InfoPage = (props) => {
   page = page[0];
   if (!page) {
     return null;
+  }
+  if (page.id == "searchPane") {
+    return <SearchPage />;
   }
   return (
     <div className={styles.infoPage}>

@@ -1,15 +1,21 @@
 import { combineReducers } from "redux";
 
-import { locationReducers } from "./location";
+import { apiReducers } from "./api";
 import { colorReducers } from "./color";
+import { locationReducers } from "./location";
+import { lookupReducers } from "./lookup";
 import { paneReducers } from "./panes";
+import { searchReducers } from "./search";
 import { trackingReducers } from "./tracking";
 
 const allReducers = Object.assign(
   {},
-  locationReducers,
+  apiReducers,
   colorReducers,
+  locationReducers,
+  lookupReducers,
   paneReducers,
+  searchReducers,
   trackingReducers
 );
 

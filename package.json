@@ -4,7 +4,7 @@
   "description": "GenomeHubs web",
   "main": "index.js",
   "scripts": {
-    "client": "webpack-dev-server --mode development --content-base src/client",
+    "client": "NODE_OPTIONS='--max-http-header-size=100000' webpack-dev-server --mode development --content-base src/client",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -49,6 +49,7 @@
     "color-convert": "^2.0.1",
     "core-js": "^3.6.5",
     "css-loader": "^3.5.3",
+    "d3-format": "^2.0.0",
     "deep-get-set": "^1.1.0",
     "file-loader": "^6.0.0",
     "immutable-update": "^1.0.0",

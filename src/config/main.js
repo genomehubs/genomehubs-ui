@@ -4,10 +4,16 @@ const appRoot = require("app-root-path");
 const GH_SITENAME = process.env.GH_SITENAME || "Demo GenomeHub";
 const GH_HOST = process.env.GH_HOST || "localhost";
 const GH_CLIENT_PORT = Number(process.env.GH_CLIENT_PORT) || 8880;
-const GH_API_PORT = Number(process.env.GH_API_PORT) || 8800;
-const GH_API_URL =
-  process.env.GH_API_URL || GH_HOST + ":" + GH_API_PORT + "/api/v1";
+const GH_API_PORT = Number(process.env.GH_API_PORT) || 3000;
 const GH_HTTPS = String(process.env.GH_HTTPS) === "true";
+const GH_API_URL =
+  process.env.GH_API_URL ||
+  (GH_HTTPS ? "https" : "http") +
+    "://" +
+    GH_HOST +
+    ":" +
+    GH_API_PORT +
+    "/api/v0.0.1";
 const GH_ORIGINS = process.env.GH_ORIGINS
   ? process.env.GH_ORIGINS.split(" ")
   : [
@@ -41,8 +47,6 @@ module.exports = {
   version: process.env.GH_VERSION || "v2.0",
   // hostname
   hostname: GH_HOST,
-  // API URL
-  apiUrl: GH_API_URL,
   mode: process.env.NODE_ENV || "test",
   ga_id: process.env.GH_GA_ID || "",
   gdpr_url: process.env.GH_GDPR_URL || "",
