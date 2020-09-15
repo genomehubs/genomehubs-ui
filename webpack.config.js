@@ -80,7 +80,7 @@ const config = {
     }),
     new HtmlWebpackPlugin({
       hash: true,
-      title: JSON.stringify(main.siteName),
+      title: JSON.stringify(main.siteName).replace(/"/g, ""),
       template: "./src/client/index.html",
       minify: {
         collapseInlineTagWhitespace: true,
@@ -118,6 +118,12 @@ const config = {
         use: [
           {
             loader: "html-loader",
+            options: {
+              minimize: {
+                removeComments: true,
+                collapseWhitespace: true,
+              },
+            },
           },
         ],
       },
