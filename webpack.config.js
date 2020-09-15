@@ -82,6 +82,14 @@ const config = {
       hash: true,
       title: JSON.stringify(main.siteName),
       template: "./src/client/index.html",
+      minify: {
+        collapseInlineTagWhitespace: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: true,
+        minifyURLs: true,
+        removeComments: true,
+        removeAttributeQuotes: true,
+      },
     }),
     new CopyWebpackPlugin({
       patterns: [
