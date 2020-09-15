@@ -80,7 +80,7 @@ const config = {
     }),
     new HtmlWebpackPlugin({
       hash: true,
-      title: "GenomeHubs - Web",
+      title: JSON.stringify(main.siteName),
       template: "./src/client/index.html",
     }),
     new CopyWebpackPlugin({
