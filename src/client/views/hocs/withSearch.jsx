@@ -6,6 +6,7 @@ import {
   getSearchResults,
   getSearchResultArray,
   fetchSearchResults,
+  getSearchResultById,
   resetSearch,
 } from "../reducers/search";
 
@@ -14,6 +15,9 @@ const withSearch = (WrappedComponent) => (props) => {
     searchTerm: getSearchTerm(state),
     searchResults: getSearchResults(state),
     searchResultArray: getSearchResultArray(state),
+    ...(props.recordId && {
+      searchById: getSearchResultById(state, props.recordId),
+    }),
   });
 
   const mapDispatchToProps = (dispatch) => ({

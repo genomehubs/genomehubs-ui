@@ -4,6 +4,8 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import withLocation from "../hocs/withLocation";
 import withPanes from "../hocs/withPanes";
+import ExplorePage from "./ExplorePage";
+import RecordPage from "./RecordPage";
 import SearchPage from "./SearchPage";
 
 const InfoPage = (props) => {
@@ -11,10 +13,15 @@ const InfoPage = (props) => {
     return null;
   }
   let page = props.panes.filter((obj) => obj.view == props.views.primary);
-  console.log(page);
   page = page[0];
   if (!page) {
     return null;
+  }
+  if (page.id == "explorePane") {
+    return <ExplorePage />;
+  }
+  if (page.id == "recordPane") {
+    return <RecordPage />;
   }
   if (page.id == "searchPane") {
     return <SearchPage />;

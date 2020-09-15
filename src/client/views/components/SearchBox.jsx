@@ -46,7 +46,12 @@ const SearchBox = ({
   ) {
     terms = [];
     lookupTerms.results.forEach((result, i) => {
-      let value = result.reason[0].fields["taxon_names.name.raw"][0];
+      let value;
+      if (result.reason) {
+        value = result.reason[0].fields["taxon_names.name.raw"][0];
+      } else {
+        value = result.result.scientific_name;
+      }
       if (value != lookupTerm) {
         terms.push(
           <div
@@ -71,8 +76,10 @@ const SearchBox = ({
     !/[\(\)<>=]/.test(lookupTerm)
   ) {
     suggestions = [<div key={"x"}>Did you mean:</div>];
+    console.log(lookupTerms.suggestions);
     lookupTerms.suggestions.forEach((suggestion, i) => {
       let value = suggestion.suggestion.text;
+      console.log(value);
       suggestions.push(
         <div key={i} className={styles.term} onClick={() => updateTerm(value)}>
           <span className={styles.value}>{value}</span>?
@@ -106,7 +113,7 @@ const SearchBox = ({
           autoComplete="off"
           autoCapitalize="off"
           autoCorrect="off"
-          spellcheck="false"
+          spellCheck="false"
         ></input>
       </div>
       {(terms || suggestions) && (

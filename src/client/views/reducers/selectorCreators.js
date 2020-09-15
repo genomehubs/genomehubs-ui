@@ -1,8 +1,5 @@
 import { createSelectorCreator } from "reselect";
-import { handleAction } from "redux-actions";
 import shallow from "shallowequal";
-import immutableUpdate from "immutable-update";
-import store from "../store";
 
 export const byIdSelectorCreator = () => {
   return createSelectorCreator((resultFunc) => {

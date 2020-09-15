@@ -2,6 +2,7 @@ import { createAction, handleAction, handleActions } from "redux-actions";
 import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
 import { setApiStatus } from "./api";
+import { createCachedSelector } from "re-reselect";
 
 const apiUrl = API_URL || "/api/v1";
 
@@ -60,6 +61,14 @@ export const getSearchResultArray = createSelector(
   }
 );
 
+export const getSearchResultById = createCachedSelector(
+  getSearchResultArray,
+  (_state, searchId) => searchId,
+  (results, searchId) => {
+    return results.find((result) => result.taxon_id === searchId);
+  }
+)((_state, searchId) => searchId);
+
 export function fetchSearchResults(searchTerm, result = "taxon") {
   return async function (dispatch) {
     dispatch(requestSearch());
@@ -79,9 +88,15 @@ export function fetchSearchResults(searchTerm, result = "taxon") {
       } catch (error) {
         json = console.log("An error occured.", error);
       }
-      dispatch(receiveSearch(json));
+      if (
+        (!json.results || json.results.length == 0) &&
+        !searchTerm.match(/[\(\)<>=]/)
+      ) {
+        dispatch(fetchSearchResults(`tax_name(${searchTerm})`, result));
+      } else {
+        dispatch(receiveSearch(json));
+      }
     } catch (err) {
-      console.log(err);
       return dispatch(setApiStatus(false));
     }
   };

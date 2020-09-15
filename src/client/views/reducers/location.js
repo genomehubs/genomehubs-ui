@@ -23,12 +23,12 @@ export const getPathname = (state) => {
 
 const options = [
   "about",
-  "assemblies",
+  "explore",
   "landing",
   "notfound",
+  "records",
+  "report",
   "search",
-  "tools",
-  "trees",
   "tutorials",
 ];
 

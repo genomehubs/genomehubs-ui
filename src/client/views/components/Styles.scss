@@ -260,23 +260,30 @@ body,
       padding: 0.25em;
       transition: all 0s ease-in 0s;
 
-      .identifier {
-        &Prefix {
-          color: rgba(themed("primary"), 0.75);
-          font-size: 0.8em;
-          line-height: 1em;
-        }
-      }
+      .header {
+        cursor: pointer;
 
-      .title {
-        font-family: themed("titleFont");
-        font-size: 1.25em;
+        .identifier {
+          float: right;
+
+          &Prefix {
+            color: rgba(themed("primary"), 0.75);
+            font-size: 0.8em;
+            line-height: 1em;
+          }
+        }
+
+        .title {
+          font-family: themed("titleFont");
+          font-size: 1.25em;
+        }
       }
 
       .field {
         border: solid 0.5px rgba(themed("primary"), 0.25);
         box-sizing: border-box;
         margin: 0.25em;
+        cursor: pointer;
 
         &Name {
           background-color: rgba(themed("primary"), 0.25);
@@ -284,6 +291,11 @@ body,
           line-height: 1.25em;
           padding: 0.25em;
           text-align: center;
+
+          &Highlight {
+            background-color: themed("highlight");
+            color: themed("secondary");
+          }
         }
         &Value {
           font-size: 1.2em;
@@ -352,6 +364,14 @@ body,
           padding: 0.5em;
         }
       }
+      .lineage {
+        cursor: pointer;
+        display: inline-block;
+        margin-right: 0.5em;
+      }
+      .name {
+        display: block;
+      }
     }
 
     .landing {
@@ -363,7 +383,7 @@ body,
     .infoPage {
       box-sizing: border-box;
       min-height: calc(100% - 2em);
-      overflow: auto;
+      overflow: visible;
       padding: 1em;
       width: 100%;
     }

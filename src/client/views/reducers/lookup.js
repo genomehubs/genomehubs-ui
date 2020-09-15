@@ -45,6 +45,7 @@ export const getLookupTerms = (state) => state.lookupTerms;
 
 export function fetchLookup(searchTerm, result) {
   return function (dispatch) {
+    if (!searchTerm) dispatch(receiveLookup(defaultState));
     if (searchTerm.match(/[\(\)<>=]/)) return;
     dispatch(requestLookup());
     let url = `${apiUrl}/lookup?searchTerm=${searchTerm}&result=taxon`;
@@ -64,7 +65,7 @@ export const setLookupTerm = createAction("SET_LOOKUP_TERM");
 export const lookupTerm = handleAction(
   "SET_LOOKUP_TERM",
   (state, action) => action.payload,
-  "tax_name(Lepidoptera)"
+  ""
 );
 export const getLookupTerm = (state) => state.lookupTerm;
 
