@@ -14,15 +14,17 @@ const LineagePanel = ({
   setRecordId,
   lineage,
   fetchSearchResults,
-  setLookupTerm,
-  fetchLookup,
+  resetLookup,
+  // setLookupTerm,
+  // fetchLookup,
 }) => {
   const handleTaxonClick = (taxon, value) => {
     if (taxon != taxon_id) {
       setRecordId(taxon);
-      fetchSearchResults(`tax_eq(${taxon})`);
-      setLookupTerm(`tax_name(${value})`);
-      fetchLookup(`tax_name(${value})`, "taxon");
+      fetchSearchResults({ query: `tax_eq(${taxon})` });
+      resetLookup();
+      // setLookupTerm(`tax_name(${value})`);
+      // fetchLookup(`tax_name(${value})`, "taxon");
     }
   };
 

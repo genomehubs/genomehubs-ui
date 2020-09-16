@@ -69,17 +69,29 @@ export const getSearchResultById = createCachedSelector(
   }
 )((_state, searchId) => searchId);
 
-export function fetchSearchResults(searchTerm, result = "taxon") {
+export function fetchSearchResults(options) {
   return async function (dispatch) {
-    dispatch(requestSearch());
-    dispatch(setSearchTerm(searchTerm));
-    let query;
-    if (searchTerm.match(/[\(\)<>=]/)) {
-      query = escape(searchTerm);
-    } else {
-      query = escape(`tax_tree(${searchTerm})`);
+    if (!options.hasOwnProperty("query")) {
+      return;
     }
-    let url = `${apiUrl}/search?query=${query}&result=${result}&summaryValues=count&sortBy=assembly_span&sortOrder=desc`;
+    let searchTerm = options.query;
+    if (!options.query.match(/[\(\)<>=]/)) {
+      options.query = `tax_tree(${options.query})`;
+    }
+    if (!options.hasOwnProperty("summaryValues")) {
+      options.summaryValues = "count";
+    }
+    if (!options.hasOwnProperty("result")) {
+      options.result = "taxon";
+    }
+    dispatch(requestSearch());
+    dispatch(setSearchTerm(options.query));
+    const queryString = Object.keys(options)
+      .map((key) => `${key}=${escape(options[key])}`)
+      .join("&");
+
+    let url = `${apiUrl}/search?${queryString}`;
+    console.log(url);
     try {
       let json;
       try {
@@ -88,11 +100,11 @@ export function fetchSearchResults(searchTerm, result = "taxon") {
       } catch (error) {
         json = console.log("An error occured.", error);
       }
-      if (
-        (!json.results || json.results.length == 0) &&
-        !searchTerm.match(/[\(\)<>=]/)
-      ) {
-        dispatch(fetchSearchResults(`tax_name(${searchTerm})`, result));
+      if (!json.results || json.results.length == 0) {
+        if (!searchTerm.match(/[\(\)<>=]/)) {
+          options.query = `tax_name(${searchTerm})`;
+          dispatch(fetchSearchResults(options));
+        }
       } else {
         dispatch(receiveSearch(json));
       }

@@ -14,6 +14,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const AttributePanel = ({
   field,
@@ -33,40 +34,87 @@ const AttributePanel = ({
     styles[`infoPanel1Column`],
     styles.resultPanel
   );
-  let fieldDivs = [];
-  let fieldStats = [];
+  const sortByFrequency = (arr) => {
+    const frequencyMap = arr.reduce((obj, value) => {
+      value = formatter(value);
+      obj[value] = (obj[value] || 0) + 1;
+      return obj;
+    }, {});
+
+    return Object.entries(frequencyMap).sort((a, b) => b[1] - a[1]);
+  };
+  const formatter = (value) => {
+    if (isNaN(value)) {
+      if (Array.isArray(value)) {
+        const values = sortByFrequency(value);
+        return values
+          .map((arr) => `${arr[0]} (${arr[1]})`)
+          .slice(0, 5)
+          .join("; ");
+      }
+      return value;
+    }
+    return format(",.3~s")(value);
+  };
+  let fieldKeys = [];
+  let fieldValues = [];
+
   if (field) {
-    let value = field.value;
-    if (Array.isArray(value)) {
-      value = value[0];
-    }
-    value = isNaN(value) ? value : format(",.3s")(value);
-    if (Array.isArray(field.value) && field.count > 1) {
-      value = `${value} ...`;
-    }
-    fieldDivs.push(
-      <div
-        key={field.id}
-        className={styles.field}
-        onClick={() => handleFieldClick(field.id)}
-      >
-        <div className={styles.fieldName}>{field.id}</div>
-        <div className={styles.fieldValue}>
-          <AggregationIcon method={field.aggregation_source} />
-          {value}
-        </div>
-        <div
-          className={styles.fieldCount}
-        >{`${field.aggregation_method}, n=${field.count}`}</div>
-      </div>
-    );
-    Object.keys(field).forEach((key) => {
-      if (key != "id" && key != "values") {
-        fieldStats.push(
-          <TableRow key={key}>
-            <TableCell>{key}</TableCell>
-            <TableCell>{field[key]}</TableCell>
-          </TableRow>
+    //   let value = field.value;
+    //   if (Array.isArray(value)) {
+    //     value = value[0];
+    //   }
+    //   value = formatter(value);
+    //   if (Array.isArray(field.value) && field.count > 1) {
+    //     value = `${value} ...`;
+    //   }
+    //   fieldDivs.push(
+    //     <div
+    //       key={field.id}
+    //       className={styles.field}
+    //       onClick={() => handleFieldClick(field.id)}
+    //     >
+    //       <div className={styles.fieldName}>{field.id}</div>
+    //       <div className={styles.fieldValue}>
+    //         <AggregationIcon method={field.aggregation_source} />
+    //         {value}
+    //       </div>
+    //       <div
+    //         className={styles.fieldCount}
+    //       >{`${field.aggregation_method}, n=${field.count}`}</div>
+    //     </div>
+    //   );
+
+    const keys = [
+      { key: "value", display: "value" },
+      { key: "count", display: "n" },
+      { key: "min", display: "min" },
+      { key: "max", display: "max" },
+      { key: "mean", display: "mean" },
+      { key: "median", display: "median" },
+      { key: "mode", display: "mode" },
+      { key: "list", display: "list" },
+      { key: "aggregation_source", display: "source" },
+    ];
+    const confidence = {
+      direct: "High",
+      descendant: "Medium",
+      ancestor: "Low",
+    };
+    keys.forEach((key) => {
+      if (field.hasOwnProperty(key.key)) {
+        let css;
+        if (key.key == "aggregation_source") {
+          css = classnames(
+            styles.underscore,
+            styles[`underscore${confidence[field[key.key]]}`]
+          );
+        }
+        fieldKeys.push(<TableCell key={key.key}>{key.display}</TableCell>);
+        fieldValues.push(
+          <TableCell key={key.key}>
+            <span className={css}>{formatter(field[key.key])}</span>
+          </TableCell>
         );
       }
     });
@@ -78,9 +126,13 @@ const AttributePanel = ({
         <span className={styles.title}>{field.id}</span>
       </div>
       <div>
-        <div className={styles.flexRow}>{fieldDivs}</div>
-        <Table>
-          <TableBody>{fieldStats}</TableBody>
+        <Table size={"small"} className={styles.autoWidth}>
+          <TableHead>
+            <TableRow>{fieldKeys}</TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>{fieldValues}</TableRow>
+          </TableBody>
         </Table>
       </div>
     </div>

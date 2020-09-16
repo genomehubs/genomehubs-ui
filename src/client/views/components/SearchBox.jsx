@@ -12,15 +12,23 @@ const SearchBox = ({
   chooseView,
   lookupTerm,
   setLookupTerm,
+  resetLookup,
   lookupTerms,
   fetchLookup,
   searchTerm,
   fetchSearchResults,
 }) => {
-  const updateSearch = (value, result = "taxon") => {
-    fetchSearchResults(value);
+  const doSearch = (query, result = "taxon") => {
+    fetchSearchResults({ query, result });
     chooseView("search");
-    updateTerm(value, result);
+    resetLookup();
+  };
+  const updateSearch = (query, result = "taxon") => {
+    console.log(query);
+    fetchSearchResults({ query, result });
+    chooseView("search");
+    setLookupTerm(query);
+    resetLookup();
   };
   const updateTerm = (value, result = "taxon") => {
     setLookupTerm(value);
@@ -31,7 +39,7 @@ const SearchBox = ({
   };
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      updateSearch(e.currentTarget.value);
+      doSearch(e.currentTarget.value);
     }
   };
 

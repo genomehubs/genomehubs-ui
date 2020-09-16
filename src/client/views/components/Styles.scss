@@ -452,5 +452,20 @@ body,
         }
       }
     }
+    .autoWidth {
+      width: auto;
+    }
+    .underscore {
+      border-bottom: solid 0.2em themed("primary");
+      &High {
+        border-bottom-color: green;
+      }
+      &Medium {
+        border-bottom-color: orange;
+      }
+      &Low {
+        border-bottom-color: red;
+      }
+    }
   }
 }

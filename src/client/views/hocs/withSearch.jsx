@@ -21,9 +21,9 @@ const withSearch = (WrappedComponent) => (props) => {
   });
 
   const mapDispatchToProps = (dispatch) => ({
-    fetchSearchResults: (searchTerm, result) => {
-      if (searchTerm.length > 0) {
-        dispatch(fetchSearchResults(searchTerm, result));
+    fetchSearchResults: (options) => {
+      if (options.query && options.query.length > 0) {
+        dispatch(fetchSearchResults(options));
       } else {
         dispatch(resetSearch());
       }

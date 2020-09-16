@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import {
   getLookupTerm,
   setLookupTerm,
+  resetLookupTerm,
   getLookupTerms,
   fetchLookup,
   resetLookup,
@@ -23,6 +24,7 @@ const withLookup = (WrappedComponent) => (props) => {
       }
     },
     setLookupTerm: (searchTerm) => dispatch(setLookupTerm(searchTerm)),
+    resetLookup: () => dispatch(resetLookup()),
   });
 
   const Connected = connect(

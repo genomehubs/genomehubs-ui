@@ -17,7 +17,6 @@ const withSummary = (WrappedComponent) => (props) => {
 
   const mapDispatchToProps = (dispatch) => ({
     fetchSummary: (taxon, field, summary, result = "taxon") => {
-      console.log("fetch");
       dispatch(fetchSummary(taxon, field, summary, result));
     },
     setSummaryField: (field) => dispatch(setSummaryField(field)),

@@ -78,6 +78,7 @@ export function fetchSummary(lineage, field, summary, result) {
     }
     dispatch(requestSummary(`${lineage}--${field}--${summary}`));
     let url = `${apiUrl}/summary?recordId=${lineage}&result=${result}&summary=${summary}&fields=${field}`;
+    console.log(url);
     try {
       let json;
       try {
@@ -86,9 +87,7 @@ export function fetchSummary(lineage, field, summary, result) {
       } catch (error) {
         json = console.log("An error occured.", error);
       }
-      console.log("here");
       dispatch(receiveSummary(json));
-      console.log("there");
     } catch (err) {
       return dispatch(setApiStatus(false));
     }
@@ -131,7 +130,14 @@ const processSummary = (summaries, summaryId) => {
           count += underCount;
         }
         ticks.push(tick);
-        buckets.push({ bin, count, x, width });
+        buckets.push({
+          bin,
+          count,
+          x,
+          width,
+          ...(bin > xBinDomain[0] && { min: xBinScale(bin) }),
+          ...(bin < xBinDomain[1] && { max: xBinScale(bin + 0.5) }),
+        });
         max = Math.max(max, count);
       }
     });

@@ -1,5 +1,8 @@
 import React, { useEffect } from "react";
 import { compose } from "recompose";
+import withLocation from "../hocs/withLocation";
+import withLookup from "../hocs/withLookup";
+import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 
 const HistogramSVG = ({
@@ -7,6 +10,9 @@ const HistogramSVG = ({
   sequence = 0,
   summaryById,
   fetchSummary,
+  fetchSearchResults,
+  chooseView,
+  resetLookup,
 }) => {
   const height = 100;
   let parts = summaryId.split("--");
@@ -17,6 +23,21 @@ const HistogramSVG = ({
       }, sequence * 100);
     }
   }, [summaryId]);
+  const handleClick = (bucket) => {
+    let query = `tax_tree(${parts[0]})`;
+    if (bucket.hasOwnProperty("min")) {
+      query += ` AND ${parts[1]}>=${bucket.min}`;
+    }
+    if (bucket.hasOwnProperty("max")) {
+      query += ` AND ${parts[1]}<${bucket.max}`;
+    }
+    updateSearch({ query });
+  };
+  const updateSearch = (options) => {
+    fetchSearchResults(options);
+    chooseView("search");
+    resetLookup();
+  };
   let buckets = [];
   let ticks = [];
   if (summaryById && summaryById.buckets) {
@@ -36,6 +57,8 @@ const HistogramSVG = ({
         width={bucket.width}
         height={height}
         fill={bucket.color}
+        style={{ cursor: "pointer" }}
+        onClick={() => handleClick(bucket)}
       />
     );
     histogramText.push(
@@ -102,4 +125,9 @@ const HistogramSVG = ({
   );
 };
 
-export default compose(withSummary)(HistogramSVG);
+export default compose(
+  withLocation,
+  withLookup,
+  withSearch,
+  withSummary
+)(HistogramSVG);
