@@ -31,7 +31,7 @@ const HistogramSVG = ({
     if (bucket.hasOwnProperty("max")) {
       query += ` AND ${parts[1]}<${bucket.max}`;
     }
-    updateSearch({ query });
+    updateSearch({ query, searchRawValues: true });
   };
   const updateSearch = (options) => {
     fetchSearchResults(options);

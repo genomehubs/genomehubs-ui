@@ -28,7 +28,7 @@ const SearchBox = ({
     fetchSearchResults({ query, result });
     chooseView("search");
     setLookupTerm(query);
-    resetLookup();
+    setTimeout(resetLookup, 100);
   };
   const updateTerm = (value, result = "taxon") => {
     setLookupTerm(value);
@@ -49,7 +49,7 @@ const SearchBox = ({
     lookupTerms.status.success &&
     lookupTerms.results &&
     lookupTerms.results.length > 0 &&
-    lookupTerm != searchTerm &&
+    // lookupTerm != searchTerm &&
     !/[\(\)<>=]/.test(lookupTerm)
   ) {
     terms = [];
@@ -80,7 +80,7 @@ const SearchBox = ({
     lookupTerms.status.success &&
     lookupTerms.suggestions &&
     lookupTerms.suggestions.length > 0 &&
-    lookupTerm != searchTerm &&
+    // lookupTerm != searchTerm &&
     !/[\(\)<>=]/.test(lookupTerm)
   ) {
     suggestions = [<div key={"x"}>Did you mean:</div>];
