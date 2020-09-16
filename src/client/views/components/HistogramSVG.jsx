@@ -4,6 +4,8 @@ import withLocation from "../hocs/withLocation";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
+import Tooltip from "@material-ui/core/Tooltip";
+import { formatter } from "../functions/formatter";
 
 const HistogramSVG = ({
   summaryId,
@@ -50,16 +52,22 @@ const HistogramSVG = ({
   let histogramTickLabels = [];
   buckets.forEach((bucket, i) => {
     histogramRects.push(
-      <rect
+      <Tooltip
         key={bucket.bin}
-        x={bucket.x}
-        y={0}
-        width={bucket.width}
-        height={height}
-        fill={bucket.color}
-        style={{ cursor: "pointer" }}
-        onClick={() => handleClick(bucket)}
-      />
+        title={"Click to find records in this bin"}
+        arrow
+      >
+        <rect
+          key={bucket.bin}
+          x={bucket.x}
+          y={0}
+          width={bucket.width}
+          height={height}
+          fill={bucket.color}
+          style={{ cursor: "pointer" }}
+          onClick={() => handleClick(bucket)}
+        />
+      </Tooltip>
     );
     histogramText.push(
       <text
@@ -72,7 +80,7 @@ const HistogramSVG = ({
         dominantBaseline="central"
         pointerEvents={"none"}
       >
-        {bucket.count}
+        {formatter(bucket.count)}
       </text>
     );
   });

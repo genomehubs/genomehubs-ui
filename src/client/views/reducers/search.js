@@ -91,7 +91,6 @@ export function fetchSearchResults(options) {
       .join("&");
 
     let url = `${apiUrl}/search?${queryString}`;
-    console.log(url);
     try {
       let json;
       try {

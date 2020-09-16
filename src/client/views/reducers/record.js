@@ -66,7 +66,6 @@ export function fetchRecord(taxonId, result = "taxon") {
     }
     dispatch(requestRecord());
     let url = `${apiUrl}/record?recordId=${taxonId}&result=${result}`;
-    console.log(url);
     try {
       let json;
       try {

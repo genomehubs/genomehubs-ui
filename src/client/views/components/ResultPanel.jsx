@@ -8,6 +8,7 @@ import withRecord from "../hocs/withRecord";
 import withLocation from "../hocs/withLocation";
 import withSummary from "../hocs/withSummary";
 import HistogramSVG from "./HistogramSVG";
+import Tooltip from "@material-ui/core/Tooltip";
 import AggregationIcon from "./AggregationIcon";
 
 const ResultPanel = ({
@@ -56,22 +57,24 @@ const ResultPanel = ({
         highlight = styles["fieldNameHighlight"];
       }
       fieldDivs.push(
-        <div
-          key={field.id}
-          className={styles.field}
-          onClick={() => handleFieldClick(field.id)}
-        >
-          <div className={classnames(styles.fieldName, highlight)}>
-            {field.id}
-          </div>
-          <div className={styles.fieldValue}>
-            <AggregationIcon method={field.aggregation_source} />
-            {value}
-          </div>
+        <Tooltip key={field.id} title={"Click to view summary plot"} arrow>
           <div
-            className={styles.fieldCount}
-          >{`${field.aggregation_method}, n=${field.count}`}</div>
-        </div>
+            key={field.id}
+            className={styles.field}
+            onClick={() => handleFieldClick(field.id)}
+          >
+            <div className={classnames(styles.fieldName, highlight)}>
+              {field.id}
+            </div>
+            <div className={styles.fieldValue}>
+              <AggregationIcon method={field.aggregation_source} />
+              {value}
+            </div>
+            <div
+              className={styles.fieldCount}
+            >{`${field.aggregation_method}, n=${field.count}`}</div>
+          </div>
+        </Tooltip>
       );
     });
   }
@@ -86,23 +89,30 @@ const ResultPanel = ({
 
   return (
     <div className={css}>
-      <div className={styles.header} onClick={handleTaxonClick}>
-        <span className={styles.title}>{scientific_name}</span>
-        <span> ({taxon_rank})</span>
-        <span className={styles.identifier}>
-          <span className={styles.identifierPrefix}>taxId:</span>
-          {taxon_id}
-        </span>
-      </div>
-      <div style={{ right: "0", top: "2em" }} onClick={handleTaxonClick}>
-        <i
-          className={classnames(
-            styles.arrow,
-            styles.arrowRight,
-            styles.arrowLarge
-          )}
-        ></i>
-      </div>
+      <Tooltip title={"Click to view record"} arrow placement="top">
+        <div className={styles.header} onClick={handleTaxonClick}>
+          <span className={styles.title}>{scientific_name}</span>
+          <span> ({taxon_rank})</span>
+          <span className={styles.identifier}>
+            <span className={styles.identifierPrefix}>taxId:</span>
+            {taxon_id}
+          </span>
+        </div>
+      </Tooltip>
+      {views.primary != "records" && (
+        <div style={{ right: "0", top: "2em" }} onClick={handleTaxonClick}>
+          <Tooltip title={"Click to view record"} arrow>
+            <i
+              className={classnames(
+                styles.arrow,
+                styles.arrowRight,
+                styles.arrowLarge
+              )}
+            ></i>
+          </Tooltip>
+        </div>
+      )}
+
       <div>
         <div className={styles.flexRow}>{fieldDivs}</div>
         <div>{histogramPlot}</div>

@@ -78,7 +78,6 @@ export function fetchSummary(lineage, field, summary, result) {
     }
     dispatch(requestSummary(`${lineage}--${field}--${summary}`));
     let url = `${apiUrl}/summary?recordId=${lineage}&result=${result}&summary=${summary}&fields=${field}`;
-    console.log(url);
     try {
       let json;
       try {

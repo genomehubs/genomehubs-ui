@@ -2,7 +2,6 @@ import React from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
-import { format } from "d3-format";
 import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
 import withLocation from "../hocs/withLocation";
@@ -15,6 +14,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
+import { formatter } from "../functions/formatter";
 
 const AttributePanel = ({
   field,
@@ -34,28 +34,7 @@ const AttributePanel = ({
     styles[`infoPanel1Column`],
     styles.resultPanel
   );
-  const sortByFrequency = (arr) => {
-    const frequencyMap = arr.reduce((obj, value) => {
-      value = formatter(value);
-      obj[value] = (obj[value] || 0) + 1;
-      return obj;
-    }, {});
 
-    return Object.entries(frequencyMap).sort((a, b) => b[1] - a[1]);
-  };
-  const formatter = (value) => {
-    if (isNaN(value)) {
-      if (Array.isArray(value)) {
-        const values = sortByFrequency(value);
-        return values
-          .map((arr) => `${arr[0]} (${arr[1]})`)
-          .slice(0, 5)
-          .join("; ");
-      }
-      return value;
-    }
-    return format(",.3~s")(value);
-  };
   let fieldKeys = [];
   let fieldValues = [];
 

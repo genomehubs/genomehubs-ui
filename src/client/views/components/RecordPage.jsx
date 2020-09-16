@@ -19,7 +19,6 @@ const RecordPage = ({ record, recordId, fetchRecord, searchById = {} }) => {
       fetchRecord(recordId);
     }
   }, [recordId]);
-  console.log(record);
   if (record && record.record && record.record.taxon_id) {
     taxon = {
       taxon_id: record.record.taxon_id,
