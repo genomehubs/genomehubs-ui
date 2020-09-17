@@ -4,9 +4,12 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import withLocation from "../hocs/withLocation";
 import withPanes from "../hocs/withPanes";
-import ExplorePage from "./ExplorePage";
-import RecordPage from "./RecordPage";
-import SearchPage from "./SearchPage";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import loadable from "@loadable/component";
+
+const ExplorePage = loadable(() => import("./ExplorePage"));
+const RecordPage = loadable(() => import("./RecordPage"));
+const SearchPage = loadable(() => import("./SearchPage"));
 
 const InfoPage = (props) => {
   if (!props.views.primary) {

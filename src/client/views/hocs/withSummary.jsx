@@ -2,16 +2,12 @@ import React from "react";
 import { connect } from "react-redux";
 import {
   fetchSummary,
-  getSummaryBySummaryId,
   getSummaryField,
   setSummaryField,
 } from "../reducers/explore";
 
 const withSummary = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
-    ...(props.summaryId && {
-      summaryById: getSummaryBySummaryId(state, props.summaryId),
-    }),
     summaryField: getSummaryField(state),
   });
 

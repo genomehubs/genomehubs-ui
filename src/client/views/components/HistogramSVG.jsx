@@ -4,6 +4,7 @@ import withLocation from "../hocs/withLocation";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
+import withSummaryById from "../hocs/withSummaryById";
 import Tooltip from "@material-ui/core/Tooltip";
 import { formatter } from "../functions/formatter";
 
@@ -137,5 +138,6 @@ export default compose(
   withLocation,
   withLookup,
   withSearch,
-  withSummary
+  withSummary,
+  withSummaryById
 )(HistogramSVG);
