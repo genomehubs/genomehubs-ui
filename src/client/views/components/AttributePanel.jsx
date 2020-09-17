@@ -15,6 +15,9 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
 import { formatter } from "../functions/formatter";
+import loadable from "@loadable/component";
+
+const LocationMap = loadable(() => import("./LocationMap"));
 
 const AttributePanel = ({
   field,
@@ -37,8 +40,14 @@ const AttributePanel = ({
 
   let fieldKeys = [];
   let fieldValues = [];
+  let zoom;
+  let geoPoints;
 
   if (field) {
+    if (field.id == "sample_location") {
+      geoPoints = field.value;
+      zoom = 10;
+    }
     //   let value = field.value;
     //   if (Array.isArray(value)) {
     //     value = value[0];
@@ -114,6 +123,11 @@ const AttributePanel = ({
           </TableBody>
         </Table>
       </div>
+      {zoom && (
+        <div>
+          <LocationMap geoPoints={geoPoints} zoom={zoom} />
+        </div>
+      )}
     </div>
   );
 };

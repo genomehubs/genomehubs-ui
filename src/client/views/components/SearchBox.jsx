@@ -24,7 +24,6 @@ const SearchBox = ({
     resetLookup();
   };
   const updateSearch = (query, result = "taxon") => {
-    console.log(query);
     fetchSearchResults({ query, result });
     chooseView("search");
     setLookupTerm(query);
@@ -84,10 +83,8 @@ const SearchBox = ({
     !/[\(\)<>=]/.test(lookupTerm)
   ) {
     suggestions = [<div key={"x"}>Did you mean:</div>];
-    console.log(lookupTerms.suggestions);
     lookupTerms.suggestions.forEach((suggestion, i) => {
       let value = suggestion.suggestion.text;
-      console.log(value);
       suggestions.push(
         <div key={i} className={styles.term} onClick={() => updateTerm(value)}>
           <span className={styles.value}>{value}</span>?
