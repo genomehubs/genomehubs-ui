@@ -111,10 +111,16 @@ const AttributePanel = ({
   return (
     <div className={css}>
       <div className={styles.header}>
-        <span className={styles.title}>
-          {field.id}
-          {meta.units && <span> ({meta.units})</span>}
-        </span>
+        <Tooltip
+          title={meta.description && meta.description}
+          arrow
+          placement={"top"}
+        >
+          <span className={styles.title}>
+            {field.id}
+            {meta.units && <span> ({meta.units})</span>}
+          </span>
+        </Tooltip>
       </div>
       <div>
         <Table size={"small"} className={styles.autoWidth}>
