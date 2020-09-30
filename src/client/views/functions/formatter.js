@@ -12,5 +12,8 @@ export const formatter = (value) => {
     }
     return value;
   }
+  if (value < 1000 && value >= 0.001) {
+    return format(",.3~r")(value);
+  }
   return format(",.3~s")(value);
 };

@@ -12,7 +12,12 @@ const LocationMap = ({ geoPoints = [], zoom = 10 }) => {
     <Map
       center={positions[0]}
       zoom={zoom}
-      style={{ marginTop: "1em", width: "800", height: "450px" }}
+      style={{
+        marginTop: "1em",
+        width: "800",
+        height: "450px",
+        background: "none",
+      }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

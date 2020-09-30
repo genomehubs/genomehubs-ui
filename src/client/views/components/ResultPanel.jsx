@@ -2,12 +2,13 @@ import React from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
-import { format } from "d3-format";
+import { formatter } from "../functions/formatter";
 import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
 import withLocation from "../hocs/withLocation";
 import withSummary from "../hocs/withSummary";
 import HistogramSVG from "./HistogramSVG";
+import WordCloud from "./WordCloud";
 import Tooltip from "@material-ui/core/Tooltip";
 import AggregationIcon from "./AggregationIcon";
 
@@ -25,6 +26,7 @@ const ResultPanel = ({
   views,
   sequence,
   summaryId,
+  summary,
 }) => {
   const handleTaxonClick = () => {
     chooseView("records");
@@ -48,7 +50,7 @@ const ResultPanel = ({
       if (Array.isArray(value)) {
         value = value[0];
       }
-      value = isNaN(value) ? value : format(",.3s")(value);
+      value = isNaN(value) ? value : formatter(value);
       if (Array.isArray(field.value) && field.count > 1) {
         value = `${value} ...`;
       }
@@ -78,13 +80,21 @@ const ResultPanel = ({
       );
     });
   }
-  let histogramPlot;
+  let summaryPlot;
   if (summaryId) {
-    histogramPlot = (
-      <div style={{ width: "80%" }}>
-        <HistogramSVG summaryId={summaryId} sequence={sequence} />
-      </div>
-    );
+    if (summary == "histogram") {
+      summaryPlot = (
+        <div style={{ width: "80%" }}>
+          <HistogramSVG summaryId={summaryId} sequence={sequence} />
+        </div>
+      );
+    } else if (summary == "terms") {
+      summaryPlot = (
+        <div style={{ width: "80%" }}>
+          <WordCloud summaryId={summaryId} sequence={sequence} />
+        </div>
+      );
+    }
   }
 
   return (
@@ -115,7 +125,7 @@ const ResultPanel = ({
 
       <div>
         <div className={styles.flexRow}>{fieldDivs}</div>
-        <div>{histogramPlot}</div>
+        <div>{summaryPlot}</div>
       </div>
     </div>
   );

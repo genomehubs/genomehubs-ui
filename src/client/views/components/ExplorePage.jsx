@@ -9,17 +9,27 @@ import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
+import withTypes from "../hocs/withTypes";
 
-const ExplorePage = ({ lineage, searchById = {}, summaryField }) => {
+const ExplorePage = ({ lineage, searchById = {}, summaryField, types }) => {
   let results = [];
   let taxon_id;
   if (lineage.taxon) {
     taxon_id = lineage.taxon.taxon_id;
   }
+  let summary;
+  if (types[summaryField]) {
+    if (types[summaryField].bins) {
+      summary = "histogram";
+    } else if (types[summaryField].type == "keyword") {
+      summary = "terms";
+    }
+  }
+
   if (taxon_id) {
     let summaryId;
-    if (summaryField) {
-      summaryId = `${taxon_id}--${summaryField}--histogram`;
+    if (summaryField && types[summaryField]) {
+      summaryId = `${taxon_id}--${summaryField}--${summary}`;
     }
     results.push(
       <ResultPanel
@@ -27,13 +37,14 @@ const ExplorePage = ({ lineage, searchById = {}, summaryField }) => {
         {...searchById}
         {...lineage.taxon}
         summaryId={summaryId}
+        summary={summary}
       />
     );
   }
   lineage.lineage.forEach((ancestor, i) => {
     let summaryId;
     if (summaryField) {
-      summaryId = `${ancestor.taxon_id}--${summaryField}--histogram`;
+      summaryId = `${ancestor.taxon_id}--${summaryField}--${summary}`;
     }
 
     results.push(
@@ -42,6 +53,7 @@ const ExplorePage = ({ lineage, searchById = {}, summaryField }) => {
         {...ancestor}
         summaryId={summaryId}
         sequence={i + 1}
+        summary={summary}
       />
     );
   });
@@ -65,6 +77,7 @@ export default compose(
   withLocation,
   withRecord,
   withSearch,
+  withTypes,
   withSummary,
   withExplore
 )(ExplorePage);

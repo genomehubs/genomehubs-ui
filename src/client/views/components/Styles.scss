@@ -409,6 +409,12 @@ body,
       .name {
         display: block;
       }
+
+      .tagCloud {
+        span {
+          cursor: pointer;
+        }
+      }
     }
 
     .landing {

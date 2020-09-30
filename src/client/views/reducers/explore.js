@@ -5,8 +5,8 @@ import { setApiStatus } from "./api";
 import { byIdSelectorCreator } from "./selectorCreators";
 import { createCachedSelector } from "re-reselect";
 import { interpolateGreens } from "d3-scale-chromatic";
-import { scaleLinear, scaleLog } from "d3-scale";
-import { format } from "d3-format";
+import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
+import { formatter } from "../functions/formatter";
 import store from "../store";
 
 const apiUrl = API_URL || "/api/v1";
@@ -93,67 +93,105 @@ export function fetchSummary(lineage, field, summary, result) {
   };
 }
 
+const scales = {
+  log10: scaleLog,
+  sqrt: scaleSqrt,
+  linear: scaleLinear,
+};
+
+const processHistogram = (summary) => {
+  let buckets = [];
+  let ticks = [];
+  const binMeta = summary.meta.bins;
+  let xBinScale = scales[binMeta.scale];
+  const xDomain = [
+    xBinScale().invert(binMeta.min),
+    xBinScale().invert(binMeta.max),
+  ];
+  const xBinDomain = xDomain.map((x) => Math.log10(x));
+  const xRange = [0, 1000];
+  const xScale = scaleLinear().domain(xBinDomain).range(xRange);
+  xBinScale = xBinScale().domain(xDomain).range(xBinDomain).invert;
+  const binCount = binMeta.count;
+  const width = (xRange[1] - xRange[0]) / binCount;
+  let underCount = 0;
+  let overCount = 0;
+  let max = 0;
+  summary.summary.buckets.forEach((bucket) => {
+    let bin = bucket.key;
+    let count = 0;
+    const x = xScale(bin);
+    if (bin < xBinDomain[0]) {
+      underCount += bucket.doc_count;
+    } else if (bin >= xBinDomain[1]) {
+      overCount += bucket.doc_count;
+      if (bin == xBinDomain[1]) {
+        let tick = { x, value: formatter(xBinScale(bin)) };
+        ticks.push(tick);
+      }
+    } else {
+      count = bucket.doc_count;
+      let tick = { x, value: formatter(xBinScale(bin)) };
+      if (bin == xBinDomain[0]) {
+        count += underCount;
+      }
+      ticks.push(tick);
+      buckets.push({
+        bin,
+        count,
+        x,
+        width,
+        ...(bin > xBinDomain[0] && { min: xBinScale(bin) }),
+        ...(bin < xBinDomain[1] && { max: xBinScale(bin + 0.5) }),
+      });
+      max = Math.max(max, count);
+    }
+  });
+  if (overCount) {
+    buckets[buckets.length - 1].count += overCount;
+    max = Math.max(max, buckets[buckets.length - 1].count);
+  }
+  let lin = scaleLinear().domain([1, max]).range([0.25, 1]);
+  let seq = interpolateGreens;
+  buckets.forEach((bucket) => {
+    if (bucket.count) {
+      bucket.color = seq(lin(bucket.count));
+    } else {
+      bucket.color = "none";
+    }
+  });
+  return { buckets, ticks };
+};
+
+const processTerms = (summary) => {
+  let max = 0;
+  let buckets = summary.summary.buckets.map((obj) => {
+    max = Math.max(max, obj.doc_count);
+    return {
+      value: obj.key,
+      count: obj.doc_count,
+    };
+  });
+  let lin = scaleLinear().domain([1, max]).range([0.25, 1]);
+  let seq = interpolateGreens;
+  buckets.forEach((bucket) => {
+    if (bucket.count) {
+      bucket.color = seq(lin(bucket.count));
+    } else {
+      bucket.color = "none";
+    }
+  });
+  return { buckets };
+};
+
 const processSummary = (summaries, summaryId) => {
   let summary = summaries[summaryId];
   if (!summary) return {};
-  if (summary.name == "histogram" && summary.field == "assembly_span") {
-    let buckets = [];
-    let ticks = [];
-    const f = format(".2~s");
-    const xDomain = [1000000, 100000000000];
-    const xBinDomain = xDomain.map((x) => Math.log10(x));
-    const xRange = [0, 1000];
-    const xScale = scaleLinear().domain(xBinDomain).range(xRange);
-    const xBinScale = scaleLog().domain(xDomain).range(xBinDomain).invert;
-    const binCount = 10;
-    const width = (xRange[1] - xRange[0]) / binCount;
-    let underCount = 0;
-    let overCount = 0;
-    let max = 0;
-    summary.summary.buckets.forEach((bucket) => {
-      let bin = bucket.key;
-      let count = 0;
-      const x = xScale(bin);
-      if (bin < xBinDomain[0]) {
-        underCount += bucket.doc_count;
-      } else if (bin >= xBinDomain[1]) {
-        overCount += bucket.doc_count;
-        if (bin == xBinDomain[1]) {
-          let tick = { x, value: f(xBinScale(bin)) };
-          ticks.push(tick);
-        }
-      } else {
-        count = bucket.doc_count;
-        let tick = { x, value: f(xBinScale(bin)) };
-        if (bin == xBinDomain[0]) {
-          count += underCount;
-        }
-        ticks.push(tick);
-        buckets.push({
-          bin,
-          count,
-          x,
-          width,
-          ...(bin > xBinDomain[0] && { min: xBinScale(bin) }),
-          ...(bin < xBinDomain[1] && { max: xBinScale(bin + 0.5) }),
-        });
-        max = Math.max(max, count);
-      }
-    });
-    if (overCount) {
-      buckets[buckets.length - 1].count += overCount;
-      max = Math.max(max, buckets[buckets.length - 1].count);
-    }
-    let lin = scaleLinear().domain([1, max]).range([0.25, 1]);
-    let seq = interpolateGreens;
-    buckets.forEach((bucket) => {
-      if (bucket.count) {
-        bucket.color = seq(lin(bucket.count));
-      } else {
-        bucket.color = "none";
-      }
-    });
-    return { buckets, ticks };
+  if (summary.name == "histogram") {
+    return processHistogram(summary);
+  }
+  if (summary.name == "terms") {
+    return processTerms(summary);
   }
   return summary;
 };
