@@ -1,13 +1,19 @@
 import React from "react";
 import { connect } from "react-redux";
-import { getTypesMap } from "../reducers/types";
+import { getTypesMap, fetchTypes } from "../reducers/types";
 
 const withTypes = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
     types: getTypesMap(state),
   });
+  const mapDispatchToProps = (dispatch) => ({
+    fetchTypes: (result) => dispatch(fetchTypes(result)),
+  });
 
-  const Connected = connect(mapStateToProps)(WrappedComponent);
+  const Connected = connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(WrappedComponent);
 
   return <Connected {...props} />;
 };

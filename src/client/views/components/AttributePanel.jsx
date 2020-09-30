@@ -21,6 +21,7 @@ const LocationMap = loadable(() => import("./LocationMap"));
 
 const AttributePanel = ({
   field,
+  meta,
   taxon_id,
   chooseView,
   fetchLineage,
@@ -107,11 +108,13 @@ const AttributePanel = ({
       }
     });
   }
-
   return (
     <div className={css}>
       <div className={styles.header}>
-        <span className={styles.title}>{field.id}</span>
+        <span className={styles.title}>
+          {field.id}
+          {meta.units && <span> ({meta.units})</span>}
+        </span>
       </div>
       <div>
         <Table size={"small"} className={styles.autoWidth}>

@@ -10,13 +10,24 @@ import SearchBox from "./SearchBox";
 import withLocation from "../hocs/withLocation";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
+import withTypes from "../hocs/withTypes";
 
-const RecordPage = ({ record, recordId, fetchRecord, searchById = {} }) => {
+const RecordPage = ({
+  record,
+  recordId,
+  fetchRecord,
+  types,
+  fetchTypes,
+  searchById = {},
+}) => {
   let results = [];
   let taxon = {};
   useEffect(() => {
     if (recordId) {
       fetchRecord(recordId);
+    }
+    if (Object.keys(types).length == 0) {
+      fetchTypes("taxon");
     }
   }, [recordId]);
   if (record && record.record && record.record.taxon_id) {
@@ -55,6 +66,7 @@ const RecordPage = ({ record, recordId, fetchRecord, searchById = {} }) => {
             key={field.id}
             taxon_id={taxon.taxon_id}
             field={field}
+            meta={types[key]}
           />
         );
       });
@@ -96,4 +108,9 @@ const RecordPage = ({ record, recordId, fetchRecord, searchById = {} }) => {
   );
 };
 
-export default compose(withLocation, withRecord, withSearch)(RecordPage);
+export default compose(
+  withLocation,
+  withRecord,
+  withSearch,
+  withTypes
+)(RecordPage);

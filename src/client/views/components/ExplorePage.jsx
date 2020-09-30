@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
@@ -11,7 +11,18 @@ import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
 
-const ExplorePage = ({ lineage, searchById = {}, summaryField, types }) => {
+const ExplorePage = ({
+  lineage,
+  searchById = {},
+  summaryField,
+  types,
+  fetchTypes,
+}) => {
+  useEffect(() => {
+    if (Object.keys(types).length == 0) {
+      fetchTypes("taxon");
+    }
+  }, []);
   let results = [];
   let taxon_id;
   if (lineage.taxon) {
