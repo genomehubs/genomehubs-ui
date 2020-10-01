@@ -111,7 +111,7 @@ const AttributePanel = ({
   let header = (
     <span className={styles.title}>
       {field.id}
-      {meta.units && <span> ({meta.units})</span>}
+      {meta && meta.units && <span> ({meta.units})</span>}
     </span>
   );
   if (meta && meta.description) {
