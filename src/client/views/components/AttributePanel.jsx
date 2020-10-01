@@ -108,20 +108,22 @@ const AttributePanel = ({
       }
     });
   }
+  let header = (
+    <span className={styles.title}>
+      {field.id}
+      {meta.units && <span> ({meta.units})</span>}
+    </span>
+  );
+  if (meta && meta.description) {
+    header = (
+      <Tooltip title={meta.description} arrow placement={"top"}>
+        {header}
+      </Tooltip>
+    );
+  }
   return (
     <div className={css}>
-      <div className={styles.header}>
-        <Tooltip
-          title={meta.description && meta.description}
-          arrow
-          placement={"top"}
-        >
-          <span className={styles.title}>
-            {field.id}
-            {meta.units && <span> ({meta.units})</span>}
-          </span>
-        </Tooltip>
-      </div>
+      <div className={styles.header}>{header}</div>
       <div>
         <Table size={"small"} className={styles.autoWidth}>
           <TableHead>

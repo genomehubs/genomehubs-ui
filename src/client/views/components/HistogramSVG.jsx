@@ -47,6 +47,23 @@ const HistogramSVG = ({
     buckets = summaryById.buckets;
     ticks = summaryById.ticks;
   }
+  if (buckets.length > 0 && summaryById.max == 0) {
+    return (
+      <svg viewBox={"0 0 1000 25"} preserveAspectRatio="xMinYMin">
+        <text
+          style={{ fontSize: "12px" }}
+          x={1000 / 2}
+          y={25 / 2}
+          fillOpacity={0.5}
+          textAnchor="middle"
+          dominantBaseline="central"
+          pointerEvents={"none"}
+        >
+          no data
+        </text>
+      </svg>
+    );
+  }
   let histogramRects = [];
   let histogramText = [];
   let histogramTicks = [];

@@ -108,7 +108,7 @@ const processHistogram = (summary) => {
     xBinScale().invert(binMeta.min),
     xBinScale().invert(binMeta.max),
   ];
-  const xBinDomain = xDomain.map((x) => Math.log10(x));
+  const xBinDomain = xDomain.map((x) => xBinScale()(x));
   const xRange = [0, 1000];
   const xScale = scaleLinear().domain(xBinDomain).range(xRange);
   xBinScale = xBinScale().domain(xDomain).range(xBinDomain).invert;
@@ -160,7 +160,7 @@ const processHistogram = (summary) => {
       bucket.color = "none";
     }
   });
-  return { buckets, ticks };
+  return { buckets, ticks, max };
 };
 
 const processTerms = (summary) => {
