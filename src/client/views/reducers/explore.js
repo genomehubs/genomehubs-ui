@@ -117,7 +117,7 @@ const processHistogram = (summary) => {
   let underCount = 0;
   let overCount = 0;
   let max = 0;
-  summary.summary.buckets.forEach((bucket) => {
+  summary.summary.buckets.forEach((bucket, i) => {
     let bin = bucket.key;
     let count = 0;
     const x = xScale(bin);
@@ -142,7 +142,9 @@ const processHistogram = (summary) => {
         x,
         width,
         ...(bin > xBinDomain[0] && { min: xBinScale(bin) }),
-        ...(bin < xBinDomain[1] && { max: xBinScale(bin + 0.5) }),
+        ...(bin < xBinDomain[1] && {
+          max: xBinScale(summary.summary.buckets[i + 1].key),
+        }),
       });
       max = Math.max(max, count);
     }
