@@ -216,6 +216,10 @@ body,
       padding-top: 56.25%;
     }
 
+    .fixedArTenOne::before {
+      padding-top: 90%;
+    }
+
     .infoPane {
       background: mix(themed("primary"), themed("secondary"), 5%);
       border: 2px solid themed("secondary");
