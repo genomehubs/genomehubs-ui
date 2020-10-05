@@ -43,12 +43,12 @@ const lookupTerms = handleActions(
 
 export const getLookupTerms = (state) => state.lookupTerms;
 
-export function fetchLookup(searchTerm, result) {
+export function fetchLookup(lookupTerm, result) {
   return function (dispatch) {
-    if (!searchTerm) dispatch(receiveLookup(defaultState));
-    if (searchTerm.match(/[\(\)<>=]/)) return;
+    if (!lookupTerm) dispatch(receiveLookup(defaultState));
+    if (lookupTerm.match(/[\(\)<>=]/)) return;
     dispatch(requestLookup());
-    let url = `${apiUrl}/lookup?searchTerm=${searchTerm}&result=taxon`;
+    let url = `${apiUrl}/lookup?searchTerm=${lookupTerm}&result=taxon`;
     return fetch(url)
       .then(
         (response) => response.json(),

@@ -30,6 +30,7 @@ const searchResults = handleActions(
       isFetching: false,
       status: action.payload.status,
       results: action.payload.results,
+      query: action.payload.query,
       lastUpdated: action.meta.receivedAt,
     }),
     RESET_SEARCH: defaultState,
@@ -85,7 +86,7 @@ export function fetchSearchResults(options) {
       options.result = "taxon";
     }
     dispatch(requestSearch());
-    dispatch(setSearchTerm(options.query));
+    dispatch(setSearchTerm(options));
     const queryString = Object.keys(options)
       .map((key) => `${key}=${escape(options[key])}`)
       .join("&");

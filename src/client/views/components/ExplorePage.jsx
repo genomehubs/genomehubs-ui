@@ -11,18 +11,7 @@ import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
 
-const ExplorePage = ({
-  lineage,
-  searchById = {},
-  summaryField,
-  types,
-  fetchTypes,
-}) => {
-  useEffect(() => {
-    if (Object.keys(types).length == 0) {
-      fetchTypes("taxon");
-    }
-  }, []);
+const ExplorePage = ({ lineage, searchById = {}, summaryField, types }) => {
   let results = [];
   let taxon_id;
   if (lineage.taxon) {

@@ -28,7 +28,7 @@ const withSearch = (WrappedComponent) => (props) => {
         dispatch(resetSearch());
       }
     },
-    setSearchTerm: (searchTerm) => dispatch(setSearchTerm(searchTerm)),
+    setSearchTerm: (options) => dispatch(setSearchTerm(options)),
   });
 
   const Connected = connect(

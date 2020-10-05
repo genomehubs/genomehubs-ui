@@ -22,48 +22,7 @@ export const resetTypes = createAction("RESET_TYPES");
 const defaultState = () => ({
   isFetching: false,
   requestedById: {},
-  byId: {
-    // assembly_span: {
-    //   bins: {
-    //     min: 6,
-    //     max: 11,
-    //     count: 10,
-    //     scale: "log10",
-    //   },
-    //   type: "long",
-    //   summary: ["count", "max", "min"],
-    // },
-    // c_value: {
-    //   bins: {
-    //     min: -2.5,
-    //     max: 2.5,
-    //     count: 10,
-    //     scale: "log10",
-    //   },
-    //   type: "half_float",
-    //   summary: ["count", "max", "min"],
-    // },
-    // c_value_method: {
-    //   type: "keyword",
-    //   summary: ["list"],
-    // },
-    // cell_type: {
-    //   type: "keyword",
-    //   summary: ["list"],
-    // },
-    // genome_size: {
-    //   bins: {
-    //     min: 6,
-    //     max: 11,
-    //     count: 10,
-    //     scale: "log10",
-    //   },
-    //   type: "long",
-    //   summary: ["count", "max", "min"],
-    // },
-    // sample_location: { type: "geo_point", fields: ["count"] },
-    // sample_sex: { type: "keyword", fields: ["count"] },
-  },
+  byId: {},
 });
 
 function onReceiveTypes(state, action) {

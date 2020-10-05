@@ -15,7 +15,6 @@ const SearchBox = ({
   resetLookup,
   lookupTerms,
   fetchLookup,
-  searchTerm,
   fetchSearchResults,
 }) => {
   const doSearch = (query, result = "taxon") => {
@@ -48,7 +47,6 @@ const SearchBox = ({
     lookupTerms.status.success &&
     lookupTerms.results &&
     lookupTerms.results.length > 0 &&
-    // lookupTerm != searchTerm &&
     !/[\(\)<>=]/.test(lookupTerm)
   ) {
     terms = [];
@@ -59,18 +57,16 @@ const SearchBox = ({
       } else {
         value = result.result.scientific_name;
       }
-      if (value != lookupTerm) {
-        terms.push(
-          <div
-            key={i}
-            className={styles.term}
-            onClick={() => updateSearch(value)}
-          >
-            <span className={styles.value}>{value}</span>
-            <div className={styles.extra}>— {result.result.taxon_rank}</div>
-          </div>
-        );
-      }
+      terms.push(
+        <div
+          key={i}
+          className={styles.term}
+          onClick={() => updateSearch(value)}
+        >
+          <span className={styles.value}>{value}</span>
+          <div className={styles.extra}>— {result.result.taxon_rank}</div>
+        </div>
+      );
     });
   }
   let suggestions;
@@ -79,7 +75,6 @@ const SearchBox = ({
     lookupTerms.status.success &&
     lookupTerms.suggestions &&
     lookupTerms.suggestions.length > 0 &&
-    // lookupTerm != searchTerm &&
     !/[\(\)<>=]/.test(lookupTerm)
   ) {
     suggestions = [<div key={"x"}>Did you mean:</div>];

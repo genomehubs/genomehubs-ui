@@ -4,14 +4,16 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import ResultPanel from "./ResultPanel";
 import SearchBox from "./SearchBox";
+import ControlPanel from "./ControlPanel";
 import withLocation from "../hocs/withLocation";
 import withSearch from "../hocs/withSearch";
 
-const SearchPage = ({ searchResultArray }) => {
+const SearchPage = ({ searchResults, searchResultArray }) => {
   let results = [];
   searchResultArray.forEach((result) => {
     results.push(<ResultPanel key={result.id} {...result} />);
   });
+
   return (
     <div className={styles.infoPage}>
       <SearchBox />
@@ -23,6 +25,8 @@ const SearchPage = ({ searchResultArray }) => {
         )}
       >
         {results}
+        <ControlPanel pagination />
+        <ControlPanel options />
       </div>
     </div>
   );

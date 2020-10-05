@@ -514,5 +514,12 @@ body,
         border-bottom-color: red;
       }
     }
+
+    .disableTheme {
+      * {
+        color: unset;
+        background-color: unset;
+      }
+    }
   }
 }

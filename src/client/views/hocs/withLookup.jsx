@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import {
   getLookupTerm,
   setLookupTerm,
-  resetLookupTerm,
   getLookupTerms,
   fetchLookup,
   resetLookup,
@@ -16,14 +15,14 @@ const withLookup = (WrappedComponent) => (props) => {
   });
 
   const mapDispatchToProps = (dispatch) => ({
-    fetchLookup: (searchTerm, result) => {
-      if (searchTerm.length > 3) {
-        dispatch(fetchLookup(searchTerm, result));
+    fetchLookup: (lookupTerm, result) => {
+      if (lookupTerm.length > 3) {
+        dispatch(fetchLookup(lookupTerm, result));
       } else {
         dispatch(resetLookup());
       }
     },
-    setLookupTerm: (searchTerm) => dispatch(setLookupTerm(searchTerm)),
+    setLookupTerm: (lookupTerm) => dispatch(setLookupTerm(lookupTerm)),
     resetLookup: () => dispatch(resetLookup()),
   });
 

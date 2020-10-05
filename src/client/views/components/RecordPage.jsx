@@ -17,7 +17,6 @@ const RecordPage = ({
   recordId,
   fetchRecord,
   types,
-  fetchTypes,
   searchById = {},
 }) => {
   let results = [];
@@ -25,9 +24,6 @@ const RecordPage = ({
   useEffect(() => {
     if (recordId) {
       fetchRecord(recordId);
-    }
-    if (Object.keys(types).length == 0) {
-      fetchTypes("taxon");
     }
   }, [recordId]);
   if (record && record.record && record.record.taxon_id) {

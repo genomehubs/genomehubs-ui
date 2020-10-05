@@ -33,7 +33,11 @@ const WordCloud = ({
   }, [summaryId, visible]);
   const handleClick = (bucket) => {
     let query = `tax_tree(${parts[0]}) AND ${parts[1]}=${bucket.value}`;
-    updateSearch({ query, searchRawValues: true });
+    updateSearch({
+      query,
+      searchRawValues: true,
+      includeEstimates: false,
+    });
   };
   const updateSearch = (options) => {
     fetchSearchResults(options);
@@ -73,15 +77,16 @@ const WordCloud = ({
     );
   }
   return (
-    <TagCloud
-      className={styles.tagCloud}
-      minSize={12}
-      maxSize={35}
-      tags={buckets}
-      disableRandomColor
-      onClick={handleClick}
-      ref={targetRef}
-    />
+    <div ref={targetRef}>
+      <TagCloud
+        className={styles.tagCloud}
+        minSize={12}
+        maxSize={35}
+        tags={buckets}
+        disableRandomColor
+        onClick={handleClick}
+      />
+    </div>
   );
 };
 
