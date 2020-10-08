@@ -146,17 +146,19 @@ const AttributePanel = ({
             styles[`underscore${confidence[field[key.key]]}`]
           );
           source = field[key.key];
-          icon = (
-            <span className={styles.disableTheme}>
-              <IconButton
-                aria-label="expand row"
-                size="small"
-                onClick={() => setOpen(!open)}
-              >
-                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-              </IconButton>
-            </span>
-          );
+          if (field[key.key] == "direct") {
+            icon = (
+              <span className={styles.disableTheme}>
+                <IconButton
+                  aria-label="expand row"
+                  size="small"
+                  onClick={() => setOpen(!open)}
+                >
+                  {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                </IconButton>
+              </span>
+            );
+          }
         }
         fieldKeys.push(<TableCell key={key.key}>{key.display}</TableCell>);
         fieldValues.push(
