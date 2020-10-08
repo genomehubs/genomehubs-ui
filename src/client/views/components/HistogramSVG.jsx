@@ -21,7 +21,7 @@ const HistogramSVG = ({
   resetLookup,
 }) => {
   const height = 100;
-  const [targetRef, visible] = useVisible();
+  let [targetRef, visible] = useVisible();
   let parts = summaryId.split("--");
   useEffect(() => {
     if (summaryId && visible) {
