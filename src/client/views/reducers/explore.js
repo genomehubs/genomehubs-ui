@@ -94,6 +94,7 @@ export function fetchSummary(lineage, field, summary, result) {
 }
 
 const scales = {
+  log2: () => scaleLog().base(2),
   log10: scaleLog,
   sqrt: scaleSqrt,
   linear: scaleLinear,
@@ -103,15 +104,19 @@ const processHistogram = (summary) => {
   let buckets = [];
   let ticks = [];
   const binMeta = summary.meta.bins;
-  let xBinScale = scales[binMeta.scale];
-  const xDomain = [
-    xBinScale().invert(binMeta.min),
-    xBinScale().invert(binMeta.max),
-  ];
-  const xBinDomain = xDomain.map((x) => xBinScale()(x));
+  let xBinScale = scales[binMeta.scale]();
+  let xBinDomain, xDomain;
+  if (binMeta.scale == "log2") {
+    xDomain = [2 ** binMeta.min, 2 ** binMeta.max];
+    xBinDomain = [binMeta.min, binMeta.max];
+    xBinScale.domain(xBinDomain);
+  } else {
+    xDomain = [xBinScale.invert(binMeta.min), xBinScale.invert(binMeta.max)];
+    xBinDomain = xDomain.map((x) => xBinScale(x));
+  }
   const xRange = [0, 1000];
   const xScale = scaleLinear().domain(xBinDomain).range(xRange);
-  xBinScale = xBinScale().domain(xDomain).range(xBinDomain).invert;
+  xBinScale = xBinScale.domain(xDomain).range(xBinDomain).invert;
   const binCount = binMeta.count;
   const width = (xRange[1] - xRange[0]) / binCount;
   let underCount = 0;
@@ -142,7 +147,7 @@ const processHistogram = (summary) => {
         x,
         width,
         ...(bin > xBinDomain[0] && { min: xBinScale(bin) }),
-        ...(bin < xBinDomain[1] && {
+        ...(bin < xBinDomain[1] - 0.3 && {
           max: xBinScale(summary.summary.buckets[i + 1].key),
         }),
       });
