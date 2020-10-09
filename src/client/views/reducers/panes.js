@@ -55,7 +55,7 @@ export const panes = handleAction(
       view: "about",
       image: "about.jpg",
       text:
-        "GoaT (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers on a tree.",
+        "GoaT (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers for all taxa across the tree of life.",
     },
   ]
 );
