@@ -11,6 +11,7 @@ const ExplorePage = loadable(() => import("./ExplorePage"));
 const RecordPage = loadable(() => import("./RecordPage"));
 const SearchPage = loadable(() => import("./SearchPage"));
 const AboutPage = loadable(() => import("./AboutPage"));
+const TutorialPage = loadable(() => import("./TutorialPage"));
 
 const InfoPage = (props) => {
   if (!props.views.primary) {
@@ -32,6 +33,9 @@ const InfoPage = (props) => {
   }
   if (page.id == "aboutPane") {
     return <AboutPage />;
+  }
+  if (page.id == "tutorialPane") {
+    return <TutorialPage />;
   }
   return (
     <div className={styles.infoPage}>

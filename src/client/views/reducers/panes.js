@@ -12,7 +12,7 @@ export const panes = handleAction(
       view: "search",
       image: "search.png",
       text:
-        "Search by the scientific name of any taxon (partial names and misspellings welcome).",
+        "Search by taxon name or ID (partial names and misspellings welcome).",
     },
     {
       id: "recordPane",
@@ -42,7 +42,7 @@ export const panes = handleAction(
     },
     {
       id: "tutorialPane",
-      title: "View Tutorials",
+      title: "Help & Tutorials",
       short: "help",
       view: "tutorials",
       image: "tutorial.png",
@@ -50,12 +50,12 @@ export const panes = handleAction(
     },
     {
       id: "aboutPane",
-      title: "About GenomeHubs/GoaT",
+      title: "About GoaT",
       short: "about",
       view: "about",
       image: "about.jpg",
       text:
-        "Genomes on a Tree (GoaT) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers on a tree.",
+        "GoaT (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers on a tree.",
     },
   ]
 );
