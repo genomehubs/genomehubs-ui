@@ -37,7 +37,7 @@ export const panes = handleAction(
       title: "View Reports",
       short: "report",
       view: "report",
-      image: "placeholderRed.png",
+      image: "placeholder.png",
       text: "Reports on the data in GoaT will be added here soon.",
     },
     {
