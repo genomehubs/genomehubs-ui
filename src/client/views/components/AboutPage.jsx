@@ -28,12 +28,23 @@ const AboutPage = ({}) => {
         <p>Future releases will add fetures of use to:</p>
         <ul>
           <li>
-            Genome Sequencing Consortia (such as i5k, EBP, DTOL): to identify
-            where sequencing efforts are currently focussed; to choose species
-            that will have maximal impact in terms of covering diversity; to see
-            which sequencing projects might be more tractable (e.g., if a
-            species has varying ploidy levels, it might be better to first
-            sequence a sister species with consistent ploidy)
+            Genome Sequencing Consortia (such as{" "}
+            <a className={styles.link} href="http://i5k.github.io">
+              i5k
+            </a>
+            ,{" "}
+            <a className={styles.link} href="https://www.earthbiogenome.org/">
+              EBP
+            </a>
+            ,{" "}
+            <a className={styles.link} href="https://www.darwintreeoflife.org">
+              DTOL
+            </a>
+            ): to identify where sequencing efforts are currently focussed; to
+            choose species that will have maximal impact in terms of covering
+            diversity; to see which sequencing projects might be more tractable
+            (e.g., if a species has varying ploidy levels, it might be better to
+            first sequence a sister species with consistent ploidy)
           </li>
           <li>
             Comparative Genomicists: to answer genome evolution questions such
@@ -43,7 +54,13 @@ const AboutPage = ({}) => {
         </ul>
 
         <p>
-          We are funded by the BBSRC (BB/R015325/1) and the Sanger Tree of Life
+          We are funded by the Sanger{" "}
+          <a
+            className={styles.link}
+            href="https://www.sanger.ac.uk/programme/tree-of-life/"
+          >
+            Tree of Life
+          </a>{" "}
           programme.
         </p>
         <p>All our data will be FAIR, and all our tools will be open source.</p>
@@ -53,7 +70,12 @@ const AboutPage = ({}) => {
           <li>Sujai Kumar (Community Support)</li>
           <li>Mark Blaxter (Principal Investigator)</li>
         </ul>
-        <p>Wellcome Sanger Institute, Cambridge, UK</p>
+        <p>
+          <a className={styles.link} href="https://www.sanger.ac.uk/">
+            Wellcome Sanger Institute
+          </a>
+          , Cambridge, UK
+        </p>
       </div>
     </TextPanel>
   );

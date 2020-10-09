@@ -198,6 +198,19 @@ body,
           width: 100%;
         }
       }
+
+      .link {
+        text-decoration: underline;
+      }
+
+      code {
+        font-family: "Courier New", Courier, monospace;
+        background: mix(themed("primary"), themed("secondary"), 5%);
+      }
+
+      li {
+        margin-bottom: 0.5em;
+      }
     }
 
     .fixedAr::before {

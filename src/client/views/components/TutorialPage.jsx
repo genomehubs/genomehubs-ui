@@ -5,6 +5,9 @@ import styles from "./Styles.scss";
 import TextPanel from "./TextPanel";
 
 const TutorialPage = ({}) => {
+  let direct = classnames(styles.underscore, styles.underscoreHigh);
+  let descendant = classnames(styles.underscore, styles.underscoreMedium);
+  let ancestor = classnames(styles.underscore, styles.underscoreLow);
   let text = (
     <TextPanel view={"tutorials"}>
       <div>
@@ -15,63 +18,81 @@ const TutorialPage = ({}) => {
 
         <p>
           Task: To find the best genome size estimate for a new sample about to
-          be sequenced. Let's say the sample to be sequenced is `Heliconius
-          egeria`.
+          be sequenced. Let's say the sample to be sequenced is{" "}
+          <em>
+            <b>Heliconius egeria</b>
+          </em>
+          .
         </p>
 
         <ol>
           <li>
-            On the home page, in the main central search box, type `Heliconius
-            egeria` and press Enter. If there are multiple scientific name
-            matches, or if the term is misspelt (e.g., `haliconius egeria`), the
-            tool will offer multiple suggestions. Click on `Heliconius egeria -
-            species`
+            On the <b>Home Page</b>, in the main central search box, type{" "}
+            <code>Heliconius egeria</code> and press Enter. If there are
+            multiple scientific name matches, or if the term is misspelt (e.g.,{" "}
+            <code>haliconius egeria</code>), the tool will offer multiple
+            suggestions. Click on{" "}
+            <b>
+              <em>Heliconius egeria</em> - species
+            </b>
           </li>
           <li>
-            You are now on the `Search` page which shows you information about
-            each species-level descendant of your search for which any genome
-            size or chromosome number metadata is available. In this case there
-            are no descendants such as subspecies for Heliconius egeria, so only
-            one record is shown.
+            You are now on the <b>Search</b> page which shows you information
+            about each species-level descendant of your search for which any
+            genome size or chromosome number metadata is available. In this case
+            there are no descendants such as subspecies for{" "}
+            <em>Heliconius egeria</em>, so only one record is shown.
           </li>
           <li>
             The little boxes show you summary info for each species, and the
-            colours indicate whether the estimates are directly measured for
-            that species (green), or inferred from ancestors or descendant taxa
-            (red), and the `n` value tells you how many values were used for the
+            colours indicate whether the estimates are{" "}
+            <span className={direct}>direct</span> measurements for that species
+            (green), or inferred from{" "}
+            <span className={descendant}>descendant</span> (orange) or{" "}
+            <span className={ancestor}>ancestral</span> taxa (red), and the{" "}
+            <em>n</em> value tells you how many values were used for the
             estimate. For some species, multiple genome assembly versions exist,
-            or multiple C value estimates are stored, so `n` can be greater than
-            1.
+            or multiple C value estimates are stored, so <em>n</em> can be
+            greater than 1.
           </li>
           <li>
-            To see more than just a little boxed summary, click on `Records` in
-            the top menu. The full raw data table for each species in our
-            database will be shown.
+            To see more than just a little boxed summary, click on{" "}
+            <b>Records</b> in the top menu. The full raw data table for each
+            species in our database will be shown.
           </li>
           <li>
-            In the `Records` view, there is a single "direct" value for
-            chromosome_number - i.e. it was measured for that species. Clicking
-            on the arrow next to "direct" (with a green underline) takes you to
-            the source of this value
+            In the <b>Records</b> view, there is a single{" "}
+            <span className={direct}>direct</span> value for chromosome_number -
+            i.e. it was measured for that species. Clicking on the arrow next to{" "}
+            <span className={direct}>direct</span> (with a green underline)
+            takes you to the source of this value
           </li>
           <li>
-            The remaining estimates for C value and genome size are indirect
-            (underlined in red), and are estimated based on the ancestor of
-            `Heliconius egeria`, i.e., the genus `Heliconius`, which has 2
-            "direct" values for the genus as a whole.
+            The remaining estimates for C value and genome size are indirect,
+            and are estimated based on the{" "}
+            <span className={ancestor}>ancestor</span> (underlined in red) of
+            <em>Heliconius egeria</em>, i.e., the genus <em>Heliconius</em>,
+            which has 2 <span className={direct}>direct</span> values for the
+            genus as a whole.
           </li>
           <li>
-            Therefore the best estimates for `Heliconius egeria` are:
+            Therefore the best estimates for <em>Heliconius egeria</em> are:
             <ul>
-              <li>chromosome number: 21</li>
-              <li>genome size: 347 Mbp</li>
-              <li>C value: 0.355</li>
+              <li>
+                chromosome number: <code>21</code>
+              </li>
+              <li>
+                genome size: <code>347 Mb</code>
+              </li>
+              <li>
+                C value: <code>0.355</code>
+              </li>
             </ul>
           </li>
           <li>
             To double check that the estimates are not an outlier, you should
-            click on `Explore` - which lets you see each estimate for each level
-            of the taxonomy, e.g., genus, family, order, etc.
+            click on <b>Explore</b> - which lets you see each estimate for each
+            level of the taxonomy, e.g., genus, family, order, etc.
           </li>
         </ol>
       </div>
