@@ -10,21 +10,27 @@ export const panes = handleAction(
       title: "Search GoaT",
       short: "search",
       view: "search",
-      text: "Search metadata for taxa in GoaT.",
+      image: "search.png",
+      text:
+        "Search by the scientific name of any taxon (partial names and misspellings welcome).",
     },
     {
       id: "recordPane",
       title: "Browse Records",
       short: "records",
       view: "records",
-      text: "View full records for individual taxa.",
+      image: "browse.png",
+      text:
+        "For a given taxon (at any level: species, genus, family, order, etc.), browse all the metadata available for all its descendants at the species level.",
     },
     {
       id: "explorePane",
       title: "Explore Data",
       short: "explore",
       view: "explore",
-      text: "Explore values for individual fields.",
+      image: "explore.png",
+      text:
+        "Explore C value, genome size, and chromosome numbers for all ancestor/descendant taxa of a given taxon, and see how the estimates change as you explore the tree of life.",
     },
     {
       id: "reportPane",
@@ -44,11 +50,12 @@ export const panes = handleAction(
     },
     {
       id: "aboutPane",
-      title: "About GenomeHubs",
+      title: "About GenomeHubs/GoaT",
       short: "about",
       view: "about",
       image: "about.jpg",
-      text: "Find out more about the GenomeHubs project.",
+      text:
+        "Genomes on a Tree (GoaT) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers on a tree.",
     },
   ]
 );

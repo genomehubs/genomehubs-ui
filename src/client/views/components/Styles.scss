@@ -421,6 +421,24 @@ body,
       }
     }
 
+    .textPanel {
+      border-top: solid 0.25px rgba(themed("primary"), 0.25);
+      box-sizing: border-box;
+      color: themed("primary");
+      margin: 1em 0 1em 0;
+      padding: 0.25em;
+      transition: all 0s ease-in 0s;
+
+      .header {
+        display: block;
+        margin: 0.5em 0 1em 0;
+        .title {
+          font-family: themed("titleFont");
+          font-size: 1.5em;
+        }
+      }
+    }
+
     .landing {
       min-height: calc(100% - 2em);
       overflow: auto;

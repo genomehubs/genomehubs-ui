@@ -3,6 +3,7 @@ import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 import ResultPanel from "./ResultPanel";
+import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
 import ControlPanel from "./ControlPanel";
 import withLocation from "../hocs/withLocation";
@@ -13,6 +14,12 @@ const SearchPage = ({ searchResults, searchResultArray }) => {
   searchResultArray.forEach((result) => {
     results.push(<ResultPanel key={result.id} {...result} />);
   });
+  let controls;
+  if (searchResults.status && searchResults.status.hits) {
+    controls = <ControlPanel pagination options />;
+  }
+
+  let text = <TextPanel view={"search"}></TextPanel>;
 
   return (
     <div className={styles.infoPage}>
@@ -25,8 +32,8 @@ const SearchPage = ({ searchResults, searchResultArray }) => {
         )}
       >
         {results}
-        <ControlPanel pagination />
-        <ControlPanel options />
+        {controls}
+        {text}
       </div>
     </div>
   );

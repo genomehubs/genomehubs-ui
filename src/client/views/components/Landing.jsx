@@ -7,6 +7,7 @@ import withPanes from "../hocs/withPanes";
 import styles from "./Styles.scss";
 import SearchBox from "./SearchBox";
 import InfoPanel from "./InfoPanel";
+import TextPanel from "./TextPanel";
 
 const Landing = (props) => {
   let css = classnames(
@@ -39,11 +40,14 @@ const Landing = (props) => {
     }
   }
 
+  let text = <TextPanel view={"about"}></TextPanel>;
+
   return (
     <div ref={componentRef} className={css}>
       {firstPanel}
       <SearchBox />
       {morePanels}
+      {text}
     </div>
   );
 };

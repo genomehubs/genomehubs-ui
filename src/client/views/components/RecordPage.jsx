@@ -4,6 +4,7 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import ResultPanel from "./ResultPanel";
 import LineagePanel from "./LineagePanel";
+import TextPanel from "./TextPanel";
 import AttributePanel from "./AttributePanel";
 import NamesPanel from "./NamesPanel";
 import SearchBox from "./SearchBox";
@@ -68,26 +69,9 @@ const RecordPage = ({
       });
     }
   }
-  // if (taxon_id) {
-  //   results.push(
-  //     <ResultPanel key={taxon_id} {...searchById} {...record.lineage.taxon} />
-  //   );
-  // }
-  // lineage.lineage.forEach((ancestor, i) => {
-  //   let summaryId;
-  //   if (summaryField) {
-  //     summaryId = `${ancestor.taxon_id}--${summaryField}--histogram`;
-  //   }
 
-  //   results.push(
-  //     <ResultPanel
-  //       key={ancestor.taxon_id}
-  //       {...ancestor}
-  //       summaryId={summaryId}
-  //       sequence={i + 1}
-  //     />
-  //   );
-  // });
+  let text = <TextPanel view={"records"}></TextPanel>;
+
   return (
     <div className={styles.infoPage}>
       <SearchBox />
@@ -99,6 +83,7 @@ const RecordPage = ({
         )}
       >
         {results}
+        {text}
       </div>
     </div>
   );

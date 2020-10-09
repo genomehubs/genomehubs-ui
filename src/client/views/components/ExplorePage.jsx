@@ -3,6 +3,7 @@ import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 import ResultPanel from "./ResultPanel";
+import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
 import withLocation from "../hocs/withLocation";
 import withExplore from "../hocs/withExplore";
@@ -57,6 +58,9 @@ const ExplorePage = ({ lineage, searchById = {}, summaryField, types }) => {
       />
     );
   });
+
+  let text = <TextPanel view={"explore"}></TextPanel>;
+
   return (
     <div className={styles.infoPage}>
       <SearchBox />
@@ -68,6 +72,7 @@ const ExplorePage = ({ lineage, searchById = {}, summaryField, types }) => {
         )}
       >
         {results}
+        {text}
       </div>
     </div>
   );

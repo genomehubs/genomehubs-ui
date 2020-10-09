@@ -22,14 +22,15 @@ const ControlPanel = ({
     styles.flexCenterHorizontal,
     styles.fullWidth
   );
-  let pageDiv;
+  let pageDivs = [];
+  if (pagination) {
+    pageDivs.push(<SearchPagination key={"pagination"} />);
+  }
   if (options) {
-    pageDiv = <SearchOptions />;
-  } else if (pagination && searchResults.status && searchResults.status.hits) {
-    pageDiv = <SearchPagination />;
+    pageDivs.push(<SearchOptions key={"options"} />);
   }
 
-  return <div className={css}>{pageDiv}</div>;
+  return <div className={css}>{pageDivs}</div>;
 };
 
 export default compose(withSearch)(ControlPanel);
