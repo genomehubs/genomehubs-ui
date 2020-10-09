@@ -204,7 +204,7 @@ body,
       }
 
       code {
-        font-family: "Courier New", Courier, monospace;
+        font-family: themed("codeFont");
         background: mix(themed("primary"), themed("secondary"), 5%);
       }
 

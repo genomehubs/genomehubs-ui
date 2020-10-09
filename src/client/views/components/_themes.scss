@@ -2,6 +2,7 @@
 
 $titleFontFamily: "Signika", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $bodyFontFamily: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$codeFontFamily: "Roboto Mono", "Courier New", Courier, monospace;
 $bodyFontSize: 10pt;
 
 $themes: (
@@ -12,6 +13,7 @@ $themes: (
     faintHighlight: $faintHighlightColor,
     titleFont: $titleFontFamily,
     bodyFont: $bodyFontFamily,
+    codeFont: $codeFontFamily,
     bodyFontSize: $bodyFontSize,
   ),
   Dark: (
@@ -21,6 +23,7 @@ $themes: (
     faintHighlight: $faintHighlightColor,
     titleFont: $titleFontFamily,
     bodyFont: $bodyFontFamily,
+    codeFont: $codeFontFamily,
     bodyFontSize: $bodyFontSize,
   ),
 );
