@@ -1,10 +1,6 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
-import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
 import { setApiStatus } from "./api";
-import deep from "deep-get-set";
-import shallow from "shallowequal";
-import store from "../store";
 
 const apiUrl = API_URL || "/api/v1";
 

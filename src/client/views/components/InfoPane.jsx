@@ -4,10 +4,9 @@ import classnames from "classnames";
 import withLocation from "../hocs/withLocation";
 import styles from "./Styles.scss";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Typography from "@material-ui/core/Typography";
+import loadable from "@loadable/component";
+
+const InfoCard = loadable(() => import("./InfoCard"));
 
 // const useStyles = makeStyles({
 //   root: {
@@ -34,39 +33,6 @@ import Typography from "@material-ui/core/Typography";
 //     transition: "all 0s ease-in 0s",
 //   },
 // });
-
-const importAll = (r) => {
-  let images = {};
-  r.keys().map((item, index) => {
-    images[item.replace("./", "")] = r(item).default;
-  });
-  return images;
-};
-
-const images = importAll(require.context("./img", false, /\.(png|jpe?g|svg)$/));
-
-const InfoCard = (props) => {
-  // const classes = useStyles();
-  let placeholder = props.image ? props.image : "placeholder.png";
-
-  return (
-    <Card className={styles.root} variant="outlined">
-      <CardContent>
-        <Typography className={styles.title} color="textSecondary" gutterBottom>
-          {props.title}
-        </Typography>
-        <Typography variant="body2" component="p">
-          {props.text || ""}
-        </Typography>
-      </CardContent>
-      <CardMedia
-        className={styles.cover}
-        image={images[placeholder]}
-        title={props.title}
-      />
-    </Card>
-  );
-};
 
 const InfoPane = (props) => {
   const [hover, setHover] = useState(false);

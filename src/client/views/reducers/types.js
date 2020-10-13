@@ -1,18 +1,8 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
-import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
-import { setApiStatus } from "./api";
-import { byIdSelectorCreator } from "./selectorCreators";
-import { createCachedSelector } from "re-reselect";
-import { interpolateGreens } from "d3-scale-chromatic";
-import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
-import { format } from "d3-format";
-import store from "../store";
 
-const apiUrl = API_URL || "/api/v1";
-
-const requestTypes = createAction("REQUEST_TYPES");
-const receiveTypes = createAction(
+export const requestTypes = createAction("REQUEST_TYPES");
+export const receiveTypes = createAction(
   "RECEIVE_TYPES",
   (json) => json,
   () => ({ receivedAt: Date.now() })
@@ -53,33 +43,7 @@ const types = handleActions(
 
 export const getTypes = (state) => state.types.byId;
 
-export const getTypesMap = createSelector(getTypes, (types) => types);
-
 export const getTypesFetching = (state) => state.types.isFetching;
-
-export function fetchTypes(result) {
-  return async function (dispatch) {
-    const state = store.getState();
-    const fetching = getTypesFetching(state);
-    if (fetching) {
-      return;
-    }
-    dispatch(requestTypes(result));
-    let url = `${apiUrl}/resultFields?result=${result}`;
-    try {
-      let json;
-      try {
-        const response = await fetch(url);
-        json = await response.json();
-      } catch (error) {
-        json = console.log("An error occured.", error);
-      }
-      dispatch(receiveTypes(json));
-    } catch (err) {
-      return dispatch(setApiStatus(false));
-    }
-  };
-}
 
 export const typeReducers = {
   types,

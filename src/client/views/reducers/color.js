@@ -1,12 +1,8 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
 import { createSelector, createSelectorCreator } from "reselect";
 import immutableUpdate from "immutable-update";
-import deep from "deep-get-set";
-import shallow from "shallowequal";
 import store from "../store";
-import { byIdSelectorCreator } from "./selectorCreators";
 import { queryToStore, colorToRGB, qsDefault, userColors } from "../querySync";
-import { getQueryValue } from "../reducers/location";
 
 export const addPalette = createAction("ADD_PALETTE");
 export const editPalette = createAction("EDIT_PALETTE");

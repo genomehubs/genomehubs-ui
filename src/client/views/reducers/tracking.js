@@ -1,5 +1,4 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
-import { createSelector } from "reselect";
 import store from "../store";
 
 const trackingId = GA_ID || "";

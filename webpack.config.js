@@ -6,6 +6,7 @@ const GitRevisionPlugin = require("git-revision-webpack-plugin");
 const main = require("./src/config/main");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { DuplicatesPlugin } = require("inspectpack/plugin");
 
 const devMode = process.env.NODE_ENV !== "production";
 
@@ -28,12 +29,17 @@ const config = {
   },
   resolve: {
     extensions: [".js", ".jsx"],
+    alias: {
+      react: "preact/compat",
+      "react-dom/test-utils": "preact/test-utils",
+      "react-dom": "preact/compat",
+    },
   },
   optimization: {
     splitChunks: {
       chunks: "all",
       maxInitialRequests: Infinity,
-      minSize: 0,
+      minSize: 50000,
       cacheGroups: {
         vendor: {
           test: /[\\/]node_modules[\\/]/,
@@ -43,6 +49,7 @@ const config = {
             )[1];
             return `npm.${packageName.replace("@", "")}`;
           },
+          chunks: "all",
         },
       },
     },
@@ -97,6 +104,12 @@ const config = {
           from: "./src/client/favicon",
         },
       ],
+    }),
+    new DuplicatesPlugin({
+      // Emit compilation warning or error? (Default: `false`)
+      emitErrors: false,
+      // Display full duplicates information? (Default: `false`)
+      verbose: false,
     }),
   ],
   module: {

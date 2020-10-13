@@ -1,12 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  getRecords,
   getCurrentRecord,
   fetchRecord,
   getCurrentRecordId,
   setCurrentRecordId,
-  resetRecord,
 } from "../reducers/record";
 
 const withRecord = (WrappedComponent) => (props) => {

@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import { fetchLineage, getLineage } from "../reducers/explore";
+import { getLineage } from "../reducers/explore";
+import { fetchLineage } from "../selectors/explore";
 
 const withExplore = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
