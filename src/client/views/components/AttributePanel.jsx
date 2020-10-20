@@ -214,7 +214,7 @@ const AttributePanel = ({
         </Table>
       </div>
       {zoom && (
-        <div>
+        <div className={styles.disableTheme}>
           <LocationMap geoPoints={geoPoints} zoom={zoom} />
         </div>
       )}
