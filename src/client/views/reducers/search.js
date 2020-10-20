@@ -3,6 +3,7 @@ import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
 import { setApiStatus } from "./api";
 import { createCachedSelector } from "re-reselect";
+import store from "../store";
 
 const apiUrl = API_URL || "/api/v1";
 
@@ -75,6 +76,12 @@ export function fetchSearchResults(options) {
     if (!options.hasOwnProperty("query")) {
       return;
     }
+    const state = store.getState();
+    const searchHistory = getSearchHistory(state);
+    console.log(searchHistory);
+
+    dispatch(setSearchHistory(options));
+
     let searchTerm = options.query;
     if (!options.query.match(/[\(\)<>=]/)) {
       options.query = `tax_tree(${options.query})`;
@@ -122,7 +129,20 @@ export const searchTerm = handleAction(
 );
 export const getSearchTerm = (state) => state.searchTerm;
 
+const defaultSearchHistory = { byId: {}, allIds: [] };
+export const setSearchHistory = createAction("SET_SEARCH_HISTORY");
+export const searchHistory = handleAction(
+  "SET_SEARCH_HISTORY",
+  (state, action) => {
+    console.log(action.payload);
+    return defaultSearchHistory;
+  },
+  defaultSearchHistory
+);
+export const getSearchHistory = (state) => state.searchTerm;
+
 export const searchReducers = {
   searchTerm,
   searchResults,
+  searchHistory,
 };

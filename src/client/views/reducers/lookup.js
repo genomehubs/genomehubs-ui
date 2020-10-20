@@ -45,6 +45,7 @@ export function fetchLookup(lookupTerm, result) {
     if (lookupTerm.match(/[\(\)<>=]/)) return;
     dispatch(requestLookup());
     let url = `${apiUrl}/lookup?searchTerm=${lookupTerm}&result=taxon`;
+    // return;
     return fetch(url)
       .then(
         (response) => response.json(),

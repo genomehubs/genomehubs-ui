@@ -4,8 +4,8 @@ import classnames from "classnames";
 import withLocation from "../hocs/withLocation";
 import styles from "./Styles.scss";
 import loadable from "@loadable/component";
-
-const Landing = loadable(() => import("./Landing"));
+import Landing from "./Landing";
+// const Landing = loadable(() => import("./Landing"));
 const InfoPage = loadable(() => import("./InfoPage"));
 
 const Main = (props) => {

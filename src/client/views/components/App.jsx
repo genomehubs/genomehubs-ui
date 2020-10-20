@@ -7,10 +7,12 @@ import { withCookies } from "react-cookie";
 import withFadeInOut from "../hocs/withFadeInOut";
 import withTheme from "../hocs/withTheme";
 import Layout from "./Layout";
+import Head from "./Head";
 
 const App = ({ theme, cookies }) => {
   return (
     <div className={classnames(`theme${theme}`, styles.app)}>
+      <Head />
       <CookiesProvider>
         <Layout cookies={cookies} />
       </CookiesProvider>

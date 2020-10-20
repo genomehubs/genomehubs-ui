@@ -6,10 +6,12 @@ import withLocation from "../hocs/withLocation";
 import withPanes from "../hocs/withPanes";
 import styles from "./Styles.scss";
 import loadable from "@loadable/component";
-
-const SearchBox = loadable(() => import("./SearchBox"));
-const InfoPanel = loadable(() => import("./InfoPanel"));
-const TextPanel = loadable(() => import("./TextPanel"));
+import SearchBox from "./SearchBox";
+import InfoPanel from "./InfoPanel";
+import TextPanel from "./TextPanel";
+// const SearchBox = loadable(() => import("./SearchBox"));
+// const InfoPanel = loadable(() => import("./InfoPanel"));
+// const TextPanel = loadable(() => import("./TextPanel"));
 
 const Landing = (props) => {
   let css = classnames(

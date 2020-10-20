@@ -1,12 +1,10 @@
 const path = require("path");
 const webpack = require("webpack");
+const main = require("./src/config/main");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const GitRevisionPlugin = require("git-revision-webpack-plugin");
-// const combineLoaders = require('webpack-combine-loaders');
-const main = require("./src/config/main");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { DuplicatesPlugin } = require("inspectpack/plugin");
 
 const devMode = process.env.NODE_ENV !== "production";
 
@@ -87,14 +85,13 @@ const config = {
     }),
     new HtmlWebpackPlugin({
       hash: true,
-      title: JSON.stringify(main.siteName).replace(/"/g, ""),
       template: "./src/client/index.html",
       minify: {
         collapseInlineTagWhitespace: true,
         collapseWhitespace: true,
         preserveLineBreaks: true,
         minifyURLs: true,
-        removeComments: true,
+        removeComments: false,
         removeAttributeQuotes: true,
       },
     }),
@@ -104,12 +101,6 @@ const config = {
           from: "./src/client/favicon",
         },
       ],
-    }),
-    new DuplicatesPlugin({
-      // Emit compilation warning or error? (Default: `false`)
-      emitErrors: false,
-      // Display full duplicates information? (Default: `false`)
-      verbose: false,
     }),
   ],
   module: {
@@ -133,7 +124,7 @@ const config = {
             loader: "html-loader",
             options: {
               minimize: {
-                removeComments: true,
+                removeComments: false,
                 collapseWhitespace: true,
               },
             },
