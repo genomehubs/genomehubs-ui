@@ -64,7 +64,9 @@ const SearchBox = ({
           onClick={() => updateSearch(value)}
         >
           <span className={styles.value}>{value}</span>
-          <div className={styles.extra}>— {result.result.taxon_rank}</div>
+          <div
+            className={styles.extra}
+          >{`\u2014 ${result.result.taxon_rank}`}</div>
         </div>
       );
     });
