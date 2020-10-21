@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import withLocation from "../hocs/withLocation";
@@ -20,4 +20,4 @@ const Tab = (props) => {
   );
 };
 
-export default compose(withLocation)(Tab);
+export default compose(memo, withLocation)(Tab);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import withLocation from "../hocs/withLocation";
@@ -23,4 +23,4 @@ const Main = (props) => {
   return <main className={css}>{content}</main>;
 };
 
-export default compose(withLocation)(Main);
+export default compose(memo, withLocation)(Main);

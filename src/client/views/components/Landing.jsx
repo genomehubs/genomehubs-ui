@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { memo, useRef } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import useResize from "../hooks/useResize";
@@ -45,7 +45,6 @@ const Landing = (props) => {
   }
 
   let text = <TextPanel view={"about"}></TextPanel>;
-
   return (
     <div ref={componentRef} className={css}>
       {firstPanel}
@@ -56,4 +55,4 @@ const Landing = (props) => {
   );
 };
 
-export default compose(withLocation, withPanes)(Landing);
+export default compose(memo, withLocation, withPanes)(Landing);

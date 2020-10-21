@@ -8,7 +8,6 @@ import Typography from "@material-ui/core/Typography";
 export const images = require.context("./img", true, /\.(png|jpe?g|svg)$/);
 
 const InfoCard = (props) => {
-  // const classes = useStyles();
   let placeholder = props.image ? props.image : "placeholder.png";
 
   return (

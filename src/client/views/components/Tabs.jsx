@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import withFadeInOut from "../hocs/withFadeInOut";
@@ -19,6 +19,7 @@ const Tabs = (props) => {
 };
 
 export default compose(
+  memo,
   withLocation,
   withPanes
   // withFadeInOut,
