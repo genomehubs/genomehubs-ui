@@ -6,7 +6,6 @@ import ResultPanel from "./ResultPanel";
 import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
 import ControlPanel from "./ControlPanel";
-import withLocation from "../hocs/withLocation";
 import withSearch from "../hocs/withSearch";
 
 const SearchPage = ({ searchResults, searchResultArray }) => {
@@ -39,4 +38,4 @@ const SearchPage = ({ searchResults, searchResultArray }) => {
   );
 };
 
-export default compose(withLocation, withSearch)(SearchPage);
+export default compose(withSearch)(SearchPage);

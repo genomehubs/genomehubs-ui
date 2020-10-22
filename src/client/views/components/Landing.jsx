@@ -2,16 +2,12 @@ import React, { memo, useRef } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import useResize from "../hooks/useResize";
-import withLocation from "../hocs/withLocation";
 import withPanes from "../hocs/withPanes";
 import styles from "./Styles.scss";
 import loadable from "@loadable/component";
-import SearchBox from "./SearchBox";
-import InfoPanel from "./InfoPanel";
-import TextPanel from "./TextPanel";
-// const SearchBox = loadable(() => import("./SearchBox"));
-// const InfoPanel = loadable(() => import("./InfoPanel"));
-// const TextPanel = loadable(() => import("./TextPanel"));
+const SearchBox = loadable(() => import("./SearchBox"));
+const InfoPanel = loadable(() => import("./InfoPanel"));
+const TextPanel = loadable(() => import("./TextPanel"));
 
 const Landing = (props) => {
   let css = classnames(
@@ -27,7 +23,6 @@ const Landing = (props) => {
     let count = Math.min(Math.floor(width / 380), 3);
     if (count > 1) {
       morePanels = [];
-      // let paneWidth = width / (count + 1);
       firstPanel = (
         <InfoPanel panes={props.panes.slice(0, count)} cols={count} />
       );
@@ -55,4 +50,4 @@ const Landing = (props) => {
   );
 };
 
-export default compose(memo, withLocation, withPanes)(Landing);
+export default compose(memo, withPanes)(Landing);

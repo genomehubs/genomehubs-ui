@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { compose } from "recompose";
-import withLocation from "../hocs/withLocation";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
@@ -10,6 +9,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { formatter } from "../functions/formatter";
 import { useVisible } from "react-hooks-visible";
 import Skeleton from "@material-ui/lab/Skeleton";
+import { useNavigate } from "@reach/router";
 
 const HistogramSVG = ({
   summaryId,
@@ -17,9 +17,10 @@ const HistogramSVG = ({
   summaryById,
   fetchSummary,
   fetchSearchResults,
-  chooseView,
   resetLookup,
 }) => {
+  const navigate = useNavigate();
+
   const height = 100;
   let [targetRef, visible] = useVisible();
   let parts = summaryId.split("--");
@@ -46,7 +47,7 @@ const HistogramSVG = ({
   };
   const updateSearch = (options) => {
     fetchSearchResults(options);
-    chooseView("search");
+    navigate("search");
     resetLookup();
   };
   let buckets = [];
@@ -68,8 +69,7 @@ const HistogramSVG = ({
           y={25 / 2}
           fillOpacity={0.5}
           textAnchor="middle"
-          dominantBaseline="central"
-          pointerEvents={"none"}
+          alignmentBaseline="central"
         >
           no data
         </text>
@@ -109,7 +109,7 @@ const HistogramSVG = ({
           width={bucket.width}
           height={height}
           fill={bucket.color}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", pointerEvents: "auto" }}
           onClick={() => handleClick(bucket)}
         />
       </Tooltip>
@@ -122,8 +122,7 @@ const HistogramSVG = ({
         y={height / 2}
         fill={"white"}
         textAnchor="middle"
-        dominantBaseline="central"
-        pointerEvents={"none"}
+        alignmentBaseline="central"
       >
         {formatter(bucket.count)}
       </text>
@@ -164,6 +163,7 @@ const HistogramSVG = ({
       viewBox={"-25 -10 1050 135"}
       preserveAspectRatio="xMinYMin"
       ref={targetRef}
+      style={{ pointerEvents: "none" }}
     >
       <g>{histogramTicks}</g>
       <g>{histogramRects}</g>
@@ -183,7 +183,6 @@ const HistogramSVG = ({
 };
 
 export default compose(
-  withLocation,
   withLookup,
   withSearch,
   withSummary,

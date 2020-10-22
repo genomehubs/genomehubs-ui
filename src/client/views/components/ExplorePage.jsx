@@ -5,19 +5,44 @@ import styles from "./Styles.scss";
 import ResultPanel from "./ResultPanel";
 import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
-import withLocation from "../hocs/withLocation";
 import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
+import qs from "qs";
 
-const ExplorePage = ({ lineage, searchById = {}, summaryField, types }) => {
+const ExplorePage = ({
+  lineage,
+  fetchLineage,
+  searchById = {},
+  summaryField,
+  setSummaryField,
+  fetchSearchResults,
+  setRecordId,
+  types,
+}) => {
   let results = [];
   let taxon_id;
   if (lineage.taxon) {
     taxon_id = lineage.taxon.taxon_id;
   }
+  let options = qs.parse(location.search.replace(/^\?/, ""));
+  useEffect(() => {
+    if (!taxon_id) {
+      if (options.taxon_id && options.field_id) {
+        fetchSearchResults({
+          query: `tax_eq(${options.taxon_id})`,
+          result: "taxon",
+          includeEstimates: true,
+        });
+        fetchLineage(options.taxon_id);
+        setRecordId(options.taxon_id);
+        setSummaryField(options.field_id);
+      }
+    }
+  }, [options]);
+
   let summary;
   if (types[summaryField]) {
     if (types[summaryField].bins) {
@@ -79,7 +104,6 @@ const ExplorePage = ({ lineage, searchById = {}, summaryField, types }) => {
 };
 
 export default compose(
-  withLocation,
   withRecord,
   withSearch,
   withTypes,

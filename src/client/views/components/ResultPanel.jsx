@@ -5,22 +5,22 @@ import styles from "./Styles.scss";
 import { formatter } from "../functions/formatter";
 import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
-import withLocation from "../hocs/withLocation";
 import withSummary from "../hocs/withSummary";
 import HistogramSVG from "./HistogramSVG";
 import WordCloud from "./WordCloud";
 import Tooltip from "@material-ui/core/Tooltip";
 import AggregationIcon from "./AggregationIcon";
+import { useLocation, useNavigate } from "@reach/router";
 
 const ResultPanel = ({
   scientific_name,
   taxon_id,
   taxon_rank,
   fields,
-  chooseView,
   fetchLineage,
   setRecordId,
   fetchRecord,
+  isCurrent,
   summaryField,
   setSummaryField,
   views,
@@ -28,15 +28,18 @@ const ResultPanel = ({
   summaryId,
   summary,
 }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const handleTaxonClick = () => {
-    chooseView("records");
+    console.log(taxon_id);
+    navigate(`records?taxon_id=${taxon_id}`);
     setRecordId(taxon_id);
   };
   const handleFieldClick = (fieldId) => {
     fetchLineage(taxon_id);
     setRecordId(taxon_id);
     setSummaryField(fieldId);
-    chooseView("explore");
+    navigate(`explore?taxon_id=${taxon_id}&field_id=${fieldId}`);
   };
   let css = classnames(
     styles.infoPanel,
@@ -55,7 +58,7 @@ const ResultPanel = ({
         value = `${value} ...`;
       }
       let highlight = null;
-      if (views.primary == "explore" && field.id == summaryField) {
+      if (location.pathname == "/view/explore" && field.id == summaryField) {
         highlight = styles["fieldNameHighlight"];
       }
       fieldDivs.push(
@@ -109,7 +112,7 @@ const ResultPanel = ({
           </span>
         </div>
       </Tooltip>
-      {views.primary != "records" && (
+      {location.pathname != "/view/records" && (
         <div style={{ right: "0", top: "2em" }} onClick={handleTaxonClick}>
           <Tooltip title={"Click to view record"} arrow>
             <i
@@ -131,9 +134,4 @@ const ResultPanel = ({
   );
 };
 
-export default compose(
-  withLocation,
-  withRecord,
-  withSummary,
-  withExplore
-)(ResultPanel);
+export default compose(withRecord, withSummary, withExplore)(ResultPanel);

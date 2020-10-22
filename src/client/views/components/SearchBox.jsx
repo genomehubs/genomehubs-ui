@@ -1,15 +1,15 @@
 import React, { memo } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
-import withLocation from "../hocs/withLocation";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
+import qs from "qs";
 
 const siteName = SITENAME || "GenomeHub";
 
 const SearchBox = ({
-  chooseView,
   lookupTerm,
   setLookupTerm,
   resetLookup,
@@ -17,14 +17,19 @@ const SearchBox = ({
   fetchLookup,
   fetchSearchResults,
 }) => {
+  const navigate = useNavigate();
+
+  const dispatchSearch = (options) => {
+    fetchSearchResults(options);
+    navigate(`search?${qs.stringify(options)}`);
+  };
+
   const doSearch = (query, result = "taxon") => {
-    fetchSearchResults({ query, result });
-    chooseView("search");
+    dispatchSearch({ query, result });
     resetLookup();
   };
   const updateSearch = (query, result = "taxon") => {
-    fetchSearchResults({ query, result });
-    chooseView("search");
+    dispatchSearch({ query, result });
     setLookupTerm(query);
     setTimeout(resetLookup, 100);
   };
@@ -128,4 +133,4 @@ const SearchBox = ({
   );
 };
 
-export default compose(memo, withLocation, withSearch, withLookup)(SearchBox);
+export default compose(memo, withSearch, withLookup)(SearchBox);

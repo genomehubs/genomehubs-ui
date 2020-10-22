@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
@@ -16,4 +16,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default compose(memo)(Layout);

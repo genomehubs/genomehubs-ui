@@ -3,28 +3,27 @@ import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 import { format } from "d3-format";
-import withLocation from "../hocs/withLocation";
 import withLookup from "../hocs/withLookup";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
+import { useNavigate } from "@reach/router";
+import qs from "qs";
 
 const LineagePanel = ({
   taxon_id,
-  chooseView,
   setRecordId,
   lineage,
   fetchSearchResults,
   resetLookup,
-  // setLookupTerm,
-  // fetchLookup,
 }) => {
+  const navigate = useNavigate();
+
   const handleTaxonClick = (taxon, value) => {
     if (taxon != taxon_id) {
       setRecordId(taxon);
       fetchSearchResults({ query: `tax_eq(${taxon})` });
+      navigate(`?taxon_id=${taxon}`);
       resetLookup();
-      // setLookupTerm(`tax_name(${value})`);
-      // fetchLookup(`tax_name(${value})`, "taxon");
     }
   };
 
@@ -59,9 +58,4 @@ const LineagePanel = ({
   );
 };
 
-export default compose(
-  withLocation,
-  withLookup,
-  withSearch,
-  withRecord
-)(LineagePanel);
+export default compose(withLookup, withSearch, withRecord)(LineagePanel);

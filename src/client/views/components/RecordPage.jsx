@@ -8,25 +8,36 @@ import TextPanel from "./TextPanel";
 import AttributePanel from "./AttributePanel";
 import NamesPanel from "./NamesPanel";
 import SearchBox from "./SearchBox";
-import withLocation from "../hocs/withLocation";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withTypes from "../hocs/withTypes";
+import qs from "qs";
 
 const RecordPage = ({
+  location,
   record,
   recordId,
   fetchRecord,
+  setRecordId,
+  fetchSearchResults,
   types,
   searchById = {},
 }) => {
   let results = [];
   let taxon = {};
+  let options = qs.parse(location.search.replace(/^\?/, ""));
   useEffect(() => {
     if (recordId) {
       fetchRecord(recordId);
+    } else if (options.taxon_id) {
+      setRecordId(options.taxon_id);
+      fetchSearchResults({
+        query: `tax_eq(${options.taxon_id})`,
+        result: "taxon",
+        includeEstimates: true,
+      });
     }
-  }, [recordId]);
+  }, [recordId, options]);
   if (record && record.record && record.record.taxon_id) {
     taxon = {
       taxon_id: record.record.taxon_id,
@@ -89,9 +100,4 @@ const RecordPage = ({
   );
 };
 
-export default compose(
-  withLocation,
-  withRecord,
-  withSearch,
-  withTypes
-)(RecordPage);
+export default compose(withRecord, withSearch, withTypes)(RecordPage);

@@ -161,19 +161,12 @@ export const removeHash = (value) => {
 
 window.onpopstate = (e) => {
   let state = store.getState();
-  let dataset = getDatasetID(state);
-  store.dispatch(setPathname(document.location.pathname));
-  let newDataset = getDatasetID(state);
-  if (newDataset != dataset) {
-    store.dispatch(loadDataset(newDataset));
-  }
   let currentQuery = getQueryString(state);
   let str = document.location.search.replace(/^\?/, "");
   let values = qs.parse(str);
   store.dispatch(
     queryToStore({ values, searchReplace: true, currentQuery, action: "POP" })
   );
-  store.dispatch(setQueryString(str));
 };
 
 export const parseQueryString = createSelector(getQueryString, (str = "") =>

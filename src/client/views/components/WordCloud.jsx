@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { compose } from "recompose";
-import withLocation from "../hocs/withLocation";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
@@ -11,6 +10,7 @@ import { TagCloud } from "react-tagcloud";
 import styles from "./Styles.scss";
 import { useVisible } from "react-hooks-visible";
 import Skeleton from "@material-ui/lab/Skeleton";
+import { useNavigate } from "@reach/router";
 
 const WordCloud = ({
   summaryId,
@@ -18,9 +18,9 @@ const WordCloud = ({
   summaryById,
   fetchSummary,
   fetchSearchResults,
-  chooseView,
   resetLookup,
 }) => {
+  const navigate = useNavigate();
   const height = 100;
   const [targetRef, visible] = useVisible();
   let parts = summaryId.split("--");
@@ -41,7 +41,7 @@ const WordCloud = ({
   };
   const updateSearch = (options) => {
     fetchSearchResults(options);
-    chooseView("search");
+    navigate("search");
     resetLookup();
   };
   let buckets = [];
@@ -61,7 +61,7 @@ const WordCloud = ({
           y={25 / 2}
           fillOpacity={0.5}
           textAnchor="middle"
-          dominantBaseline="central"
+          alignmentBaseline="central"
           pointerEvents={"none"}
         >
           no data
@@ -91,7 +91,6 @@ const WordCloud = ({
 };
 
 export default compose(
-  withLocation,
   withLookup,
   withSearch,
   withSummary,

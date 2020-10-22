@@ -1,23 +1,38 @@
 import React, { memo } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
-import withLocation from "../hocs/withLocation";
 import styles from "./Styles.scss";
-import SearchBox from "./SearchBox";
 
-const Tab = (props) => {
-  // {paneWidth, title, image, text, fullText}
-  const handleClick = () => {
-    props.chooseView(props.view);
-  };
+import { Link, Location } from "@reach/router";
 
-  let highlight = props.views.primary == props.view;
-  let css = classnames(styles.tab, { [styles.tabHighlight]: highlight });
+const NavLink = (props) => {
+  let parts = props.pathname.split("/");
+  parts[2] = props.destination;
+  let to = parts.join("/");
   return (
-    <div className={css} onClick={handleClick}>
-      {props.short}
-    </div>
+    <Link
+      {...props}
+      to={to}
+      getProps={({ isCurrent }) => {
+        let css = classnames(styles.tab, { [styles.tabHighlight]: isCurrent });
+        return {
+          className: css,
+        };
+      }}
+    />
   );
 };
 
-export default compose(memo, withLocation)(Tab);
+const Tab = (props) => {
+  return (
+    <Location>
+      {({ location }) => (
+        <NavLink pathname={location.pathname} destination={props.view}>
+          {props.short}
+        </NavLink>
+      )}
+    </Location>
+  );
+};
+
+export default compose(memo)(Tab);

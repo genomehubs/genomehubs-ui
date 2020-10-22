@@ -5,7 +5,6 @@ import styles from "./Styles.scss";
 import { makeStyles } from "@material-ui/core/styles";
 import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
-import withLocation from "../hocs/withLocation";
 import withSummary from "../hocs/withSummary";
 import AggregationIcon from "./AggregationIcon";
 import Table from "@material-ui/core/Table";
@@ -23,6 +22,7 @@ import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import TablePagination from "@material-ui/core/TablePagination";
+import { useNavigate } from "@reach/router";
 
 const LocationMap = loadable(() => import("./LocationMap"));
 
@@ -88,16 +88,17 @@ const AttributePanel = ({
   field,
   meta,
   taxon_id,
-  chooseView,
   fetchLineage,
   summaryField,
   setSummaryField,
 }) => {
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const handleFieldClick = (fieldId) => {
     fetchLineage(taxon_id);
     setSummaryField(fieldId);
-    chooseView("explore");
+    navigate("explore");
   };
   let css = classnames(
     styles.infoPanel,
@@ -222,9 +223,4 @@ const AttributePanel = ({
   );
 };
 
-export default compose(
-  withLocation,
-  withRecord,
-  withSummary,
-  withExplore
-)(AttributePanel);
+export default compose(withRecord, withSummary, withExplore)(AttributePanel);

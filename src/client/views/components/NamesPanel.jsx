@@ -3,7 +3,6 @@ import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 import { format } from "d3-format";
-import withLocation from "../hocs/withLocation";
 import withRecord from "../hocs/withRecord";
 
 const LineagePanel = ({ taxon_id, names }) => {
@@ -31,4 +30,4 @@ const LineagePanel = ({ taxon_id, names }) => {
   );
 };
 
-export default compose(withLocation, withRecord)(LineagePanel);
+export default compose(withRecord)(LineagePanel);
