@@ -4,6 +4,7 @@ import immutableUpdate from "immutable-update";
 import { setApiStatus } from "./api";
 import { createCachedSelector } from "re-reselect";
 import store from "../store";
+import qs from "qs";
 
 const apiUrl = API_URL || "/api/v1";
 
@@ -78,7 +79,7 @@ export function fetchSearchResults(options) {
     }
     const state = store.getState();
     const searchHistory = getSearchHistory(state);
-    console.log(searchHistory);
+    // console.log(searchHistory);
 
     dispatch(setSearchHistory(options));
 
@@ -94,10 +95,7 @@ export function fetchSearchResults(options) {
     }
     dispatch(requestSearch());
     dispatch(setSearchTerm(options));
-    const queryString = Object.keys(options)
-      .map((key) => `${key}=${escape(options[key])}`)
-      .join("&");
-
+    const queryString = qs.stringify(options);
     let url = `${apiUrl}/search?${queryString}`;
     try {
       let json;
@@ -110,6 +108,9 @@ export function fetchSearchResults(options) {
       if (!json.results || json.results.length == 0) {
         if (!searchTerm.match(/[\(\)<>=]/)) {
           options.query = `tax_name(${searchTerm})`;
+          dispatch(fetchSearchResults(options));
+        } else if (searchTerm.match(/tax_tree/)) {
+          options.query = searchTerm.query.replace("tax_tree", "tax_name");
           dispatch(fetchSearchResults(options));
         }
       } else {
@@ -134,7 +135,7 @@ export const setSearchHistory = createAction("SET_SEARCH_HISTORY");
 export const searchHistory = handleAction(
   "SET_SEARCH_HISTORY",
   (state, action) => {
-    console.log(action.payload);
+    // console.log(action.payload);
     return defaultSearchHistory;
   },
   defaultSearchHistory

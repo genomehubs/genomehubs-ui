@@ -31,7 +31,6 @@ const ResultPanel = ({
   const location = useLocation();
   const navigate = useNavigate();
   const handleTaxonClick = () => {
-    console.log(taxon_id);
     navigate(`records?taxon_id=${taxon_id}`);
     setRecordId(taxon_id);
   };

@@ -5,10 +5,11 @@ import styles from "./Styles.scss";
 import { Link } from "@reach/router";
 
 const siteName = SITENAME || "/";
+const basename = BASENAME || "view";
 
 const SiteName = () => {
   return (
-    <Link className={styles.siteName} to="/view/">
+    <Link className={styles.siteName} to={`/${basename}/`}>
       {siteName}
     </Link>
   );

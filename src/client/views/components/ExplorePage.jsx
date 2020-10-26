@@ -29,8 +29,8 @@ const ExplorePage = ({
   }
   let options = qs.parse(location.search.replace(/^\?/, ""));
   useEffect(() => {
-    if (!taxon_id) {
-      if (options.taxon_id && options.field_id) {
+    if (options.taxon_id && options.field_id) {
+      if (options.taxon_id != taxon_id || options.field_id != summaryField) {
         fetchSearchResults({
           query: `tax_eq(${options.taxon_id})`,
           result: "taxon",
@@ -41,7 +41,7 @@ const ExplorePage = ({
         setSummaryField(options.field_id);
       }
     }
-  }, [options]);
+  }, [taxon_id, options]);
 
   let summary;
   if (types[summaryField]) {

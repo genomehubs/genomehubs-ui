@@ -27,15 +27,15 @@ const RecordPage = ({
   let taxon = {};
   let options = qs.parse(location.search.replace(/^\?/, ""));
   useEffect(() => {
-    if (recordId) {
-      fetchRecord(recordId);
-    } else if (options.taxon_id) {
+    if (options.taxon_id && options.taxon_id != recordId) {
       setRecordId(options.taxon_id);
       fetchSearchResults({
         query: `tax_eq(${options.taxon_id})`,
         result: "taxon",
         includeEstimates: true,
       });
+    } else if (recordId) {
+      fetchRecord(recordId);
     }
   }, [recordId, options]);
   if (record && record.record && record.record.taxon_id) {

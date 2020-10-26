@@ -12,6 +12,8 @@ const SearchPage = loadable(() => import("./SearchPage"));
 const AboutPage = loadable(() => import("./AboutPage"));
 const TutorialPage = loadable(() => import("./TutorialPage"));
 
+const basename = BASENAME || "view";
+
 const Main = (props) => {
   let css = classnames(
     styles.flexCenter,
@@ -20,7 +22,7 @@ const Main = (props) => {
   );
   return (
     <main className={css}>
-      <Router className={css} basepath="view">
+      <Router className={css} basepath={basename}>
         <Landing path="/" />
         <SearchPage path="/search" />
         <ExplorePage path="/explore" />

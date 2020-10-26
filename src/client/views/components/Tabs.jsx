@@ -7,18 +7,10 @@ import styles from "./Styles.scss";
 import Tab from "./Tab";
 
 const Tabs = (props) => {
-  // if (props.views.primary == 'landing') {
-  //   return null;
-  // }
-
   let css = classnames(styles.tabHolder);
   let tabs = props.panes.map((pane) => <Tab key={pane.short} {...pane} />);
 
   return <nav className={css}>{tabs}</nav>;
 };
 
-export default compose(
-  memo,
-  withPanes
-  // withFadeInOut,
-)(Tabs);
+export default compose(memo, withPanes)(Tabs);
