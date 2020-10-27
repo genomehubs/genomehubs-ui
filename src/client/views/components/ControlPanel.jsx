@@ -4,7 +4,7 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import { format } from "d3-format";
 import withSearch from "../hocs/withSearch";
-import SearchOptions from "./SearchOptions";
+// import SearchOptions from "./SearchOptions";
 import SearchPagination from "./SearchPagination";
 
 const ControlPanel = ({
@@ -26,9 +26,9 @@ const ControlPanel = ({
   if (pagination) {
     pageDivs.push(<SearchPagination key={"pagination"} />);
   }
-  if (options) {
-    pageDivs.push(<SearchOptions key={"options"} />);
-  }
+  // if (options) {
+  //   pageDivs.push(<SearchOptions key={"options"} />);
+  // }
 
   return <div className={css}>{pageDivs}</div>;
 };

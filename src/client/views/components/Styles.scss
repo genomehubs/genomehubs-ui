@@ -551,6 +551,61 @@ body,
       * {
         color: unset;
         background-color: unset;
+
+        .aggregationToggle {
+          opacity: 0.25;
+          &:hover {
+            opacity: 1;
+          }
+        }
+
+        .field {
+          // border: solid 0.5px rgba(themed("primary"), 0.25);
+          box-sizing: border-box;
+          margin: 0.25em;
+
+          &Value {
+            font-size: 1.2em;
+            padding: 0.25em;
+
+            .confidence {
+              float: left;
+              padding-right: 0.75em;
+              height: 1.44em;
+              position: relative;
+
+              .one,
+              .two,
+              .three {
+                height: 0.33em;
+                width: 0.33em;
+                position: absolute;
+                background-color: rgba(themed("primary"), 0.25);
+                &High {
+                  background-color: green;
+                }
+              }
+              .one,
+              .two {
+                &Medium {
+                  background-color: orange;
+                }
+              }
+              .one {
+                bottom: 0;
+                &Low {
+                  background-color: red;
+                }
+              }
+              .two {
+                bottom: 0.33em;
+              }
+              .three {
+                bottom: 0.66em;
+              }
+            }
+          }
+        }
       }
     }
   }

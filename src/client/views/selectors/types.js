@@ -12,6 +12,16 @@ export const apiUrl = API_URL || "/api/v1";
 
 export const getTypesMap = createSelector(getTypes, (types) => types);
 
+export const getDisplayTypes = createSelector(getTypes, (types) => {
+  let displayTypes = [];
+  Object.values(types).forEach((type) => {
+    if (type.display_level == 1) {
+      displayTypes.push(type);
+    }
+  });
+  return displayTypes;
+});
+
 export function fetchTypes(result) {
   return async function (dispatch) {
     const state = store.getState();
