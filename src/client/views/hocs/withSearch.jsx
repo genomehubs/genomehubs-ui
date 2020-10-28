@@ -6,6 +6,7 @@ import {
   getSearchResults,
   getSearchResultArray,
   fetchSearchResults,
+  saveSearchResults,
   getSearchResultById,
   resetSearch,
 } from "../reducers/search";
@@ -29,6 +30,7 @@ const withSearch = (WrappedComponent) => (props) => {
       }
     },
     setSearchTerm: (options) => dispatch(setSearchTerm(options)),
+    saveSearchResults: (options, format) => saveSearchResults(options, format),
   });
 
   const Connected = connect(

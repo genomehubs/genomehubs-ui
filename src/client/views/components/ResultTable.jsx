@@ -14,6 +14,17 @@ import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import SaveIcon from "@material-ui/icons/Save";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
+import MenuItem from "@material-ui/core/MenuItem";
+import MenuList from "@material-ui/core/MenuList";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import withSearch from "../hocs/withSearch";
@@ -156,9 +167,113 @@ const SortableCell = ({
   );
 };
 
+const DownloadButton = ({ onButtonClick, searchTerm }) => {
+  const options = {
+    "Save CSV": { format: "csv" },
+    "Save TSV": { format: "tsv" },
+    "Save JSON": { format: "json" },
+    "Save Tidy Data": { format: "tsv", tidyData: true },
+    "Save Raw Values": {
+      format: "tsv",
+      tidyData: true,
+      includeRawValues: true,
+    },
+  };
+
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+  const handleClick = () => {
+    let key = Object.keys(options)[selectedIndex];
+    let format = options[key].format;
+    let fullOptions = {
+      ...searchTerm,
+      ...options[key],
+      offset: 0,
+      size: 10000,
+    };
+    delete fullOptions.format;
+    onButtonClick(fullOptions, format);
+  };
+
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setOpen(false);
+  };
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  return (
+    <span
+      style={{
+        margin: "1em 0",
+        float: "right",
+        maxHeight: "2em",
+        overflow: "visible",
+        backgroundColor: "white",
+      }}
+    >
+      <ButtonGroup
+        variant="contained"
+        color="primary"
+        ref={anchorRef}
+        aria-label="split button"
+      >
+        <Button onClick={handleClick}>
+          {Object.keys(options)[selectedIndex]}
+        </Button>
+        <Button
+          color="primary"
+          size="small"
+          aria-controls={open ? "split-button-menu" : undefined}
+          aria-expanded={open ? "true" : undefined}
+          aria-label="select merge strategy"
+          aria-haspopup="menu"
+          onClick={handleToggle}
+        >
+          <ArrowDropDownIcon />
+        </Button>
+      </ButtonGroup>
+      {/* <Popper
+        open={open}
+        anchorEl={anchorRef.current}
+        role={undefined}
+        disablePortal
+      > */}
+      <Paper style={{ height: open ? "auto" : 0, overflow: "hidden" }}>
+        <ClickAwayListener onClickAway={handleClose}>
+          <MenuList id="split-button-menu">
+            {Object.keys(options).map((option, index) => (
+              <MenuItem
+                key={option}
+                selected={index === selectedIndex}
+                onClick={(event) => handleMenuItemClick(event, index)}
+              >
+                {option}
+              </MenuItem>
+            ))}
+          </MenuList>
+        </ClickAwayListener>
+      </Paper>
+      {/* </Popper> */}
+    </span>
+  );
+};
 const ResultTable = ({
   displayTypes,
   fetchSearchResults,
+  saveSearchResults,
   searchResults,
   searchTerm,
 }) => {
@@ -357,6 +472,20 @@ const ResultTable = ({
           onChangeRowsPerPage={handleChangeRowsPerPage}
         /> */}
       </Box>
+      {/* <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        className={classes.button}
+        onClick={() => saveSearchResults(searchTerm, "csv")}
+        startIcon={<SaveIcon />}
+      >
+        Save
+      </Button> */}
+      <DownloadButton
+        onButtonClick={saveSearchResults}
+        searchTerm={searchTerm}
+      />
     </span>
   );
 };
