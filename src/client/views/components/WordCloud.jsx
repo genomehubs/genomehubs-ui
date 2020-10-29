@@ -11,6 +11,7 @@ import styles from "./Styles.scss";
 import { useVisible } from "react-hooks-visible";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { useNavigate } from "@reach/router";
+import qs from "qs";
 
 const WordCloud = ({
   summaryId,
@@ -40,8 +41,8 @@ const WordCloud = ({
     });
   };
   const updateSearch = (options) => {
-    fetchSearchResults(options);
-    navigate("search");
+    // fetchSearchResults(options);
+    navigate(`search?${qs.stringify(options)}`);
     resetLookup();
   };
   let buckets = [];

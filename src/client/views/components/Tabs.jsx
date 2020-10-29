@@ -8,9 +8,15 @@ import Tab from "./Tab";
 
 const Tabs = (props) => {
   let css = classnames(styles.tabHolder);
-  let tabs = props.panes.map((pane) => <Tab key={pane.short} {...pane} />);
+  let show = { help: true, about: true, search: true };
+  let tabs = [];
+  props.panes.forEach((pane) => {
+    if (show[pane.short]) {
+      tabs.push(<Tab key={pane.short} {...pane} />);
+    }
+  });
 
   return <nav className={css}>{tabs}</nav>;
 };
 
-export default compose(memo, withPanes)(Tabs);
+export default compose(withPanes)(Tabs);

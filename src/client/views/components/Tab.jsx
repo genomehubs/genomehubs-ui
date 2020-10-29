@@ -2,13 +2,12 @@ import React, { memo } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
-
-import { Link, Location } from "@reach/router";
+import { Link, useLocation } from "@reach/router";
 
 const NavLink = (props) => {
   let parts = props.pathname.split("/");
   parts[2] = props.destination;
-  let to = parts.join("/");
+  let to = parts.join("/") + props.search;
   return (
     <Link
       {...props}
@@ -24,15 +23,16 @@ const NavLink = (props) => {
 };
 
 const Tab = (props) => {
+  const location = useLocation();
   return (
-    <Location>
-      {({ location }) => (
-        <NavLink pathname={location.pathname} destination={props.view}>
-          {props.short}
-        </NavLink>
-      )}
-    </Location>
+    <NavLink
+      pathname={location.pathname}
+      search={location.search}
+      destination={props.view}
+    >
+      {props.short}
+    </NavLink>
   );
 };
 
-export default compose(memo)(Tab);
+export default compose()(Tab);

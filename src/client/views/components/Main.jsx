@@ -22,7 +22,7 @@ const Main = (props) => {
   );
   return (
     <main className={css}>
-      <Router className={css} basepath={basename}>
+      <Router className={css} basepath={basename} primary={false}>
         <Landing path="/" />
         <SearchPage path="/search" />
         <ExplorePage path="/explore" />

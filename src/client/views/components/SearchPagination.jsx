@@ -27,7 +27,6 @@ const SearchPagination = ({
   let offset = searchResults.status.offset;
   let resultCount = searchResults.status.hits;
   let count = Math.ceil(resultCount / pageSize);
-  console.log(count);
   let page = offset / pageSize;
   const handleChange = (event, newPage) => {
     searchTerm.offset = newPage * pageSize;

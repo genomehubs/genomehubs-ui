@@ -315,6 +315,7 @@ body,
         bottom: 0;
         width: 100%;
         height: calc(100% - 3rem);
+        background-color: themed("secondary");
         // transition: all 0s ease-in 0s;
       }
       &:hover {
@@ -538,8 +539,13 @@ body,
 
     .aggregationToggle {
       opacity: 0.25;
+      filter: grayscale(100%);
+      display: inline-block;
+      min-height: 1rem;
+      min-width: 2rem;
       &:hover,
       &Opaque {
+        filter: none;
         opacity: 1;
       }
     }

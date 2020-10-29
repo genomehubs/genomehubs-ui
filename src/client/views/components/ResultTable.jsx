@@ -109,6 +109,7 @@ const SortableCell = ({
         wordWrap: "break-word",
         maxWidth: "8rem",
         minWidth: "3rem",
+        lineHeight: "1rem",
         verticalAlign: "bottom",
       }}
       sortDirection={sortDirection}
@@ -133,7 +134,7 @@ const SortableCell = ({
         </TableSortLabel>
       </Tooltip>
       <br />
-      {excludeAncestral && (
+      {(excludeAncestral && (
         <span className={css}>
           <Tooltip
             key={"direct"}
@@ -172,7 +173,7 @@ const SortableCell = ({
             />
           </Tooltip>
         </span>
-      )}
+      )) || <span className={css}></span>}
     </TableCell>
   );
 };
