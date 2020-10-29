@@ -279,26 +279,28 @@ const ResultTable = ({
       </Tooltip>,
     ];
     displayTypes.forEach((type) => {
-      if (result.result.fields.hasOwnProperty(type.name)) {
-        let field = result.result.fields[type.name];
-        let value = field.value;
-        if (Array.isArray(value)) {
-          value = value[0];
+      if (type.name != "sex_determination_system") {
+        if (result.result.fields.hasOwnProperty(type.name)) {
+          let field = result.result.fields[type.name];
+          let value = field.value;
+          if (Array.isArray(value)) {
+            value = value[0];
+          }
+          value = isNaN(value) ? value : formatter(value);
+          if (Array.isArray(field.value) && field.count > 1) {
+            value = `${value} ...`;
+          }
+          cells.push(
+            <TableCell key={type.name}>
+              <div className={styles.fieldValue}>
+                {value}
+                <AggregationIcon method={field.aggregation_source} />
+              </div>
+            </TableCell>
+          );
+        } else {
+          cells.push(<TableCell key={type.name}>-</TableCell>);
         }
-        value = isNaN(value) ? value : formatter(value);
-        if (Array.isArray(field.value) && field.count > 1) {
-          value = `${value} ...`;
-        }
-        cells.push(
-          <TableCell key={type.name}>
-            <div className={styles.fieldValue}>
-              {value}
-              <AggregationIcon method={field.aggregation_source} />
-            </div>
-          </TableCell>
-        );
-      } else {
-        cells.push(<TableCell key={type.name}>-</TableCell>);
       }
     });
     cells.push(
@@ -335,20 +337,22 @@ const ResultTable = ({
     />,
   ];
   displayTypes.forEach((type) => {
-    let sortDirection = sortBy === type.name ? sortOrder : false;
-    heads.push(
-      <SortableCell
-        name={type.name}
-        classes={classes}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        sortDirection={sortDirection}
-        handleTableSort={handleTableSort}
-        excludeAncestral={arrToObj(searchTerm.excludeAncestral)}
-        excludeDescendant={arrToObj(searchTerm.excludeDescendant)}
-        excludeDirect={arrToObj(searchTerm.excludeDirect)}
-      />
-    );
+    if (type.name != "sex_determination_system") {
+      let sortDirection = sortBy === type.name ? sortOrder : false;
+      heads.push(
+        <SortableCell
+          name={type.name}
+          classes={classes}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          sortDirection={sortDirection}
+          handleTableSort={handleTableSort}
+          excludeAncestral={arrToObj(searchTerm.excludeAncestral)}
+          excludeDescendant={arrToObj(searchTerm.excludeDescendant)}
+          excludeDirect={arrToObj(searchTerm.excludeDirect)}
+        />
+      );
+    }
   });
   heads.push(<TableCell key={"last"}></TableCell>);
 
