@@ -6,7 +6,7 @@ import ResultPanel from "./ResultPanel";
 import ResultTable from "./ResultTable";
 import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
-import ControlPanel from "./ControlPanel";
+// import ControlPanel from "./ControlPanel";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import { shallowEqualObjects } from "shallow-equal";
@@ -39,9 +39,9 @@ const SearchPage = ({
   // });
   results = <ResultTable />;
   let controls;
-  if (searchResults.status && searchResults.status.hits) {
-    controls = <ControlPanel pagination options />;
-  }
+  // if (searchResults.status && searchResults.status.hits) {
+  //   controls = <ControlPanel pagination options />;
+  // }
 
   let text = <TextPanel view={"search"}></TextPanel>;
 

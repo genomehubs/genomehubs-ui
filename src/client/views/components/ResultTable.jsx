@@ -5,6 +5,7 @@ import styles from "./Styles.scss";
 import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
+import TableContainer from "@material-ui/core/TableContainer";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
@@ -14,17 +15,9 @@ import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import SaveIcon from "@material-ui/icons/Save";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
-import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
-import MenuItem from "@material-ui/core/MenuItem";
-import MenuList from "@material-ui/core/MenuList";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import withSearch from "../hocs/withSearch";
@@ -32,15 +25,17 @@ import withTypes from "../hocs/withTypes";
 import { formatter } from "../functions/formatter";
 import AggregationIcon from "./AggregationIcon";
 import { useLocation, useNavigate } from "@reach/router";
+import DownloadButton from "./DownloadButton";
+import SearchPagination from "./SearchPagination";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
     },
-    "&:last-child th, &:last-child td": {
-      borderBottom: 0,
-    },
+    // "&:last-child th, &:last-child td": {
+    //   borderBottom: 0,
+    // },
   },
 }))(TableRow);
 
@@ -92,6 +87,20 @@ const SortableCell = ({
   excludeAncestral,
   excludeDescendant,
 }) => {
+  let css = styles.aggregationToggle;
+  if (excludeAncestral) {
+    if (
+      excludeDirect.hasOwnProperty(name) ||
+      excludeDescendant.hasOwnProperty(name) ||
+      excludeAncestral.hasOwnProperty(name)
+    ) {
+      css = classnames(
+        styles.aggregationToggle,
+        styles.aggregationToggleOpaque
+      );
+    }
+  }
+
   return (
     <TableCell
       key={name}
@@ -99,6 +108,7 @@ const SortableCell = ({
         whiteSpace: "normal",
         wordWrap: "break-word",
         maxWidth: "8rem",
+        minWidth: "3rem",
         verticalAlign: "bottom",
       }}
       sortDirection={sortDirection}
@@ -124,7 +134,7 @@ const SortableCell = ({
       </Tooltip>
       <br />
       {excludeAncestral && (
-        <span className={styles.aggregationToggle}>
+        <span className={css}>
           <Tooltip
             key={"direct"}
             title={"Toggle directly measured values"}
@@ -167,109 +177,6 @@ const SortableCell = ({
   );
 };
 
-const DownloadButton = ({ onButtonClick, searchTerm }) => {
-  const options = {
-    "Save CSV": { format: "csv" },
-    "Save TSV": { format: "tsv" },
-    "Save JSON": { format: "json" },
-    "Save Tidy Data": { format: "tsv", tidyData: true },
-    "Save Raw Values": {
-      format: "tsv",
-      tidyData: true,
-      includeRawValues: true,
-    },
-  };
-
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
-
-  const handleClick = () => {
-    let key = Object.keys(options)[selectedIndex];
-    let format = options[key].format;
-    let fullOptions = {
-      ...searchTerm,
-      ...options[key],
-      offset: 0,
-      size: 10000,
-    };
-    delete fullOptions.format;
-    onButtonClick(fullOptions, format);
-  };
-
-  const handleMenuItemClick = (event, index) => {
-    setSelectedIndex(index);
-    setOpen(false);
-  };
-
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
-
-  const handleClose = (event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  return (
-    <span
-      style={{
-        margin: "1em 0",
-        float: "right",
-        maxHeight: "2em",
-        overflow: "visible",
-        backgroundColor: "white",
-      }}
-    >
-      <ButtonGroup
-        variant="contained"
-        color="primary"
-        ref={anchorRef}
-        aria-label="split button"
-      >
-        <Button onClick={handleClick}>
-          {Object.keys(options)[selectedIndex]}
-        </Button>
-        <Button
-          color="primary"
-          size="small"
-          aria-controls={open ? "split-button-menu" : undefined}
-          aria-expanded={open ? "true" : undefined}
-          aria-label="select merge strategy"
-          aria-haspopup="menu"
-          onClick={handleToggle}
-        >
-          <ArrowDropDownIcon />
-        </Button>
-      </ButtonGroup>
-      {/* <Popper
-        open={open}
-        anchorEl={anchorRef.current}
-        role={undefined}
-        disablePortal
-      > */}
-      <Paper style={{ height: open ? "auto" : 0, overflow: "hidden" }}>
-        <ClickAwayListener onClickAway={handleClose}>
-          <MenuList id="split-button-menu">
-            {Object.keys(options).map((option, index) => (
-              <MenuItem
-                key={option}
-                selected={index === selectedIndex}
-                onClick={(event) => handleMenuItemClick(event, index)}
-              >
-                {option}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </ClickAwayListener>
-      </Paper>
-      {/* </Popper> */}
-    </span>
-  );
-};
 const ResultTable = ({
   displayTypes,
   fetchSearchResults,
@@ -277,25 +184,16 @@ const ResultTable = ({
   searchResults,
   searchTerm,
 }) => {
+  if (!searchResults.status || !searchResults.status.hits) {
+    return null;
+  }
   const navigate = useNavigate();
   const classes = useStyles();
   let sortBy = searchTerm.sortBy || "";
   let sortOrder = searchTerm.sortOrder || "asc";
-  // console.log(searchTerm);
   const handleTaxonClick = (taxon_id) => {
-    // setRecordId(taxon_id);
     navigate(`records?taxon_id=${taxon_id}`);
   };
-  // const [excludeAncestral, setExcludeAncestral] = useState({});
-  // const [excludeDescendant, setExcludeDescendant] = useState({});
-  // const [excludeDirect, setExcludeDirect] = useState({});
-
-  // const setExclusion = (excludeSource) => {
-  //   if (excludeSource) {
-  //     let [key, value] = Object.entries(excludeSource)[0];
-  //     let current = searchTerm[key] || [];
-  //   }
-  // };
   const arrToObj = (arr) => {
     let obj = {};
     if (arr) {
@@ -454,38 +352,32 @@ const ResultTable = ({
   heads.push(<TableCell key={"last"}></TableCell>);
 
   return (
-    <span className={styles.disableTheme}>
+    <span>
       <Box margin={1}>
-        <Table size="small" aria-label="search results">
-          <TableHead>
-            <TableRow>{heads}</TableRow>
-          </TableHead>
-          <TableBody>{rows}</TableBody>
-        </Table>
-        {/* <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 100]}
-          component="div"
-          count={values.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        /> */}
+        <TableContainer className={classes.container}>
+          <Table size="small" aria-label="search results">
+            <TableHead>
+              <TableRow>{heads}</TableRow>
+            </TableHead>
+            <TableBody>{rows}</TableBody>
+          </Table>
+        </TableContainer>
       </Box>
-      {/* <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        className={classes.button}
-        onClick={() => saveSearchResults(searchTerm, "csv")}
-        startIcon={<SaveIcon />}
+
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          position: "relative",
+          overflow: "visible",
+        }}
       >
-        Save
-      </Button> */}
-      <DownloadButton
-        onButtonClick={saveSearchResults}
-        searchTerm={searchTerm}
-      />
+        <DownloadButton
+          onButtonClick={saveSearchResults}
+          searchTerm={searchTerm}
+        />
+        <SearchPagination />
+      </Box>
     </span>
   );
 };

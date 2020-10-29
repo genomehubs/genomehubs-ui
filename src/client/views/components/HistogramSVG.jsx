@@ -118,7 +118,10 @@ const HistogramSVG = ({
     histogramText.push(
       <text
         key={bucket.bin}
-        style={{ fontSize: "24px" }}
+        style={{
+          fontSize: "24px",
+          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+        }}
         x={bucket.x + bucket.width / 2}
         y={height / 2}
         fill={"white"}

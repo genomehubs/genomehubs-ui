@@ -15,7 +15,7 @@ body,
   height: 100%;
   margin: 0;
   min-width: 800px;
-  overflow: auto;
+  overflow: visible;
   overscroll-behavior: none;
   width: 100%;
 }
@@ -27,13 +27,23 @@ body,
   width: 100%;
 }
 
-* {
+.app {
   @include themify($themes) {
     background: themed("secondary");
     color: themed("primary");
     font-family: themed("bodyFont");
     font-size: themed("bodyFontSize");
     transition: all 0.3s ease-in 0s;
+  }
+}
+
+* {
+  @include themify($themes) {
+    // background: inherit;
+    // color: inherit;
+    // font-family: inherit;
+    // font-size: inherit;
+    // transition: inherit;
 
     h1,
     h2,
@@ -46,7 +56,10 @@ body,
       font-size: 2em;
     }
 
-    a {
+    a,
+    a:visited {
+      color: themed("primary");
+      font-family: themed("bodyFont");
       text-decoration: none;
     }
 
@@ -126,6 +139,8 @@ body,
     footer {
       border-top: 1px solid themed("primary");
       flex: none;
+      font-family: themed("bodyFont");
+      font-size: themed("bodyFontSize");
       line-height: 2em;
       min-height: 2em;
       text-align: center;
@@ -169,6 +184,8 @@ body,
       background-color: transparent;
       margin: 1em 0;
       width: 80%;
+      font-family: themed("bodyFont");
+      font-size: themed("bodyFontSize");
 
       &4Column {
         .infoPane {
@@ -355,43 +372,6 @@ body,
         &Value {
           font-size: 1.2em;
           padding: 0.25em;
-
-          .confidence {
-            float: left;
-            padding-right: 0.58em;
-            height: 1.3em;
-            position: relative;
-
-            .one,
-            .two,
-            .three {
-              height: 0.33em;
-              width: 0.33em;
-              position: absolute;
-              background-color: rgba(themed("primary"), 0.25);
-              &High {
-                background-color: green;
-              }
-            }
-            .one,
-            .two {
-              &Medium {
-                background-color: orange;
-              }
-            }
-            .one {
-              bottom: 0;
-              &Low {
-                background-color: red;
-              }
-            }
-            .two {
-              bottom: 0.33em;
-            }
-            .three {
-              bottom: 0.66em;
-            }
-          }
         }
         &Count {
           color: rgba(themed("primary"), 0.75);
@@ -477,6 +457,7 @@ body,
 
     header {
       font-family: themed("bodyFont");
+      font-size: themed("bodyFontSize");
       height: 2em;
       // left: 0;
       min-width: 100%;
@@ -503,11 +484,12 @@ body,
     }
 
     .completion {
-      font-family: themed("titleFont");
-      font-size: 1.25em;
-      margin: 0 10%;
+      font-family: themed("bodyFont");
+      font-size: themed("bodyFontSize");
+      margin: 0 auto;
       position: relative;
       z-index: 10;
+      max-width: 600px;
       // padding: 1em 0;
 
       background-color: themed("secondary");
@@ -547,66 +529,69 @@ body,
       }
     }
 
-    .disableTheme {
-      * {
-        color: unset;
-        background-color: unset;
+    // .disableTheme {
+    // color: unset;
+    // background-color: unset;
+    // * {
+    //   color: inherit;
+    //   background-color: inherit;
 
-        .aggregationToggle {
-          opacity: 0.25;
-          &:hover {
-            opacity: 1;
-          }
-        }
+    .aggregationToggle {
+      opacity: 0.25;
+      &:hover,
+      &Opaque {
+        opacity: 1;
+      }
+    }
 
-        .field {
-          // border: solid 0.5px rgba(themed("primary"), 0.25);
-          box-sizing: border-box;
-          margin: 0.25em;
+    .field {
+      // border: solid 0.5px rgba(themed("primary"), 0.25);
+      // box-sizing: border-box;
+      // margin: 0.25em;
 
-          &Value {
-            font-size: 1.2em;
-            padding: 0.25em;
+      &Value {
+        // font-size: 1.2em;
+        // padding: 0.25em;
 
-            .confidence {
-              float: left;
-              padding-right: 0.75em;
-              height: 1.44em;
-              position: relative;
+        .confidence {
+          float: left;
+          padding-right: 0.75em;
+          height: 1.2em;
+          position: relative;
 
-              .one,
-              .two,
-              .three {
-                height: 0.33em;
-                width: 0.33em;
-                position: absolute;
-                background-color: rgba(themed("primary"), 0.25);
-                &High {
-                  background-color: green;
-                }
-              }
-              .one,
-              .two {
-                &Medium {
-                  background-color: orange;
-                }
-              }
-              .one {
-                bottom: 0;
-                &Low {
-                  background-color: red;
-                }
-              }
-              .two {
-                bottom: 0.33em;
-              }
-              .three {
-                bottom: 0.66em;
-              }
+          .one,
+          .two,
+          .three {
+            height: 0.33em;
+            width: 0.33em;
+            position: absolute;
+            background-color: rgba(themed("primary"), 0.25);
+            &High {
+              background-color: green;
             }
+          }
+          .one,
+          .two {
+            &Medium {
+              background-color: orange;
+            }
+          }
+          .one {
+            bottom: 0;
+            &Low {
+              background-color: red;
+            }
+          }
+          .two {
+            bottom: 0.33em;
+          }
+          .three {
+            bottom: 0.66em;
           }
         }
       }
+      // }
+      // }
     }
   }
 }
