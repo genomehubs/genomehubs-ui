@@ -59,47 +59,47 @@ const summaries = handleActions(
 export const getSummaries = (state) => state.summaries.byId;
 export const getSummariesFetching = (state) => state.summaries.requestedById;
 
-export const requestLineage = createAction("REQUEST_LINEAGE");
-export const receiveLineage = createAction(
-  "RECEIVE_LINEAGE",
-  (json) => json,
-  () => ({ receivedAt: Date.now() })
-);
-export const resetLineage = createAction("RESET_LINEAGE");
+// export const requestLineage = createAction("REQUEST_LINEAGE");
+// export const receiveLineage = createAction(
+//   "RECEIVE_LINEAGE",
+//   (json) => json,
+//   () => ({ receivedAt: Date.now() })
+// );
+// export const resetLineage = createAction("RESET_LINEAGE");
 
-const defaultLineageState = () => ({
-  isFetching: false,
-  status: {},
-  taxon: {},
-  lineage: [],
-});
+// const defaultLineageState = () => ({
+//   isFetching: false,
+//   status: {},
+//   taxon: {},
+//   lineage: [],
+// });
 
-const lineage = handleActions(
-  {
-    REQUEST_LINEAGE: (state, action) =>
-      immutableUpdate(state, {
-        isFetching: true,
-      }),
-    RECEIVE_LINEAGE: (state, action) => {
-      const record = action.payload.records[0].record;
-      return {
-        isFetching: false,
-        status: action.payload.status,
-        taxon: {
-          taxon_id: record.taxon_id,
-          scientific_name: record.scientific_name,
-          taxon_rank: record.taxon_rank,
-        },
-        lineage: record.lineage,
-        lastUpdated: action.meta.receivedAt,
-      };
-    },
-    RESET_LINEAGE: defaultLineageState,
-  },
-  defaultLineageState()
-);
+// const lineage = handleActions(
+//   {
+//     REQUEST_LINEAGE: (state, action) =>
+//       immutableUpdate(state, {
+//         isFetching: true,
+//       }),
+//     RECEIVE_LINEAGE: (state, action) => {
+//       const record = action.payload.records[0].record;
+//       return {
+//         isFetching: false,
+//         status: action.payload.status,
+//         taxon: {
+//           taxon_id: record.taxon_id,
+//           scientific_name: record.scientific_name,
+//           taxon_rank: record.taxon_rank,
+//         },
+//         lineage: record.lineage,
+//         lastUpdated: action.meta.receivedAt,
+//       };
+//     },
+//     RESET_LINEAGE: defaultLineageState,
+//   },
+//   defaultLineageState()
+// );
 
-export const getLineage = (state) => state.lineage;
+// export const getLineage = (state) => state.lineage;
 
 export const setSummaryField = createAction("SET_SUMMARY_FIELD");
 export const summaryField = handleAction(
@@ -111,6 +111,6 @@ export const getSummaryField = (state) => state.summaryField;
 
 export const exploreReducers = {
   summaries,
-  lineage,
+  // lineage,
   summaryField,
 };

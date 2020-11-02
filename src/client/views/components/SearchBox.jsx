@@ -9,6 +9,9 @@ import qs from "qs";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
+import SearchIcon from "@material-ui/icons/Search";
 import Grid from "@material-ui/core/Grid";
 import Popper from "@material-ui/core/Popper";
 import Typography from "@material-ui/core/Typography";
@@ -22,6 +25,15 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     color: theme.palette.text.secondary,
     marginRight: theme.spacing(2),
+  },
+  search: {
+    fontSize: "2em",
+    marginLeft: theme.spacing(1),
+    // color: theme.palette.getContrastText("#333333"),
+    backgroundColor: "inherit",
+    // "&:hover": {
+    //   backgroundColor: "#999999",
+    // },
   },
 }));
 
@@ -52,15 +64,15 @@ const SearchBox = ({
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-
-  const dispatchSearch = (options) => {
+  let result = "taxon";
+  const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
-    navigate(`search?${qs.stringify(options)}`);
+    navigate(`search?${qs.stringify(options)}#${term}`);
   };
 
-  const doSearch = (query, result = "taxon") => {
+  const doSearch = (query, term) => {
     // setLookupTerm(query);
-    dispatchSearch({ query, result });
+    dispatchSearch({ query, result }, term);
     resetLookup();
   };
   // const updateSearch = (query, result = "taxon") => {
@@ -68,9 +80,9 @@ const SearchBox = ({
   //   setLookupTerm(query);
   //   setTimeout(resetLookup, 100);
   // };
-  const updateTerm = (value, result = "taxon") => {
+  const updateTerm = (value) => {
     setLookupTerm(value);
-    fetchLookup(value, result);
+    fetchLookup(value);
   };
   const handleChange = (e, newValue) => {
     if (newValue != lookupTerm) {
@@ -78,7 +90,12 @@ const SearchBox = ({
     }
   };
   const handleKeyDown = (e, newValue) => {
-    doSearch(newValue.title);
+    doSearch(newValue.taxon_id, newValue.title);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    doSearch(lookupTerm, lookupTerm);
   };
 
   let terms;
@@ -102,6 +119,8 @@ const SearchBox = ({
         title: value,
         taxon_id: result.result.taxon_id,
         taxon_rank: result.result.taxon_rank,
+        scientific_name: result.result.scientific_name,
+        name_class: result.reason[0].fields["taxon_names.class"],
       });
 
       terms.push(
@@ -148,59 +167,89 @@ const SearchBox = ({
         alignItems: "center",
       }}
     >
-      <div
+      <form
+        onSubmit={handleSubmit}
         style={{
-          width: "600px",
+          minWidth: "600px",
           flex: "0 1 auto",
           position: "absolute",
           left: "50%",
           transform: "translateX(-50%)",
         }}
       >
-        <Autocomplete
-          id="main-search"
-          getOptionLabel={(option) =>
-            typeof option === "string" ? option : option.title
-          }
-          getOptionSelected={(option, value) => option.title === value.title}
-          options={options}
-          autoComplete
-          includeInputInList
-          freeSolo
-          value={lookupTerm}
-          onChange={handleKeyDown}
-          onInputChange={handleChange}
-          PopperComponent={PlacedPopper}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={`Search ${siteName}`}
-              variant="outlined"
-              fullWidth
+        <Grid container alignItems="center">
+          <Grid item style={{ width: "600px" }}>
+            <Autocomplete
+              id="main-search"
+              getOptionLabel={(option) =>
+                typeof option === "string" ? option : option.title
+              }
+              getOptionSelected={(option, value) =>
+                option.title === value.title
+              }
+              options={options}
+              autoComplete
+              includeInputInList
+              freeSolo
+              value={lookupTerm}
+              onChange={handleKeyDown}
+              onInputChange={handleChange}
+              PopperComponent={PlacedPopper}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={`Search ${siteName}`}
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+              renderOption={(option) => {
+                return (
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      <SearchIcon className={classes.icon} />
+                    </Grid>
+                    <Grid item xs>
+                      <div>{option.title}</div>
+                      <span style={{ float: "right" }}>
+                        <Typography variant="body2" color="textSecondary">
+                          {option.taxon_id}
+                        </Typography>
+                      </span>
+                      <Typography variant="body2" color="textSecondary">
+                        {option.taxon_rank}
+                        {option.name_class != "scientific name" && (
+                          <span> :: {option.scientific_name}</span>
+                        )}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                );
+              }}
             />
-          )}
-          renderOption={(option) => {
-            return (
-              <Grid container alignItems="center">
-                <Grid item>
-                  <LocationOnIcon className={classes.icon} />
-                </Grid>
-                <Grid item xs>
-                  <div>{option.title}</div>
-                  <span style={{ float: "right" }}>
-                    <Typography variant="body2" color="textSecondary">
-                      {option.taxon_id}
-                    </Typography>
-                  </span>
-                  <Typography variant="body2" color="textSecondary">
-                    {option.taxon_rank}
-                  </Typography>
-                </Grid>
-              </Grid>
-            );
-          }}
-        />
-      </div>
+          </Grid>
+          {/* <div
+        style={{
+          flex: "0 1 auto",
+        }}
+      > */}
+          <Grid item>
+            {/* <Button
+              variant="contained"
+              color="default"
+              disableElevation
+              className={classes.search}
+              size="large"
+              startIcon={<SearchIcon />}
+            >
+              Search
+            </Button> */}
+            <IconButton className={classes.search} type="submit">
+              <SearchIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+      </form>
     </div>
   );
   // return (

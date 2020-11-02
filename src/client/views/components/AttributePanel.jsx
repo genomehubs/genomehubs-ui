@@ -3,7 +3,6 @@ import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 import { makeStyles } from "@material-ui/core/styles";
-import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
 import withSummary from "../hocs/withSummary";
 import AggregationIcon from "./AggregationIcon";
@@ -84,22 +83,11 @@ const NestedTable = ({ values }) => {
   );
 };
 
-const AttributePanel = ({
-  field,
-  meta,
-  taxon_id,
-  fetchLineage,
-  summaryField,
-  setSummaryField,
-}) => {
+const AttributePanel = ({ field, meta }) => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
-  const handleFieldClick = (fieldId) => {
-    fetchLineage(taxon_id);
-    setSummaryField(fieldId);
-    navigate("explore");
-  };
+
   let css = classnames(
     styles.infoPanel,
     styles[`infoPanel1Column`],
@@ -223,4 +211,4 @@ const AttributePanel = ({
   );
 };
 
-export default compose(withRecord, withSummary, withExplore)(AttributePanel);
+export default compose(withRecord, withSummary)(AttributePanel);

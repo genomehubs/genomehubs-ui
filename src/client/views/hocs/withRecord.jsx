@@ -6,11 +6,13 @@ import {
   getCurrentRecordId,
   setCurrentRecordId,
 } from "../reducers/record";
+import { getLineage } from "../selectors/record";
 
 const withRecord = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
     record: getCurrentRecord(state),
     recordId: getCurrentRecordId(state),
+    lineage: getLineage(state),
   });
 
   const mapDispatchToProps = (dispatch) => ({

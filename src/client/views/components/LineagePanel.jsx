@@ -3,7 +3,7 @@ import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 import { format } from "d3-format";
-import withLookup from "../hocs/withLookup";
+import withSetLookup from "../hocs/withSetLookup";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import { useNavigate } from "@reach/router";
@@ -14,16 +14,17 @@ const LineagePanel = ({
   setRecordId,
   lineage,
   fetchSearchResults,
+  setLookupTerm,
   resetLookup,
 }) => {
   const navigate = useNavigate();
 
-  const handleTaxonClick = (taxon, value) => {
+  const handleTaxonClick = (taxon, name) => {
     if (taxon != taxon_id) {
       setRecordId(taxon);
       fetchSearchResults({ query: `tax_eq(${taxon})` });
-      navigate(`?taxon_id=${taxon}`);
-      resetLookup();
+      navigate(`?taxon_id=${taxon}#${encodeURIComponent(name)}`);
+      setLookupTerm(name);
     }
   };
 
@@ -33,20 +34,22 @@ const LineagePanel = ({
     styles.resultPanel
   );
   let lineageDivs = [];
-  lineage.forEach((ancestor) => {
-    lineageDivs.push(
-      <span
-        key={ancestor.taxon_id}
-        className={styles.lineage}
-        onClick={() =>
-          handleTaxonClick(ancestor.taxon_id, ancestor.scientific_name)
-        }
-        title={`${ancestor.taxon_rank}: ${ancestor.scientific_name} [taxid: ${ancestor.taxon_id}]`}
-      >
-        {ancestor.scientific_name}
-      </span>
-    );
-  });
+  if (lineage && lineage.lineage) {
+    lineage.lineage.forEach((ancestor) => {
+      lineageDivs.push(
+        <span
+          key={ancestor.taxon_id}
+          className={styles.lineage}
+          onClick={() =>
+            handleTaxonClick(ancestor.taxon_id, ancestor.scientific_name)
+          }
+          title={`${ancestor.taxon_rank}: ${ancestor.scientific_name} [taxid: ${ancestor.taxon_id}]`}
+        >
+          {ancestor.scientific_name}
+        </span>
+      );
+    });
+  }
 
   return (
     <div className={css}>
@@ -58,4 +61,4 @@ const LineagePanel = ({
   );
 };
 
-export default compose(withLookup, withSearch, withRecord)(LineagePanel);
+export default compose(withSetLookup, withSearch, withRecord)(LineagePanel);

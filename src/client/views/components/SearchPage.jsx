@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
@@ -7,6 +7,7 @@ import ResultTable from "./ResultTable";
 import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
 // import ControlPanel from "./ControlPanel";
+import withSetLookup from "../hocs/withSetLookup";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import { shallowEqualObjects } from "shallow-equal";
@@ -16,6 +17,7 @@ import { useNavigate } from "@reach/router";
 const SearchPage = ({
   searchResults,
   searchResultArray,
+  setLookupTerm,
   searchTerm,
   setSearchTerm,
   fetchSearchResults,
@@ -24,6 +26,7 @@ const SearchPage = ({
   let results = [];
   const navigate = useNavigate();
   let options = qs.parse(location.search.replace(/^\?/, ""));
+  let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
   useEffect(() => {
     if (options.query && !shallowEqualObjects(options, searchTerm)) {
       if (options.query != searchTerm.query) {
@@ -33,7 +36,10 @@ const SearchPage = ({
       setSearchTerm({});
       fetchSearchResults({});
     }
-  }, [options]);
+    if (hashTerm) {
+      setLookupTerm(hashTerm);
+    }
+  }, [options, hashTerm]);
   // searchResultArray.forEach((result) => {
   //   results.push(<ResultPanel key={result.id} {...result} />);
   // });
@@ -63,4 +69,4 @@ const SearchPage = ({
   );
 };
 
-export default compose(withSearch, withRecord)(SearchPage);
+export default compose(memo, withSetLookup, withSearch, withRecord)(SearchPage);

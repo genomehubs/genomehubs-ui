@@ -16,6 +16,7 @@ import qs from "qs";
 const WordCloud = ({
   summaryId,
   sequence = 0,
+  scientific_name,
   summaryById,
   fetchSummary,
   fetchSearchResults,
@@ -42,7 +43,9 @@ const WordCloud = ({
   };
   const updateSearch = (options) => {
     // fetchSearchResults(options);
-    navigate(`search?${qs.stringify(options)}`);
+    navigate(
+      `search?${qs.stringify(options)}#${encodeURIComponent(scientific_name)}`
+    );
     resetLookup();
   };
   let buckets = [];

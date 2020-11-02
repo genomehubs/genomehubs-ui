@@ -15,6 +15,7 @@ import qs from "qs";
 const HistogramSVG = ({
   summaryId,
   sequence = 0,
+  scientific_name,
   summaryById,
   fetchSummary,
   fetchSearchResults,
@@ -48,7 +49,9 @@ const HistogramSVG = ({
   };
   const updateSearch = (options) => {
     // fetchSearchResults(options);
-    navigate(`search?${qs.stringify(options)}`);
+    navigate(
+      `search?${qs.stringify(options)}#${encodeURIComponent(scientific_name)}`
+    );
     resetLookup();
   };
   let buckets = [];

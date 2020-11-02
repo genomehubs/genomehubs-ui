@@ -5,41 +5,47 @@ import styles from "./Styles.scss";
 import ResultPanel from "./ResultPanel";
 import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
-import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
+import withSetLookup from "../hocs/withSetLookup";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
 import qs from "qs";
 
 const ExplorePage = ({
   lineage,
-  fetchLineage,
+  fetchRecord,
+  record,
   searchById = {},
   summaryField,
   setSummaryField,
+  setLookupTerm,
   fetchSearchResults,
   setRecordId,
   types,
 }) => {
   let results = [];
   let taxon_id;
-  if (lineage.taxon) {
+  if (lineage) {
     taxon_id = lineage.taxon.taxon_id;
   }
   let options = qs.parse(location.search.replace(/^\?/, ""));
+  let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
   useEffect(() => {
-    if (options.taxon_id && options.field_id) {
+    if (options.taxon_id && !record.isFetching) {
       if (options.taxon_id != taxon_id || options.field_id != summaryField) {
         fetchSearchResults({
           query: `tax_eq(${options.taxon_id})`,
           result: "taxon",
           includeEstimates: true,
         });
-        fetchLineage(options.taxon_id);
+        fetchRecord(options.taxon_id);
         setRecordId(options.taxon_id);
         setSummaryField(options.field_id);
       }
+    }
+    if (hashTerm) {
+      setLookupTerm(hashTerm);
     }
   }, [taxon_id, options]);
 
@@ -67,22 +73,24 @@ const ExplorePage = ({
       />
     );
   }
-  lineage.lineage.forEach((ancestor, i) => {
-    let summaryId;
-    if (summaryField) {
-      summaryId = `${ancestor.taxon_id}--${summaryField}--${summary}`;
-    }
+  if (lineage) {
+    lineage.lineage.forEach((ancestor, i) => {
+      let summaryId;
+      if (summaryField) {
+        summaryId = `${ancestor.taxon_id}--${summaryField}--${summary}`;
+      }
 
-    results.push(
-      <ResultPanel
-        key={ancestor.taxon_id}
-        {...ancestor}
-        summaryId={summaryId}
-        sequence={i + 1}
-        summary={summary}
-      />
-    );
-  });
+      results.push(
+        <ResultPanel
+          key={ancestor.taxon_id}
+          {...ancestor}
+          summaryId={summaryId}
+          sequence={i + 1}
+          summary={summary}
+        />
+      );
+    });
+  }
 
   let text = <TextPanel view={"explore"}></TextPanel>;
 
@@ -108,5 +116,5 @@ export default compose(
   withSearch,
   withTypes,
   withSummary,
-  withExplore
+  withSetLookup
 )(ExplorePage);

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
@@ -10,6 +10,7 @@ import NamesPanel from "./NamesPanel";
 import SearchBox from "./SearchBox";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
+import withSetLookup from "../hocs/withSetLookup";
 import withTypes from "../hocs/withTypes";
 import qs from "qs";
 
@@ -19,6 +20,7 @@ const RecordPage = ({
   recordId,
   fetchRecord,
   setRecordId,
+  setLookupTerm,
   fetchSearchResults,
   types,
   searchById = {},
@@ -26,6 +28,7 @@ const RecordPage = ({
   let results = [];
   let taxon = {};
   let options = qs.parse(location.search.replace(/^\?/, ""));
+  let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
   useEffect(() => {
     if (options.taxon_id && options.taxon_id != recordId) {
       setRecordId(options.taxon_id);
@@ -37,7 +40,10 @@ const RecordPage = ({
     } else if (recordId) {
       fetchRecord(recordId);
     }
-  }, [recordId, options]);
+    if (hashTerm) {
+      setLookupTerm(hashTerm);
+    }
+  }, [options]);
   if (record && record.record && record.record.taxon_id) {
     taxon = {
       taxon_id: record.record.taxon_id,
@@ -100,4 +106,10 @@ const RecordPage = ({
   );
 };
 
-export default compose(withRecord, withSearch, withTypes)(RecordPage);
+export default compose(
+  memo,
+  withRecord,
+  withSearch,
+  withSetLookup,
+  withTypes
+)(RecordPage);

@@ -3,7 +3,6 @@ import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 import { formatter } from "../functions/formatter";
-import withExplore from "../hocs/withExplore";
 import withRecord from "../hocs/withRecord";
 import withSummary from "../hocs/withSummary";
 import HistogramSVG from "./HistogramSVG";
@@ -17,13 +16,9 @@ const ResultPanel = ({
   taxon_id,
   taxon_rank,
   fields,
-  fetchLineage,
-  setRecordId,
-  fetchRecord,
-  isCurrent,
+  // fetchRecord,
   summaryField,
   setSummaryField,
-  views,
   sequence,
   summaryId,
   summary,
@@ -31,14 +26,18 @@ const ResultPanel = ({
   const location = useLocation();
   const navigate = useNavigate();
   const handleTaxonClick = () => {
-    navigate(`records?taxon_id=${taxon_id}`);
-    setRecordId(taxon_id);
+    navigate(
+      `records?taxon_id=${taxon_id}#${encodeURIComponent(scientific_name)}`
+    );
+    // setRecordId(taxon_id);
   };
   const handleFieldClick = (fieldId) => {
-    fetchLineage(taxon_id);
-    setRecordId(taxon_id);
+    // fetchLineage(taxon_id);
+    // setRecordId(taxon_id);
     setSummaryField(fieldId);
-    navigate(`explore?taxon_id=${taxon_id}&field_id=${fieldId}`);
+    navigate(
+      `explore?taxon_id=${taxon_id}&field_id=${fieldId}${location.hash}`
+    );
   };
   let css = classnames(
     styles.infoPanel,
@@ -87,13 +86,21 @@ const ResultPanel = ({
     if (summary == "histogram") {
       summaryPlot = (
         <div style={{ width: "80%" }}>
-          <HistogramSVG summaryId={summaryId} sequence={sequence} />
+          <HistogramSVG
+            summaryId={summaryId}
+            scientific_name={scientific_name}
+            sequence={sequence}
+          />
         </div>
       );
     } else if (summary == "terms") {
       summaryPlot = (
         <div style={{ width: "80%" }}>
-          <WordCloud summaryId={summaryId} sequence={sequence} />
+          <WordCloud
+            summaryId={summaryId}
+            scientific_name={scientific_name}
+            sequence={sequence}
+          />
         </div>
       );
     }
@@ -133,4 +140,4 @@ const ResultPanel = ({
   );
 };
 
-export default compose(withRecord, withSummary, withExplore)(ResultPanel);
+export default compose(withRecord, withSummary)(ResultPanel);

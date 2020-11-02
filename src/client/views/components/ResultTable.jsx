@@ -192,8 +192,10 @@ const ResultTable = ({
   const classes = useStyles();
   let sortBy = searchTerm.sortBy || "";
   let sortOrder = searchTerm.sortOrder || "asc";
-  const handleTaxonClick = (taxon_id) => {
-    navigate(`records?taxon_id=${taxon_id}`);
+  const handleTaxonClick = (taxon_id, scientific_name) => {
+    navigate(
+      `records?taxon_id=${taxon_id}#${encodeURIComponent(scientific_name)}`
+    );
   };
   const arrToObj = (arr) => {
     let obj = {};
@@ -263,7 +265,12 @@ const ResultTable = ({
         <TableCell
           key={"name"}
           style={{ cursor: "pointer" }}
-          onClick={() => handleTaxonClick(result.result.taxon_id)}
+          onClick={() =>
+            handleTaxonClick(
+              result.result.taxon_id,
+              result.result.scientific_name
+            )
+          }
         >
           {name}
         </TableCell>
@@ -272,7 +279,12 @@ const ResultTable = ({
         <TableCell
           key={"taxon_id"}
           style={{ cursor: "pointer" }}
-          onClick={() => handleTaxonClick(result.result.taxon_id)}
+          onClick={() =>
+            handleTaxonClick(
+              result.result.taxon_id,
+              result.result.scientific_name
+            )
+          }
         >
           {result.result.taxon_id}
         </TableCell>
@@ -309,7 +321,12 @@ const ResultTable = ({
           <IconButton
             aria-label="go to record"
             size="small"
-            onClick={() => handleTaxonClick(result.result.taxon_id)}
+            onClick={() =>
+              handleTaxonClick(
+                result.result.taxon_id,
+                result.result.scientific_name
+              )
+            }
           >
             <KeyboardArrowRightIcon />
           </IconButton>
