@@ -59,6 +59,7 @@ const DownloadButton = ({ onButtonClick, searchTerm }) => {
   };
 
   const handleClose = (event) => {
+    event.stopPropagation();
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }

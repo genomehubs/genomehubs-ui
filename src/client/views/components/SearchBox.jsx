@@ -7,13 +7,15 @@ import withSearch from "../hocs/withSearch";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import qs from "qs";
+import SearchOptions from "./SearchOptions";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import IconButton from "@material-ui/core/IconButton";
-import Button from "@material-ui/core/Button";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import SearchIcon from "@material-ui/icons/Search";
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Grid from "@material-ui/core/Grid";
 import Popper from "@material-ui/core/Popper";
 import Typography from "@material-ui/core/Typography";
@@ -90,7 +92,9 @@ const SearchBox = ({
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const searchBoxRef = useRef(null);
   let [open, setOpen] = useState(false);
+  let [showOptions, setShowOptions] = useState(false);
   let result = "taxon";
   const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
@@ -193,15 +197,16 @@ const SearchBox = ({
       <form
         onSubmit={handleSubmit}
         style={{
-          minWidth: "600px",
+          minWidth: "800px",
           flex: "0 1 auto",
           position: "absolute",
+          marginRight: "100px",
           left: "50%",
-          transform: "translateX(-50%)",
+          transform: "translateX(calc(100px - 50%))",
         }}
       >
-        <Grid container alignItems="center">
-          <Grid item style={{ width: "600px" }}>
+        <Grid container alignItems="center" direction="row">
+          <Grid item style={{ width: "600px" }} ref={searchBoxRef}>
             <Autocomplete
               id="main-search"
               getOptionLabel={(option) =>
@@ -236,11 +241,36 @@ const SearchBox = ({
             />
           </Grid>
           <Grid item>
-            <IconButton className={classes.search} type="submit">
+            <IconButton
+              className={classes.search}
+              aria-label="submit search"
+              type="submit"
+            >
               <SearchIcon />
             </IconButton>
           </Grid>
+          <Grid item>
+            <IconButton
+              className={classes.search}
+              aria-label="expand row"
+              onClick={() => setShowOptions(!showOptions)}
+            >
+              {showOptions ? (
+                <KeyboardArrowUpIcon />
+              ) : (
+                <KeyboardArrowDownIcon />
+              )}
+            </IconButton>
+          </Grid>
         </Grid>
+        <Popper
+          id={"search-options"}
+          open={showOptions}
+          anchorEl={searchBoxRef.current}
+          placement={"bottom"}
+        >
+          <SearchOptions />
+        </Popper>
       </form>
     </div>
   );

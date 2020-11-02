@@ -6,7 +6,7 @@ import ResultPanel from "./ResultPanel";
 import ResultTable from "./ResultTable";
 import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
-// import ControlPanel from "./ControlPanel";
+import SearchSummary from "./SearchSummary";
 import withSetLookup from "../hocs/withSetLookup";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
@@ -44,10 +44,10 @@ const SearchPage = ({
   //   results.push(<ResultPanel key={result.id} {...result} />);
   // });
   results = <ResultTable />;
-  let controls;
-  // if (searchResults.status && searchResults.status.hits) {
-  //   controls = <ControlPanel pagination options />;
-  // }
+  let summary;
+  if (searchResults.status && searchResults.status.hits) {
+    summary = <SearchSummary />;
+  }
 
   let text = <TextPanel view={"search"}></TextPanel>;
 
@@ -61,8 +61,8 @@ const SearchPage = ({
           styles.fullWidth
         )}
       >
+        {summary}
         {results}
-        {controls}
         {text}
       </div>
     </div>
