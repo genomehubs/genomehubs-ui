@@ -1,4 +1,5 @@
-import React, { memo } from "react";
+import React, { memo, useRef, useState } from "react";
+import { findDOMNode } from "react-dom";
 import { compose } from "recompose";
 import classnames from "classnames";
 import withLookup from "../hocs/withLookup";
@@ -11,15 +12,13 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
+import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import SearchIcon from "@material-ui/icons/Search";
 import Grid from "@material-ui/core/Grid";
 import Popper from "@material-ui/core/Popper";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { createFilterOptions } from "@material-ui/lab/Autocomplete";
-
-// import parse from "autosuggest-highlight/parse";
-// import throttle from "lodash/throttle";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -29,11 +28,7 @@ const useStyles = makeStyles((theme) => ({
   search: {
     fontSize: "2em",
     marginLeft: theme.spacing(1),
-    // color: theme.palette.getContrastText("#333333"),
     backgroundColor: "inherit",
-    // "&:hover": {
-    //   backgroundColor: "#999999",
-    // },
   },
 }));
 
@@ -41,16 +36,47 @@ const PlacedPopper = (props) => {
   return <Popper {...props} placement="top" />;
 };
 
-// export default function GoogleMaps() {
-//   const classes = useStyles();
-//   const [value, setValue] = React.useState(null);
-//   const [inputValue, setInputValue] = React.useState('');
-//   const [options, setOptions] = React.useState([]);
+const AutoCompleteSuggestion = ({ option }) => {
+  const classes = useStyles();
+  return (
+    <Grid container alignItems="center">
+      <Grid item>
+        <HelpOutlineIcon className={classes.icon} />
+      </Grid>
+      <Grid item xs>
+        <Typography variant="body2" color="textSecondary">
+          Did you mean
+        </Typography>
+        <div>{option.title}</div>
+      </Grid>
+    </Grid>
+  );
+};
 
-//   return (
-
-//   );
-// }
+const AutoCompleteOption = ({ option }) => {
+  const classes = useStyles();
+  return (
+    <Grid container alignItems="center">
+      <Grid item>
+        <SearchIcon className={classes.icon} />
+      </Grid>
+      <Grid item xs>
+        <div>{option.title}</div>
+        <span style={{ float: "right" }}>
+          <Typography variant="body2" color="textSecondary">
+            {option.taxon_id}
+          </Typography>
+        </span>
+        <Typography variant="body2" color="textSecondary">
+          {option.taxon_rank}
+          {option.name_class != "scientific name" && (
+            <span> :: {option.scientific_name}</span>
+          )}
+        </Typography>
+      </Grid>
+    </Grid>
+  );
+};
 
 const siteName = SITENAME || "GenomeHub";
 
@@ -64,6 +90,7 @@ const SearchBox = ({
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
+  let [open, setOpen] = useState(false);
   let result = "taxon";
   const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
@@ -71,15 +98,9 @@ const SearchBox = ({
   };
 
   const doSearch = (query, term) => {
-    // setLookupTerm(query);
     dispatchSearch({ query, result }, term);
     resetLookup();
   };
-  // const updateSearch = (query, result = "taxon") => {
-  //   dispatchSearch({ query, result });
-  //   setLookupTerm(query);
-  //   setTimeout(resetLookup, 100);
-  // };
   const updateTerm = (value) => {
     setLookupTerm(value);
     fetchLookup(value);
@@ -87,10 +108,16 @@ const SearchBox = ({
   const handleChange = (e, newValue) => {
     if (newValue != lookupTerm) {
       updateTerm(newValue);
+      setOpen(true);
     }
   };
   const handleKeyDown = (e, newValue) => {
-    doSearch(newValue.taxon_id, newValue.title);
+    if (newValue.highlighted) {
+      setOpen(true);
+    } else {
+      setOpen(false);
+      doSearch(newValue.taxon_id, newValue.title);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -137,7 +164,6 @@ const SearchBox = ({
       );
     });
   }
-  let suggestions;
   if (
     lookupTerms.status &&
     lookupTerms.status.success &&
@@ -145,14 +171,11 @@ const SearchBox = ({
     lookupTerms.suggestions.length > 0 &&
     !/[\(\)<>=]/.test(lookupTerm)
   ) {
-    suggestions = [<div key={"x"}>Did you mean:</div>];
     lookupTerms.suggestions.forEach((suggestion, i) => {
-      let value = suggestion.suggestion.text;
-      suggestions.push(
-        <div key={i} className={styles.term} onClick={() => updateTerm(value)}>
-          <span className={styles.value}>{value}</span>?
-        </div>
-      );
+      options.push({
+        title: suggestion.suggestion.text,
+        highlighted: suggestion.suggestion.highlighted,
+      });
     });
   }
   return (
@@ -192,6 +215,7 @@ const SearchBox = ({
               includeInputInList
               freeSolo
               value={lookupTerm}
+              open={open}
               onChange={handleKeyDown}
               onInputChange={handleChange}
               PopperComponent={PlacedPopper}
@@ -204,46 +228,14 @@ const SearchBox = ({
                 />
               )}
               renderOption={(option) => {
-                return (
-                  <Grid container alignItems="center">
-                    <Grid item>
-                      <SearchIcon className={classes.icon} />
-                    </Grid>
-                    <Grid item xs>
-                      <div>{option.title}</div>
-                      <span style={{ float: "right" }}>
-                        <Typography variant="body2" color="textSecondary">
-                          {option.taxon_id}
-                        </Typography>
-                      </span>
-                      <Typography variant="body2" color="textSecondary">
-                        {option.taxon_rank}
-                        {option.name_class != "scientific name" && (
-                          <span> :: {option.scientific_name}</span>
-                        )}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                );
+                if (option.highlighted) {
+                  return <AutoCompleteSuggestion option={option} />;
+                }
+                return <AutoCompleteOption option={option} />;
               }}
             />
           </Grid>
-          {/* <div
-        style={{
-          flex: "0 1 auto",
-        }}
-      > */}
           <Grid item>
-            {/* <Button
-              variant="contained"
-              color="default"
-              disableElevation
-              className={classes.search}
-              size="large"
-              startIcon={<SearchIcon />}
-            >
-              Search
-            </Button> */}
             <IconButton className={classes.search} type="submit">
               <SearchIcon />
             </IconButton>
@@ -252,43 +244,6 @@ const SearchBox = ({
       </form>
     </div>
   );
-  // return (
-  //   <div
-  //     className={styles.flexColumn}
-  //     style={{
-  //       height: "6em",
-  //       minWidth: "600px",
-  //       overflow: "visible",
-  //       zIndex: 10,
-  //     }}
-  //   >
-  //     <div
-  //       className={styles.fullWidth}
-  //       style={{
-  //         textAlign: "center",
-  //       }}
-  //     >
-  //       <input
-  //         type="text"
-  //         placeholder={`Search ${siteName}`}
-  //         className={classnames(styles.searchBox, styles.fullWidth)}
-  //         value={lookupTerm}
-  //         onChange={handleChange}
-  //         onKeyPress={handleKeyDown}
-  //         autoComplete="off"
-  //         autoCapitalize="off"
-  //         autoCorrect="off"
-  //         spellCheck="false"
-  //       ></input>
-  //     </div>
-  //     {(terms || suggestions) && (
-  //       <div className={styles.completion}>
-  //         {terms}
-  //         {suggestions}
-  //       </div>
-  //     )}
-  //   </div>
-  // );
 };
 
 export default compose(memo, withSearch, withLookup)(SearchBox);
