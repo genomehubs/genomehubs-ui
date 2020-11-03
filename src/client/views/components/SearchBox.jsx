@@ -118,11 +118,15 @@ const SearchBox = ({
     }
   };
   const handleKeyDown = (e, newValue) => {
-    if (newValue.highlighted) {
-      setOpen(true);
+    if (newValue) {
+      if (newValue.highlighted) {
+        setOpen(true);
+      } else {
+        setOpen(false);
+        doSearch(newValue.taxon_id, newValue.title);
+      }
     } else {
-      setOpen(false);
-      doSearch(newValue.taxon_id, newValue.title);
+      resetLookup();
     }
   };
 

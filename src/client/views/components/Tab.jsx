@@ -7,7 +7,7 @@ import { Link, useLocation } from "@reach/router";
 const NavLink = (props) => {
   let parts = props.pathname.split("/");
   parts[2] = props.destination;
-  let to = parts.join("/") + props.search;
+  let to = parts.join("/") + props.search + props.hash;
   return (
     <Link
       {...props}
@@ -28,6 +28,7 @@ const Tab = (props) => {
     <NavLink
       pathname={location.pathname}
       search={location.search}
+      hash={location.hash}
       destination={props.view}
     >
       {props.short}
