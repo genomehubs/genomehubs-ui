@@ -27,6 +27,8 @@ import AggregationIcon from "./AggregationIcon";
 import { useLocation, useNavigate } from "@reach/router";
 import DownloadButton from "./DownloadButton";
 import SearchPagination from "./SearchPagination";
+import Skeleton from "@material-ui/lab/Skeleton";
+import { setPreferSearchTerm } from "../reducers/search";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -83,6 +85,7 @@ const SortableCell = ({
   sortOrder,
   sortDirection,
   handleTableSort,
+  showExcludeBoxes,
   excludeDirect,
   excludeAncestral,
   excludeDescendant,
@@ -134,7 +137,7 @@ const SortableCell = ({
         </TableSortLabel>
       </Tooltip>
       <br />
-      {(excludeAncestral && (
+      {(showExcludeBoxes && (
         <span className={css}>
           <Tooltip
             key={"direct"}
@@ -184,8 +187,10 @@ const ResultTable = ({
   saveSearchResults,
   searchResults,
   searchTerm,
+  setSearchTerm,
+  setPreferSearchTerm,
 }) => {
-  if (!searchResults.status || !searchResults.status.hits) {
+  if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
     return null;
   }
   const navigate = useNavigate();
@@ -193,6 +198,7 @@ const ResultTable = ({
   let sortBy = searchTerm.sortBy || "";
   let sortOrder = searchTerm.sortOrder || "asc";
   const handleTaxonClick = (taxon_id, scientific_name) => {
+    setPreferSearchTerm(false);
     navigate(
       `records?taxon_id=${taxon_id}#${encodeURIComponent(scientific_name)}`
     );
@@ -206,6 +212,7 @@ const ResultTable = ({
     }
     return obj;
   };
+  const location = useLocation();
   const handleTableSort = ({
     sortBy,
     sortOrder,
@@ -213,44 +220,49 @@ const ResultTable = ({
     toggleDescendant,
     toggleDirect,
   }) => {
+    let options = { ...searchTerm };
     if (sortBy && sortBy != "") {
-      searchTerm.sortBy = sortBy;
-      searchTerm.sortOrder = sortOrder;
+      options.sortBy = sortBy;
+      options.sortOrder = sortOrder;
     } else if (sortBy) {
-      delete searchTerm.sortBy;
-      delete searchTerm.sortOrder;
+      delete options.sortBy;
+      delete options.sortOrder;
     }
-    let ancestral = arrToObj(searchTerm.excludeAncestral);
+    let ancestral = arrToObj(options.excludeAncestral);
     if (toggleAncestral) {
       ancestral[toggleAncestral] = !ancestral[toggleAncestral];
     }
-    searchTerm.excludeAncestral = [];
+    options.excludeAncestral = [];
     Object.keys(ancestral).forEach((key) => {
       if (ancestral[key]) {
-        searchTerm.excludeAncestral.push(key);
+        options.excludeAncestral.push(key);
       }
     });
-    let descendant = arrToObj(searchTerm.excludeDescendant);
+    let descendant = arrToObj(options.excludeDescendant);
     if (toggleDescendant) {
       descendant[toggleDescendant] = !descendant[toggleDescendant];
     }
-    searchTerm.excludeDescendant = [];
+    options.excludeDescendant = [];
     Object.keys(descendant).forEach((key) => {
       if (descendant[key]) {
-        searchTerm.excludeDescendant.push(key);
+        options.excludeDescendant.push(key);
       }
     });
-    let direct = arrToObj(searchTerm.excludeDirect);
+    let direct = arrToObj(options.excludeDirect);
     if (toggleDirect) {
       direct[toggleDirect] = !direct[toggleDirect];
     }
-    searchTerm.excludeDirect = [];
+    options.excludeDirect = [];
     Object.keys(direct).forEach((key) => {
       if (direct[key]) {
-        searchTerm.excludeDirect.push(key);
+        options.excludeDirect.push(key);
       }
     });
-    fetchSearchResults(searchTerm);
+    if (location.search.match(/tax_tree%28/)) {
+      options.query = options.query.replace("tax_name", "tax_tree");
+    }
+    setPreferSearchTerm(true);
+    setSearchTerm(options);
   };
   let rows = searchResults.results.map((result) => {
     let name = result.result.scientific_name;
@@ -364,6 +376,7 @@ const ResultTable = ({
           sortOrder={sortOrder}
           sortDirection={sortDirection}
           handleTableSort={handleTableSort}
+          showExcludeBoxes={true}
           excludeAncestral={arrToObj(searchTerm.excludeAncestral)}
           excludeDescendant={arrToObj(searchTerm.excludeDescendant)}
           excludeDirect={arrToObj(searchTerm.excludeDirect)}
@@ -376,6 +389,9 @@ const ResultTable = ({
   return (
     <span>
       <Box margin={1}>
+        {/* {searchResults.isFetching ? (
+          <Skeleton variant="rect" width={800} height={200} />
+        ) : ( */}
         <TableContainer className={classes.container}>
           <Table size="small" aria-label="search results">
             <TableHead>
@@ -384,6 +400,7 @@ const ResultTable = ({
             <TableBody>{rows}</TableBody>
           </Table>
         </TableContainer>
+        {/* )} */}
       </Box>
 
       <Box

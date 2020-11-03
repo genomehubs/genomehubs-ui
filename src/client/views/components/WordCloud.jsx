@@ -20,6 +20,7 @@ const WordCloud = ({
   summaryById,
   fetchSummary,
   fetchSearchResults,
+  setPreferSearchTerm,
   resetLookup,
 }) => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const WordCloud = ({
   };
   const updateSearch = (options) => {
     // fetchSearchResults(options);
+    setPreferSearchTerm(false);
     navigate(
       `search?${qs.stringify(options)}#${encodeURIComponent(scientific_name)}`
     );

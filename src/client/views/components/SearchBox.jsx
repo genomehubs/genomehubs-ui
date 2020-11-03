@@ -89,6 +89,7 @@ const SearchBox = ({
   lookupTerms,
   fetchLookup,
   fetchSearchResults,
+  setPreferSearchTerm,
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
@@ -98,6 +99,7 @@ const SearchBox = ({
   let result = "taxon";
   const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
+    setPreferSearchTerm(false);
     navigate(`search?${qs.stringify(options)}#${term}`);
   };
 

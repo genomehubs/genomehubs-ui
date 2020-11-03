@@ -10,9 +10,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 const SearchSummary = ({ searchTerm, searchResults }) => {
-  if (!searchResults.status || !searchResults.status.hits) {
+  if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
     return null;
   }
   const count = searchResults.status.hits;
@@ -25,10 +26,20 @@ const SearchSummary = ({ searchTerm, searchResults }) => {
     styles.fullWidth
   );
 
+  let summary;
+
   return (
     <div className={css}>
       <Grid container alignItems="center">
-        <Grid item>{count} results:</Grid>
+        {searchResults.isFetching ? (
+          <Grid item style={{ minWidth: "150px" }}>
+            <Skeleton variant="text" />
+          </Grid>
+        ) : (
+          <Grid item>
+            {count} result{count >= 1 ? (count == 1 ? ":" : "s:") : "s"}
+          </Grid>
+        )}
       </Grid>
     </div>
   );

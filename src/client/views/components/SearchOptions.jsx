@@ -113,6 +113,7 @@ const SearchOptions = ({
   searchTerm,
   searchResults,
   fetchSearchResults,
+  setPreferSearchTerm,
   types,
 }) => {
   const classes = useStyles();
@@ -156,9 +157,11 @@ const SearchOptions = ({
 
   const handleClick = () => {
     let options = {
+      ...searchTerm,
       query: `${taxFilter.filter}(${taxFilter.taxon})`,
       result: index,
     };
+    setPreferSearchTerm(false);
     navigate(
       `search?${qs.stringify(options)}#${encodeURIComponent(taxFilter.taxon)}`
     );

@@ -10,7 +10,7 @@ import SearchSummary from "./SearchSummary";
 import withSetLookup from "../hocs/withSetLookup";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
-import { shallowEqualObjects } from "shallow-equal";
+import shallow from "shallowequal";
 import qs from "qs";
 import { useNavigate } from "@reach/router";
 
@@ -20,6 +20,10 @@ const SearchPage = ({
   setLookupTerm,
   searchTerm,
   setSearchTerm,
+  preferSearchTerm,
+  setPreferSearchTerm,
+  previousSearchTerm,
+  setPreviousSearchTerm,
   fetchSearchResults,
   setRecordId,
 }) => {
@@ -27,27 +31,50 @@ const SearchPage = ({
   const navigate = useNavigate();
   let options = qs.parse(location.search.replace(/^\?/, ""));
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
+  let isFetching = searchResults.isFetching;
   useEffect(() => {
-    if (options.query && !shallowEqualObjects(options, searchTerm)) {
-      if (options.query != searchTerm.query) {
-        fetchSearchResults(options);
+    if (!isFetching) {
+      if (options.query && !shallow(options, searchTerm)) {
+        if (preferSearchTerm) {
+          if (!shallow(searchTerm, previousSearchTerm)) {
+            setPreviousSearchTerm(searchTerm);
+            fetchSearchResults(searchTerm);
+          }
+          // options = { ...searchTerm };
+          // setPreferSearchTerm(false);
+          // navigate(`search?${qs.stringify(searchTerm)}${location.hash}`);
+        } else {
+          let hashedNav = (path) => {
+            let from = `search?${qs.stringify(previousSearchTerm)}${
+              location.hash
+            }`;
+            let to = `${path}#${hashTerm}`;
+            if (to != from) {
+              navigate(to);
+            }
+          };
+          if (!shallow(options, previousSearchTerm)) {
+            setPreviousSearchTerm(options);
+            fetchSearchResults(options, hashedNav);
+          }
+        }
+
+        // }
+      } else if (searchTerm.query && !options.query) {
+        setPreviousSearchTerm({});
+        setSearchTerm({});
+        fetchSearchResults({});
       }
-    } else if (searchTerm.query && !options.query) {
-      setSearchTerm({});
-      fetchSearchResults({});
+      if (hashTerm) {
+        setLookupTerm(hashTerm);
+      }
     }
-    if (hashTerm) {
-      setLookupTerm(hashTerm);
-    }
-  }, [options, hashTerm]);
-  // searchResultArray.forEach((result) => {
-  //   results.push(<ResultPanel key={result.id} {...result} />);
-  // });
-  results = <ResultTable />;
+  }, [options, hashTerm, isFetching]);
   let summary;
-  if (searchResults.status && searchResults.status.hits) {
+  if (searchResults.status && searchResults.status.hasOwnProperty("hits")) {
     summary = <SearchSummary />;
   }
+  results = <ResultTable />;
 
   let text = <TextPanel view={"search"}></TextPanel>;
 

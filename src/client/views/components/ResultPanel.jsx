@@ -4,6 +4,7 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import { formatter } from "../functions/formatter";
 import withRecord from "../hocs/withRecord";
+import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import HistogramSVG from "./HistogramSVG";
 import WordCloud from "./WordCloud";
@@ -19,6 +20,7 @@ const ResultPanel = ({
   // fetchRecord,
   summaryField,
   setSummaryField,
+  setPreferSearchTerm,
   sequence,
   summaryId,
   summary,
@@ -26,6 +28,7 @@ const ResultPanel = ({
   const location = useLocation();
   const navigate = useNavigate();
   const handleTaxonClick = () => {
+    setPreferSearchTerm(false);
     navigate(
       `records?taxon_id=${taxon_id}#${encodeURIComponent(scientific_name)}`
     );
@@ -35,6 +38,7 @@ const ResultPanel = ({
     // fetchLineage(taxon_id);
     // setRecordId(taxon_id);
     setSummaryField(fieldId);
+    setPreferSearchTerm(false);
     navigate(
       `explore?taxon_id=${taxon_id}&field_id=${fieldId}${location.hash}`
     );
@@ -140,4 +144,4 @@ const ResultPanel = ({
   );
 };
 
-export default compose(withRecord, withSummary)(ResultPanel);
+export default compose(withRecord, withSearch, withSummary)(ResultPanel);

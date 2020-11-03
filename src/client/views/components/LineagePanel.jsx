@@ -14,6 +14,7 @@ const LineagePanel = ({
   setRecordId,
   lineage,
   fetchSearchResults,
+  setPreferSearchTerm,
   setLookupTerm,
   resetLookup,
 }) => {
@@ -23,6 +24,7 @@ const LineagePanel = ({
     if (taxon != taxon_id) {
       setRecordId(taxon);
       fetchSearchResults({ query: `tax_eq(${taxon})` });
+      setPreferSearchTerm(false);
       navigate(`?taxon_id=${taxon}#${encodeURIComponent(name)}`);
       setLookupTerm(name);
     }
