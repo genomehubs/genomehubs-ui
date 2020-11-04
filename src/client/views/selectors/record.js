@@ -15,7 +15,7 @@ export const getLineage = createSelector(getCurrentRecord, (record) => {
       scientific_name: record.record.scientific_name,
       taxon_rank: record.record.taxon_rank,
     },
-    lineage: record.record.lineage,
+    lineage: record.record.lineage.reverse(),
   };
 
   return lineage;
