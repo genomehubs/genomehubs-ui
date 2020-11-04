@@ -80,9 +80,10 @@ const AutoCompleteOption = ({ option }) => {
         </span>
         <Typography variant="body2" color="textSecondary">
           {option.taxon_rank}
-          {option.name_class != "scientific name" && (
-            <span> :: {option.scientific_name}</span>
-          )}
+          {option.name_class != "scientific name" &&
+            option.name_class != "taxon ID" && (
+              <span> :: {option.scientific_name}</span>
+            )}
         </Typography>
       </Grid>
     </Grid>
@@ -167,7 +168,9 @@ const SearchBox = ({
         taxon_id: result.result.taxon_id,
         taxon_rank: result.result.taxon_rank,
         scientific_name: result.result.scientific_name,
-        name_class: result.reason[0].fields["taxon_names.class"],
+        name_class: result.reason
+          ? result.reason[0].fields["taxon_names.class"]
+          : "taxon ID",
       });
 
       terms.push(
