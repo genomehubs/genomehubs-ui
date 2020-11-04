@@ -73,7 +73,6 @@ const SearchOptions = ({
       ...searchTerm,
       offset: 0,
       query: `${taxFilter.filter}(${taxFilter.taxon})`,
-      result: index,
     };
     setPreferSearchTerm(false);
     navigate(
