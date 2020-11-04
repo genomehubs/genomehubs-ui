@@ -17,9 +17,9 @@ const defaultState = () => ({
 
 function onReceiveTypes(state, action) {
   const { payload, meta } = action;
-  const { status, fields } = payload;
+  const { status, fields, index } = payload;
   const updatedWithTypesState = immutableUpdate(state, {
-    byId: fields,
+    byId: { [index]: fields },
   });
   const updatedWithMeta = immutableUpdate(updatedWithTypesState, {
     isFetching: false,

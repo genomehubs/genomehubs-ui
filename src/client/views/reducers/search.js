@@ -1,15 +1,13 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
 import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
-import { setApiStatus } from "./api";
 import { createCachedSelector } from "re-reselect";
-import store from "../store";
 import qs from "qs";
 
-const apiUrl = API_URL || "/api/v1";
+export const apiUrl = API_URL || "/api/v1";
 
-const requestSearch = createAction("REQUEST_SEARCH");
-const receiveSearch = createAction(
+export const requestSearch = createAction("REQUEST_SEARCH");
+export const receiveSearch = createAction(
   "RECEIVE_SEARCH",
   (json) => json,
   () => ({ receivedAt: Date.now() })
@@ -77,65 +75,6 @@ export const getSearchResultById = createCachedSelector(
   }
 )((_state, searchId) => searchId);
 
-export function fetchSearchResults(options, navigate) {
-  return async function (dispatch) {
-    if (!options.hasOwnProperty("query")) {
-      dispatch(cancelSearch);
-    }
-    const state = store.getState();
-    const searchHistory = getSearchHistory(state);
-    // console.log(searchHistory);
-
-    dispatch(setSearchHistory(options));
-
-    let searchTerm = options.query;
-    if (!options.query.match(/[\(\)<>=]/)) {
-      options.query = `tax_tree(${options.query})`;
-    }
-    if (!options.hasOwnProperty("summaryValues")) {
-      options.summaryValues = "count";
-    }
-    if (!options.hasOwnProperty("result")) {
-      options.result = "taxon";
-    }
-    dispatch(requestSearch());
-    dispatch(setSearchTerm(options));
-    const queryString = qs.stringify(options);
-    let url = `${apiUrl}/search?${queryString}`;
-    try {
-      let json;
-      try {
-        const response = await fetch(url);
-        json = await response.json();
-      } catch (error) {
-        json = console.log("An error occured.", error);
-      }
-      if (!json.results || json.results.length == 0) {
-        if (!searchTerm.match(/[\(\)<>=]/)) {
-          options.query = `tax_name(${searchTerm})`;
-          dispatch(setPreferSearchTerm(true));
-          dispatch(fetchSearchResults(options, navigate));
-        } else if (searchTerm.match(/tax_tree/)) {
-          options.query = searchTerm.replace("tax_tree", "tax_name");
-
-          dispatch(setPreferSearchTerm(true));
-          dispatch(fetchSearchResults(options, navigate));
-        } else {
-          dispatch(receiveSearch(json));
-        }
-      } else {
-        if (navigate) {
-          navigate(`search?${qs.stringify(options)}`, { replace: true });
-        }
-        dispatch(receiveSearch(json));
-      }
-    } catch (err) {
-      dispatch(cancelSearch);
-      return dispatch(setApiStatus(false));
-    }
-  };
-}
-
 export const saveSearchResults = (options, format = "tsv") => {
   const filename = `download.${format}`;
   options.filename = filename;
@@ -172,6 +111,14 @@ export const searchTerm = handleAction(
 );
 export const getSearchTerm = (state) => state.searchTerm;
 
+export const setSearchIndex = createAction("SET_SEARCH_INDEX");
+export const searchIndex = handleAction(
+  "SET_SEARCH_INDEX",
+  (state, action) => action.payload,
+  "taxon"
+);
+export const getSearchIndex = (state) => state.searchIndex;
+
 export const setPreferSearchTerm = createAction("SET_PREFER_SEARCH_TERM");
 export const preferSearchTerm = handleAction(
   "SET_PREFER_SEARCH_TERM",
@@ -193,15 +140,23 @@ export const setSearchHistory = createAction("SET_SEARCH_HISTORY");
 export const searchHistory = handleAction(
   "SET_SEARCH_HISTORY",
   (state, action) => {
-    // console.log(action.payload);
     return defaultSearchHistory;
   },
   defaultSearchHistory
 );
 export const getSearchHistory = (state) => state.searchTerm;
 
+export const getSearchFields = createSelector(getSearchTerm, (searchTerm) => {
+  let fields = [];
+  if (searchTerm.fields && searchTerm.fields != "all") {
+    fields = searchTerm.fields.split(/\s*,\s*/);
+  }
+  return fields;
+});
+
 export const searchReducers = {
   searchTerm,
+  searchIndex,
   searchResults,
   searchHistory,
   preferSearchTerm,

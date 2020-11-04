@@ -3,21 +3,24 @@ import { connect } from "react-redux";
 import {
   getSearchTerm,
   setSearchTerm,
+  getSearchIndex,
+  setSearchIndex,
   getPreferSearchTerm,
   setPreferSearchTerm,
   getPreviousSearchTerm,
   setPreviousSearchTerm,
   getSearchResults,
   getSearchResultArray,
-  fetchSearchResults,
   saveSearchResults,
   getSearchResultById,
   resetSearch,
 } from "../reducers/search";
+import { fetchSearchResults } from "../selectors/search";
 
 const withSearch = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
     searchTerm: getSearchTerm(state),
+    searchIndex: getSearchIndex(state),
     preferSearchTerm: getPreferSearchTerm(state),
     previousSearchTerm: getPreviousSearchTerm(state),
     searchResults: getSearchResults(state),
@@ -36,6 +39,7 @@ const withSearch = (WrappedComponent) => (props) => {
       }
     },
     setSearchTerm: (options) => dispatch(setSearchTerm(options)),
+    setSearchIndex: (index) => dispatch(setSearchIndex(index)),
     setPreferSearchTerm: (bool) => dispatch(setPreferSearchTerm(bool)),
     setPreviousSearchTerm: (options) =>
       dispatch(setPreviousSearchTerm(options)),

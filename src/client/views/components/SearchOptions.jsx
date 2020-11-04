@@ -10,17 +10,12 @@ import Typography from "@material-ui/core/Typography";
 import qs from "qs";
 import Button from "@material-ui/core/Button";
 import SearchIcon from "@material-ui/icons/Search";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import TextField from "@material-ui/core/TextField";
-import Select from "@material-ui/core/Select";
 import Switch from "@material-ui/core/Switch";
 import { useNavigate } from "@reach/router";
+import BasicTextField from "./BasicTextField";
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
   paper: {
     width: "100%",
     minWidth: "600px",
@@ -36,79 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TaxFilter = ({ current, id = "tax-filter-0", handleChange }) => {
-  const classes = useStyles;
-  let label = "Tax filter";
-  let tree, name, eq;
-  if (current.match(/^tax_\w+\(/)) {
-    tree = current.replace(/^\w+/, "tax_tree");
-    name = current.replace(/^\w+/, "tax_name");
-    eq = current.replace(/^\w+/, "tax_eq");
-  }
-  return (
-    <FormControl className={classes.formControl}>
-      {/* <InputLabel id={`${id}-label`}>{label}</InputLabel> */}
-      <Select
-        // labelId={`${id}-label`}
-        id={id}
-        value={current}
-        onChange={handleChange}
-        label={label}
-        inputProps={{ "aria-label": label }}
-      >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        <MenuItem value={tree}>{tree}</MenuItem>
-        <MenuItem value={name}>{name}</MenuItem>
-        <MenuItem value={eq}>{eq}</MenuItem>
-      </Select>
-      <FormHelperText>{label}</FormHelperText>
-    </FormControl>
-  );
-};
-
-const BasicSelect = ({
-  current,
-  id,
-  handleChange,
-  label,
-  helperText,
-  values,
-}) => {
-  const classes = useStyles;
-  let options = [];
-  Object.keys(values).forEach((key) => {
-    options.push(<MenuItem value={values[key]}>{key}</MenuItem>);
-  });
-  return (
-    <FormControl className={classes.formControl}>
-      {label && <InputLabel id={`${id}-label`}>{label}</InputLabel>}
-      <Select
-        labelId={label ? `${id}-label` : undefined}
-        id={id}
-        value={current}
-        onChange={handleChange}
-        label={label}
-        inputProps={{ "aria-label": label ? label : helperText }}
-      >
-        {options}
-      </Select>
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
-    </FormControl>
-  );
-};
-
-const BasicTextField = ({ id, handleChange, label, helperText, value }) => {
-  const classes = useStyles;
-  return (
-    <FormControl className={classes.formControl}>
-      <TextField id={id} label={label} value={value} onChange={handleChange} />
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
-    </FormControl>
-  );
-};
-
 const SearchOptions = ({
   searchTerm,
   searchResults,
@@ -118,9 +40,6 @@ const SearchOptions = ({
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  let [index, setIndex] = useState(
-    searchTerm.result ? searchTerm.result : "taxon"
-  );
   let currentTaxon, currentFilter;
   if (searchTerm.query) {
     const parts = searchTerm.query.split(/\s*AND\s*/);
@@ -136,13 +55,7 @@ const SearchOptions = ({
       ? { taxon: currentTaxon, filter: currentFilter }
       : { filter: "tax_tree" }
   );
-  let controls = [];
-  let options = { ...searchTerm };
 
-  const handleIndexChange = (e) => {
-    e.stopPropagation();
-    setIndex(e.target.value);
-  };
   const handleTaxonFilterChange = (e) => {
     e.stopPropagation();
     if (e.target.id == "taxon-filter-select") {
@@ -158,6 +71,7 @@ const SearchOptions = ({
   const handleClick = () => {
     let options = {
       ...searchTerm,
+      offset: 0,
       query: `${taxFilter.filter}(${taxFilter.taxon})`,
       result: index,
     };
@@ -170,18 +84,6 @@ const SearchOptions = ({
   return (
     <Paper className={classes.paper}>
       <Grid container alignItems="center" direction="column">
-        <Grid container alignItems="center" direction="row">
-          <Grid item>
-            <BasicSelect
-              current={index}
-              id={"search-index-select"}
-              handleChange={handleIndexChange}
-              // label={"Search index"}
-              helperText={"search index"}
-              values={{ Taxon: "taxon", Assembly: "assembly" }}
-            />
-          </Grid>
-        </Grid>
         <Grid container alignItems="center" direction="row">
           <Grid item>
             <BasicTextField

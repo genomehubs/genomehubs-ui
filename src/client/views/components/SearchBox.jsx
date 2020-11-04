@@ -8,14 +8,19 @@ import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import qs from "qs";
 import SearchOptions from "./SearchOptions";
+import SearchSettings from "./SearchSettings";
 import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import IconButton from "@material-ui/core/IconButton";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import SearchIcon from "@material-ui/icons/Search";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import SettingsIcon from "@material-ui/icons/Settings";
+// import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+// import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Grid from "@material-ui/core/Grid";
 import Popper from "@material-ui/core/Popper";
 import Typography from "@material-ui/core/Typography";
@@ -26,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     color: theme.palette.text.secondary,
     marginRight: theme.spacing(2),
+  },
+  formControl: {
+    marginTop: theme.spacing(2),
+    minWidth: "600px",
   },
   search: {
     fontSize: "2em",
@@ -96,6 +105,7 @@ const SearchBox = ({
   const searchBoxRef = useRef(null);
   let [open, setOpen] = useState(false);
   let [showOptions, setShowOptions] = useState(false);
+  let [showSettings, setShowSettings] = useState(false);
   let result = "taxon";
   const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
@@ -213,38 +223,51 @@ const SearchBox = ({
       >
         <Grid container alignItems="center" direction="row">
           <Grid item style={{ width: "600px" }} ref={searchBoxRef}>
-            <Autocomplete
-              id="main-search"
-              getOptionLabel={(option) =>
-                typeof option === "string" ? option : option.title
-              }
-              getOptionSelected={(option, value) =>
-                option.title === value.title
-              }
-              options={options}
-              autoComplete
-              includeInputInList
-              freeSolo
-              value={lookupTerm}
-              open={open}
-              onChange={handleKeyDown}
-              onInputChange={handleChange}
-              PopperComponent={PlacedPopper}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={`Search ${siteName}`}
-                  variant="outlined"
-                  fullWidth
-                />
-              )}
-              renderOption={(option) => {
-                if (option.highlighted) {
-                  return <AutoCompleteSuggestion option={option} />;
+            <FormControl className={classes.formControl}>
+              <Autocomplete
+                id="main-search"
+                getOptionLabel={(option) =>
+                  typeof option === "string" ? option : option.title
                 }
-                return <AutoCompleteOption option={option} />;
-              }}
-            />
+                getOptionSelected={(option, value) =>
+                  option.title === value.title
+                }
+                options={options}
+                autoComplete
+                includeInputInList
+                freeSolo
+                value={lookupTerm}
+                open={open}
+                onChange={handleKeyDown}
+                onInputChange={handleChange}
+                PopperComponent={PlacedPopper}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={`Search ${siteName}`}
+                    variant="outlined"
+                    fullWidth
+                  />
+                )}
+                renderOption={(option) => {
+                  if (option.highlighted) {
+                    return <AutoCompleteSuggestion option={option} />;
+                  }
+                  return <AutoCompleteOption option={option} />;
+                }}
+              />
+
+              <FormHelperText
+                labelPlacement="end"
+                onClick={() => {
+                  setShowOptions(!showOptions);
+                  setShowSettings(false);
+                }}
+                style={{ textAlign: "right", cursor: "pointer" }}
+              >
+                Advanced search
+              </FormHelperText>
+            </FormControl>
           </Grid>
           <Grid item>
             <IconButton
@@ -256,7 +279,7 @@ const SearchBox = ({
             </IconButton>
           </Grid>
           <Grid item>
-            <IconButton
+            {/* <IconButton
               className={classes.search}
               aria-label="expand row"
               onClick={() => setShowOptions(!showOptions)}
@@ -266,6 +289,18 @@ const SearchBox = ({
               ) : (
                 <KeyboardArrowDownIcon />
               )}
+            </IconButton> */}
+            <IconButton
+              className={classes.search}
+              aria-label="search settings"
+              onClick={() => {
+                setShowSettings(!showSettings);
+                setShowOptions(false);
+              }}
+            >
+              <SettingsIcon
+                style={{ transform: showSettings ? "rotate(90deg)" : "" }}
+              />
             </IconButton>
           </Grid>
         </Grid>
@@ -276,6 +311,16 @@ const SearchBox = ({
           placement={"bottom"}
         >
           <SearchOptions />
+        </Popper>
+        <Popper
+          id={"search-settings"}
+          style={{ maxWidth: "800px" }}
+          open={showSettings}
+          anchorEl={searchBoxRef.current}
+          placement={"bottom"}
+          keepMounted={true}
+        >
+          <SearchSettings />
         </Popper>
       </form>
     </div>
