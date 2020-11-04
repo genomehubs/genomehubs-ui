@@ -261,6 +261,7 @@ const ResultTable = ({
     if (location.search.match(/tax_tree%28/)) {
       options.query = options.query.replace("tax_name", "tax_tree");
     }
+    options.offset = 0;
     setPreferSearchTerm(true);
     setSearchTerm(options);
   };

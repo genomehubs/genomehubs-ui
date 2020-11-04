@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
 const SearchPagination = ({
   searchTerm,
   searchResults,
-  fetchSearchResults,
+  setSearchTerm,
+  setPreferSearchTerm,
 }) => {
   if (!searchResults.status || !searchResults.status.hits) {
     return null;
@@ -28,14 +29,18 @@ const SearchPagination = ({
   let resultCount = searchResults.status.hits;
   let count = Math.ceil(resultCount / pageSize);
   let page = offset / pageSize;
+  let options = { ...searchTerm };
   const handleChange = (event, newPage) => {
-    searchTerm.offset = newPage * pageSize;
-    fetchSearchResults(searchTerm);
+    options.offset = newPage * pageSize;
+    console.log(options.offset);
+    setPreferSearchTerm(true);
+    setSearchTerm(options);
   };
   const handleChangeRowsPerPage = (event) => {
-    searchTerm.offset = 0;
-    searchTerm.size = parseInt(event.target.value, 10);
-    fetchSearchResults(searchTerm);
+    options.offset = 0;
+    options.size = parseInt(event.target.value, 10);
+    setPreferSearchTerm(true);
+    setSearchTerm(options);
   };
 
   return (
