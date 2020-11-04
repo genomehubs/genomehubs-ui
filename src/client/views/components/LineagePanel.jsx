@@ -38,7 +38,7 @@ const LineagePanel = ({
   let lineageDivs = [];
   if (lineage && lineage.lineage) {
     lineage.lineage.forEach((ancestor) => {
-      lineageDivs.push(
+      lineageDivs.unshift(
         <span
           key={ancestor.taxon_id}
           className={styles.lineage}
