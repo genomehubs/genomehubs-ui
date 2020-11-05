@@ -17,7 +17,12 @@ const useStyles = makeStyles((theme) => ({
 const BasicSelect = ({
   current,
   id,
-  handleChange,
+  handleBlur = (e) => {
+    e.preventDefault();
+  },
+  handleChange = (e) => {
+    e.preventDefault();
+  },
   label,
   helperText,
   values,
@@ -34,6 +39,7 @@ const BasicSelect = ({
         labelId={label ? `${id}-label` : undefined}
         id={id}
         value={current}
+        onBlur={handleBlur}
         onChange={handleChange}
         label={label}
         inputProps={{ "aria-label": label ? label : helperText }}

@@ -10,11 +10,28 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 120,
   },
 }));
-const BasicTextField = ({ id, handleChange, label, helperText, value }) => {
+const BasicTextField = ({
+  id,
+  handleBlur = (e) => {
+    e.preventDefault();
+  },
+  handleChange = (e) => {
+    e.preventDefault();
+  },
+  label,
+  helperText,
+  value,
+}) => {
   const classes = useStyles;
   return (
     <FormControl className={classes.formControl}>
-      <TextField id={id} label={label} value={value} onChange={handleChange} />
+      <TextField
+        id={id}
+        label={label}
+        value={value}
+        onBlur={handleBlur}
+        onChange={handleChange}
+      />
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
