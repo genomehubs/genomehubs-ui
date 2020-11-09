@@ -52,11 +52,19 @@ export function fetchSearchResults(options, navigate) {
           options.query = `tax_name(${searchTerm})`;
           dispatch(setPreferSearchTerm(true));
           dispatch(fetchSearchResults(options, navigate));
-        } else if (searchTerm.match(/tax_tree/)) {
-          options.query = searchTerm.replace("tax_tree", "tax_name");
+          // } else if (searchTerm.match(/tax_tree/)) {
+          //   options.query = searchTerm.replace("tax_tree", "tax_name");
 
-          dispatch(setPreferSearchTerm(true));
-          dispatch(fetchSearchResults(options, navigate));
+          //   dispatch(setPreferSearchTerm(true));
+          //   dispatch(fetchSearchResults(options, navigate));
+        } else if (searchTerm.match(/tax_rank/)) {
+          if (!options.hasOwnProperty("includeEstimates")) {
+            options.includeEstimates = true;
+            dispatch(setPreferSearchTerm(true));
+            dispatch(fetchSearchResults(options, navigate));
+          } else {
+            dispatch(receiveSearch(json));
+          }
         } else {
           dispatch(receiveSearch(json));
         }

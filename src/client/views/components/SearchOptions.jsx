@@ -347,11 +347,10 @@ const SearchOptions = ({
   );
   let [moreOptions, setMoreOptions] = useState(() => {
     let opts = { ...searchTerm };
-    if (
-      !opts.hasOwnProperty("includeEstimates") ||
-      opts.includeEstimates == "false"
-    ) {
+    if (opts.includeEstimates == "false") {
       opts.includeEstimates = false;
+    } else {
+      opts.includeEstimates = true;
     }
     opts.offset = 0;
     delete opts.query;
@@ -398,7 +397,6 @@ const SearchOptions = ({
       `search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
     );
   };
-
   return (
     <Paper className={classes.paper}>
       <Grid container alignItems="center" direction="column" spacing={2}>
