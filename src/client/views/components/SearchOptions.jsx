@@ -179,6 +179,9 @@ const SearchOptions = ({
         query += " AND ";
       }
     }
+    if (taxFilter.depth) {
+      query += `tax_depth(${taxFilter.depth})`;
+    }
     let newFilters = "";
     let newFilterArray = [];
     Object.keys(varFilters).forEach((key, i) => {
@@ -452,6 +455,14 @@ const SearchOptions = ({
                   : "ignore estimates"}
               </FormHelperText>
             </FormControl>
+          </Grid>
+          <Grid item>
+            <BasicTextField
+              id={"taxon-filter-depth"}
+              handleChange={handleTaxonFilterChange}
+              helperText={"depth"}
+              value={taxFilter.depth}
+            />
           </Grid>
         </Grid>
         {filterOptions}

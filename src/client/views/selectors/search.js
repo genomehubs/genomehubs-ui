@@ -57,7 +57,10 @@ export function fetchSearchResults(options, navigate) {
 
           //   dispatch(setPreferSearchTerm(true));
           //   dispatch(fetchSearchResults(options, navigate));
-        } else if (searchTerm.match(/tax_rank/)) {
+        } else if (
+          searchTerm.match(/tax_rank/) ||
+          searchTerm.match(/tax_depth/)
+        ) {
           if (!options.hasOwnProperty("includeEstimates")) {
             options.includeEstimates = true;
             dispatch(setPreferSearchTerm(true));
