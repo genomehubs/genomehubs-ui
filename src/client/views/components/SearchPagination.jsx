@@ -32,7 +32,6 @@ const SearchPagination = ({
   let options = { ...searchTerm };
   const handleChange = (event, newPage) => {
     options.offset = newPage * pageSize;
-    console.log(options.offset);
     setPreferSearchTerm(true);
     setSearchTerm(options);
   };

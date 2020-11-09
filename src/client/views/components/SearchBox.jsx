@@ -321,7 +321,6 @@ const SearchBox = ({
           open={showSettings}
           anchorEl={searchBoxRef.current}
           placement={"bottom"}
-          keepMounted={true}
         >
           <SearchSettings />
         </Popper>

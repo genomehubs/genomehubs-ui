@@ -14,8 +14,11 @@ import SearchIcon from "@material-ui/icons/Search";
 import CloseIcon from "@material-ui/icons/Close";
 import AddIcon from "@material-ui/icons/Add";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import Switch from "@material-ui/core/Switch";
 import { useNavigate } from "@reach/router";
+import BasicComplete from "./BasicComplete";
 import BasicTextField from "./BasicTextField";
 import BasicSelect from "./BasicSelect";
 import IconButton from "@material-ui/core/IconButton";
@@ -115,23 +118,39 @@ const SearchOptions = ({
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  let currentTaxon, currentFilter;
+  let ranks = {
+    "": "",
+    superkingdom: "superkingdom",
+    kingdom: "kingdom",
+    phylum: "phylum",
+    class: "class",
+    order: "order",
+    family: "family",
+    genus: "genus",
+    species: "species",
+    subspecies: "subspecies",
+  };
 
-  let currentRank, currentDepth;
   let filters = {};
+  let taxFilters = {
+    taxon: null,
+    filter: false,
+    rank: "",
+    level: null,
+  };
   let bool = false;
   if (searchTerm.query) {
     searchTerm.query.split(/\s*AND\s*/).forEach((term) => {
       let taxQuery = term.match(/tax_(\w+)\((.+?)\)/);
       if (taxQuery) {
         if (taxQuery[1] == "rank") {
-          currentRank = taxQuery[2];
+          taxFilters.rank = taxQuery[2];
           bool = "AND";
         } else if (taxQuery[1] == "depth") {
-          currentDepth = taxQuery[2];
+          taxFilters.depth = taxQuery[2];
         } else {
-          currentTaxon = taxQuery[2];
-          currentFilter = `tax_${taxQuery[1]}`;
+          taxFilters.taxon = taxQuery[2];
+          taxFilters.filter = `tax_${taxQuery[1]}`;
         }
       } else {
         let parts = term.split(/\s*([\>\<=]+)\s*/);
@@ -147,6 +166,19 @@ const SearchOptions = ({
   let [varFilters, setVarFilters] = useState(filters);
 
   const buildQuery = () => {
+    let query = "";
+    if (taxFilter.taxon) {
+      query = `${taxFilter.filter}(${taxFilter.taxon})`;
+      if (taxFilter.rank || taxFilter.depth) {
+        query += " AND ";
+      }
+    }
+    if (taxFilter.rank) {
+      query += `tax_rank(${taxFilter.rank})`;
+      if (taxFilter.depth) {
+        query += " AND ";
+      }
+    }
     let newFilters = "";
     let newFilterArray = [];
     Object.keys(varFilters).forEach((key, i) => {
@@ -155,12 +187,9 @@ const SearchOptions = ({
       });
     });
     if (newFilterArray.length > 0) {
-      newFilters = taxFilter.taxon ? " AND " : "";
+      newFilters = taxFilter.taxon || taxFilter.rank ? " AND " : "";
       newFilters += newFilterArray.join(" AND ");
     }
-    let query = taxFilter.taxon
-      ? `${taxFilter.filter}(${taxFilter.taxon})`
-      : "";
     query += newFilters;
     return query;
   };
@@ -311,28 +340,57 @@ const SearchOptions = ({
   //   });
   // }
   let [taxFilter, setTaxFilter] = useState(
-    currentTaxon
-      ? { taxon: currentTaxon, filter: currentFilter }
-      : { filter: "tax_tree" }
+    // currentTaxon
+    //   ? { taxon: currentTaxon, filter: currentFilter }
+    //   : { filter: "tax_tree" }
+    taxFilters
   );
+  let [moreOptions, setMoreOptions] = useState(() => {
+    let opts = { ...searchTerm };
+    if (
+      !opts.hasOwnProperty("includeEstimates") ||
+      opts.includeEstimates == "false"
+    ) {
+      opts.includeEstimates = false;
+    }
+    opts.offset = 0;
+    delete opts.query;
+    delete opts.excludeAncestral;
+    delete opts.excludeDescendant;
+    delete opts.excludeDirect;
+    return opts;
+  });
 
   const handleTaxonFilterChange = (e) => {
     e.stopPropagation();
-    if (e.target.id == "taxon-filter-select") {
-      setTaxFilter({ taxon: e.target.value, filter: taxFilter.filter });
-    } else {
-      setTaxFilter({
-        taxon: taxFilter.taxon,
-        filter: e.target.checked ? "tax_tree" : "tax_eq",
+    let id = e.target.id ? e.target.id.replace("taxon-filter-", "") : "rank";
+    let value = e.target.value;
+    if (id == "estimates") {
+      setMoreOptions({
+        ...moreOptions,
+        includeEstimates: e.target.checked,
       });
     }
+    if (id == "filter") {
+      value = e.target.checked ? "tax_tree" : "tax_eq";
+    } else if (id == "rank") {
+      if (value != "") {
+        setMoreOptions({
+          ...moreOptions,
+          includeEstimates: true,
+        });
+      }
+    }
+    setTaxFilter({
+      ...taxFilter,
+      [id]: value,
+    });
   };
 
   const handleClick = () => {
     let query = buildQuery();
     let options = {
-      ...searchTerm,
-      offset: 0,
+      ...moreOptions,
       query,
     };
     setPreferSearchTerm(false);
@@ -343,37 +401,60 @@ const SearchOptions = ({
 
   return (
     <Paper className={classes.paper}>
-      <Grid container alignItems="center" direction="column">
-        <Grid container alignItems="center" direction="row">
+      <Grid container alignItems="center" direction="column" spacing={2}>
+        <Grid container alignItems="center" direction="row" spacing={2}>
           <Grid item>
             <BasicTextField
-              id={"taxon-filter-select"}
+              id={"taxon-filter-taxon"}
               handleChange={handleTaxonFilterChange}
-              helperText={"taxonomy filter"}
+              helperText={"taxon"}
               value={taxFilter.taxon}
             />
           </Grid>
           {taxFilter.taxon && (
             <Grid item>
-              <FormControlLabel
-                className={classes.formControl}
-                control={
-                  <Switch
-                    id={"taxon-filter-type-select"}
-                    checked={taxFilter.filter == "tax_tree"}
-                    onChange={handleTaxonFilterChange}
-                    name="filter-type"
-                    color="default"
-                  />
-                }
-                label={
-                  taxFilter.filter == "tax_tree"
+              <FormControl className={classes.formControl}>
+                <Switch
+                  id={"taxon-filter-filter"}
+                  checked={taxFilter.filter == "tax_tree"}
+                  onChange={handleTaxonFilterChange}
+                  name="filter-type"
+                  color="default"
+                />
+                <FormHelperText>
+                  {taxFilter.filter == "tax_tree"
                     ? "include descendants"
-                    : "ignore descendants"
-                }
-              />
+                    : "ignore descendants"}
+                </FormHelperText>
+              </FormControl>
             </Grid>
           )}
+
+          <Grid item>
+            <BasicSelect
+              id={"taxon-filter-rank"}
+              handleChange={handleTaxonFilterChange}
+              helperText={"rank"}
+              current={taxFilter.rank}
+              values={ranks}
+            />
+          </Grid>
+          <Grid item>
+            <FormControl className={classes.formControl}>
+              <Switch
+                id={"taxon-filter-estimates"}
+                checked={moreOptions.includeEstimates}
+                onChange={handleTaxonFilterChange}
+                name="filter-estimates"
+                color="default"
+              />
+              <FormHelperText>
+                {moreOptions.includeEstimates
+                  ? "include estimates"
+                  : "ignore estimates"}
+              </FormHelperText>
+            </FormControl>
+          </Grid>
         </Grid>
         {filterOptions}
         <Grid container alignItems="right" direction="row">
