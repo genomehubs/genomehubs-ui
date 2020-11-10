@@ -8,6 +8,7 @@ import { paneReducers } from "./panes";
 import { recordReducers } from "./record";
 import { searchReducers } from "./search";
 import { trackingReducers } from "./tracking";
+import { treeReducers } from "./tree";
 import { typeReducers } from "./types";
 
 const allReducers = Object.assign(
@@ -20,6 +21,7 @@ const allReducers = Object.assign(
   recordReducers,
   searchReducers,
   trackingReducers,
+  treeReducers,
   typeReducers
 );
 

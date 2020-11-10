@@ -2,7 +2,7 @@ import React, { memo, useEffect } from "react";
 import { compose } from "recompose";
 import classnames from "classnames";
 import styles from "./Styles.scss";
-import ResultPanel from "./ResultPanel";
+import TreePanel from "./TreePanel";
 import ResultTable from "./ResultTable";
 import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
@@ -76,6 +76,7 @@ const SearchPage = ({
   }
   results = <ResultTable />;
 
+  let tree = <TreePanel></TreePanel>;
   let text = <TextPanel view={"search"}></TextPanel>;
 
   return (
@@ -90,6 +91,7 @@ const SearchPage = ({
       >
         {summary}
         {results}
+        {tree}
         {text}
       </div>
     </div>
