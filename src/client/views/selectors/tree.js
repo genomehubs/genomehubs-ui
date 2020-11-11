@@ -69,9 +69,11 @@ export const getTreeNodes = createSelector(
     let shared = {};
     let ancestors = {};
     let tips = {};
+    let orderedLineage = [];
     if (Object.values(nodes)[0]) {
       Object.values(nodes)[0].lineage.forEach((anc) => {
         shared[anc.taxon_id] = true;
+        orderedLineage.push(anc.taxon_id);
       });
     }
     Object.keys(nodes).forEach((key) => {
@@ -128,7 +130,12 @@ export const getTreeNodes = createSelector(
         incrementAncestorCounts(key);
       }
     });
-    let keys = Object.keys(shared);
+    let keys = [];
+    orderedLineage.reverse().forEach((key) => {
+      if (shared[key]) {
+        keys.push(key);
+      }
+    });
     let ancNode;
     if (keys.length > 0) {
       rootNode = keys[keys.length - 1];
