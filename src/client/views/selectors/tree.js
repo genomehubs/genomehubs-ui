@@ -1,7 +1,7 @@
 import { createSelector } from "reselect";
 import store from "../store";
 import qs from "qs";
-import { scaleLinear } from "d3-scale";
+import { scaleLinear, scalePow } from "d3-scale";
 import {
   schemeReds,
   schemeGreys,
@@ -156,7 +156,8 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let { treeNodes, rootNode, ancNode, maxDepth } = nodes;
   if (!treeNodes || !rootNode) return undefined;
   let radius = 500;
-  let rScale = scaleLinear()
+  let rScale = scalePow()
+    .exponent(2)
     .domain([-1, maxDepth + 1])
     .range([0, radius]);
   let cScale = scaleLinear()
