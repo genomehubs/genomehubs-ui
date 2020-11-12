@@ -9,7 +9,7 @@ import {
   schemeOranges,
   schemePaired,
 } from "d3-scale-chromatic";
-import { arc } from "d3-shape";
+import { arc, lineRadial } from "d3-shape";
 import {
   cancelNodesRequest,
   getNodes,
@@ -170,12 +170,28 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let greens = schemeGreens[tonalRange];
   let oranges = schemeOranges[tonalRange];
   let alternator = {};
+  let charLen = 7;
+  var radialLine = lineRadial()
+    .angle((d) => d.a)
+    .radius((d) => d.r);
 
-  const ranks = [];
+  let labels = [];
+  // let rings = ranks.map((rank, depth) => {
+  //   return {
+  //     arc: arc()({
+  //       innerRadius: rScale(-1),
+  //       outerRadius: rScale(depth),
+  //       startAngle: cScale(0),
+  //       endAngle: cScale(cScale.domain()[1]),
+  //     }),
+  //     taxon_id,
+  //     scientific_name,
+  //     rank,
+  //   };
+  // });
 
   const drawArcs = ({ node, depth = 0, start = 0, recurse = true }) => {
     if (!node) return {};
-    ranks[depth] = node.taxon_rank;
     if (!alternator.hasOwnProperty(depth)) {
       alternator[depth] = depth % 1;
     } else {
@@ -198,18 +214,82 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
     ) {
       outer = maxDepth + 1;
     }
+    let innerRadius = rScale(depth);
+    let outerRadius = rScale(outer);
+    let startAngle = cScale(start);
+    let endAngle = cScale(start + node.count);
     arcs.push({
       ...node,
       arc: arc()({
-        innerRadius: rScale(depth),
-        outerRadius: rScale(outer),
-        startAngle: cScale(start),
-        endAngle: cScale(start + node.count),
+        innerRadius,
+        outerRadius,
+        startAngle,
+        endAngle,
       }),
       start: start,
       depth: depth,
       color,
     });
+
+    const addlabel = (label, { truncate = false, stopIteration = false }) => {
+      let nextOpts = { truncate, stopIteration };
+      if (truncate) {
+        nextOpts.stopIteration = true;
+      } else {
+        nextOpts.truncate = true;
+      }
+      let labelLen = charLen * label.length;
+      let midRadius = (innerRadius + outerRadius) / 2;
+      let arcLen = (endAngle - startAngle) * midRadius;
+      let radLen = outerRadius - innerRadius;
+      if (labelLen <= arcLen) {
+        let arcAttrs = arc()({
+          innerRadius: midRadius,
+          outerRadius: midRadius,
+          startAngle,
+          endAngle,
+        }).split(/[A-Z]/);
+        labels.push({
+          ...node,
+          arc: `M${arcAttrs[1]}A${arcAttrs[2]}`,
+        });
+      } else if (arcLen > charLen && labelLen <= radLen) {
+        let midAngle = (startAngle + endAngle) / 2;
+        labels.push({
+          ...node,
+          scientific_name: label,
+          arc: radialLine([
+            { a: midAngle, r: innerRadius },
+            { a: midAngle, r: outerRadius },
+          ]),
+        });
+      } else if (!stopIteration) {
+        if (!truncate) {
+          if (node.taxon_rank == "species") {
+            let parts = label.split(" ");
+            if (parts.length == 2) {
+              addlabel(`${parts[0].charAt(0)}. ${parts[1]}`, nextOpts);
+            }
+          } else if (node.taxon_rank == "subspecies") {
+            let parts = label.split(" ");
+            if (parts.length == 3) {
+              addlabel(
+                `${parts[0].charAt(0)}. ${parts[1].charAt(0)}. ${parts[2]}`,
+                nextOpts
+              );
+            }
+          }
+        } else {
+          let maxLen = Math.max(arcLen, radLen) / charLen;
+          maxLen -= 3;
+          if (maxLen > 8) {
+            addlabel(`${label.substring(0, maxLen)}...`, nextOpts);
+          }
+        }
+      }
+    };
+    addlabel(node.scientific_name, {});
+
     if (recurse && node.hasOwnProperty("children")) {
       Object.keys(node.children).forEach((key) => {
         drawArcs({ node: treeNodes[key], depth: depth + 1, start });
@@ -220,17 +300,5 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   drawArcs({ node: treeNodes[ancNode], depth: -1, recurse: false });
   drawArcs({ node: treeNodes[rootNode] });
 
-  let rings = ranks.map((rank, depth) => {
-    return {
-      arc: arc()({
-        innerRadius: rScale(-1),
-        outerRadius: rScale(depth),
-        startAngle: cScale(0),
-        endAngle: cScale(cScale.domain()[1]),
-      }),
-      taxon_rank: rank,
-    };
-  });
-
-  return { arcs, rings };
+  return { arcs, labels };
 });

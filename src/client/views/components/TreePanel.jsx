@@ -13,10 +13,10 @@ import { useLocation, useNavigate } from "@reach/router";
 const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  let arcs, rings;
+  let arcs, labels;
   if (treeRings) {
     arcs = treeRings.arcs;
-    rings = treeRings.rings;
+    labels = treeRings.labels;
   }
 
   const [position, setPosition] = React.useState({
@@ -46,9 +46,24 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
       paths.push(
         <Tooltip
           key={segment.taxon_id}
-          followCursor
           title={segment.scientific_name}
+          onMouseMove={(e) => setPosition({ x: e.clientX, y: e.clientY })}
+          PopperProps={{
+            anchorEl: {
+              clientHeight: 0,
+              clientWidth: 0,
+              getBoundingClientRect: () => ({
+                top: position.y,
+                left: position.x,
+                right: position.x,
+                bottom: position.y + 10,
+                width: 0,
+                height: 10,
+              }),
+            },
+          }}
           arrow
+          placement="bottom"
         >
           <path
             key={segment.taxon_id}
@@ -63,21 +78,29 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
     });
   }
 
-  let ranks = [];
+  let text = [];
   let defs = [];
-  if (rings) {
-    rings.forEach((ring) => {
+  if (labels) {
+    labels.forEach((label) => {
       defs.push(
         <path
-          key={ring.taxon_rank}
-          id={`${ring.taxon_rank}-rank-path`}
-          d={ring.arc}
+          key={label.taxon_id}
+          id={`${label.taxon_id}-label-path`}
+          d={label.arc}
         />
       );
-      ranks.push(
-        <text dy="-5" fill={"white"} style={{ pointerEvents: "none" }}>
-          <textPath xlinkHref={`#${ring.taxon_rank}-rank-path`}>
-            {ring.taxon_rank}
+      text.push(
+        <text
+          fill={"white"}
+          style={{ pointerEvents: "none" }}
+          textAnchor="middle"
+        >
+          <textPath
+            xlinkHref={`#${label.taxon_id}-label-path`}
+            startOffset="50%"
+            alignmentBaseline="central"
+          >
+            {label.scientific_name}
           </textPath>
         </text>
       );
@@ -107,9 +130,9 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
             >
-              {/* <defs>{defs}</defs> */}
+              <defs>{defs}</defs>
               {paths}
-              {/* {ranks} */}
+              {text}
             </svg>
           </div>
         )}
