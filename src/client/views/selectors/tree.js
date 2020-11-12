@@ -158,7 +158,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let radius = 500;
   let rScale = scaleLinear()
     .domain([-1, maxDepth + 1])
-    .range([0, 500]);
+    .range([0, radius]);
   let cScale = scaleLinear()
     .domain([0, treeNodes[rootNode] ? treeNodes[rootNode].count : 0])
     .range([0, Math.PI * 2]);
@@ -284,7 +284,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
         } else {
           let maxLen = Math.max(arcLen, radLen) / charLen;
           maxLen -= 3;
-          if (maxLen > 8) {
+          if (maxLen > 5) {
             addlabel(`${label.substring(0, maxLen)}...`, nextOpts);
           }
         }

@@ -22,10 +22,8 @@ const withTree = (WrappedComponent) => (props) => {
   const mapDispatchToProps = (dispatch) => ({
     fetchNodes: (options) => {
       if (options.query && options.query.length > 0) {
-        console.log(options);
         dispatch(fetchNodes(options));
       } else {
-        console.log("reset");
         dispatch(resetNodes());
       }
     },
