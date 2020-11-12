@@ -170,7 +170,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let greens = schemeGreens[tonalRange];
   let oranges = schemeOranges[tonalRange];
   let alternator = {};
-  let charLen = 7;
+  let charLen = 7.5;
   var radialLine = lineRadial()
     .angle((d) => d.a)
     .radius((d) => d.r);
@@ -240,9 +240,9 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
       }
       let labelLen = charLen * label.length;
       let midRadius = (innerRadius + outerRadius) / 2;
-      let arcLen = (endAngle - startAngle) * midRadius;
+      let arcLen = (endAngle - startAngle) * innerRadius;
       let radLen = outerRadius - innerRadius;
-      if (labelLen <= arcLen) {
+      if (labelLen < arcLen) {
         let arcAttrs = arc()({
           innerRadius: midRadius,
           outerRadius: midRadius,
@@ -278,6 +278,8 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
                 nextOpts
               );
             }
+          } else {
+            addlabel(label, nextOpts);
           }
         } else {
           let maxLen = Math.max(arcLen, radLen) / charLen;
