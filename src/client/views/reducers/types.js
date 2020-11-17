@@ -17,9 +17,16 @@ const defaultState = () => ({
 
 function onReceiveTypes(state, action) {
   const { payload, meta } = action;
-  const { status, fields, index } = payload;
+  const { status, fields } = payload;
+  let byId = {};
+  Object.values(fields).forEach((field) => {
+    if (!byId[field.group]) {
+      byId[field.group] = {};
+    }
+    byId[field.group][field.name] = field;
+  });
   const updatedWithTypesState = immutableUpdate(state, {
-    byId: { [index]: fields },
+    byId,
   });
   const updatedWithMeta = immutableUpdate(updatedWithTypesState, {
     isFetching: false,

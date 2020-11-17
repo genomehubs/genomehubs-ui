@@ -22,6 +22,8 @@ const RecordPage = ({
   setRecordId,
   setLookupTerm,
   fetchSearchResults,
+  setSearchIndex,
+  searchIndex,
   types,
   searchById = {},
 }) => {
@@ -29,16 +31,20 @@ const RecordPage = ({
   let taxon = {};
   let options = qs.parse(location.search.replace(/^\?/, ""));
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
+  console.log(options);
   useEffect(() => {
+    if (options.result != searchIndex) {
+      setSearchIndex(options.result);
+    }
     if (options.taxon_id && options.taxon_id != recordId) {
       setRecordId(options.taxon_id);
       fetchSearchResults({
         query: `tax_eq(${options.taxon_id})`,
-        result: "taxon",
+        result: options.result,
         includeEstimates: true,
       });
     } else if (recordId) {
-      fetchRecord(recordId);
+      fetchRecord(recordId, options.result);
     }
     if (hashTerm) {
       setLookupTerm(hashTerm);

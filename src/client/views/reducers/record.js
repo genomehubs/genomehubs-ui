@@ -57,7 +57,7 @@ const records = handleActions(
 
 export const getRecords = (state) => state.records.byId;
 
-export function fetchRecord(taxonId, result = "taxon") {
+export function fetchRecord(taxonId, result) {
   return async function (dispatch) {
     const state = store.getState();
     const records = getRecords(state);

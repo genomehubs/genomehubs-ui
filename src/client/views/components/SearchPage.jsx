@@ -20,6 +20,7 @@ const SearchPage = ({
   setLookupTerm,
   searchTerm,
   setSearchTerm,
+  setSearchIndex,
   preferSearchTerm,
   setPreferSearchTerm,
   previousSearchTerm,
@@ -38,6 +39,7 @@ const SearchPage = ({
         if (preferSearchTerm) {
           if (!shallow(searchTerm, previousSearchTerm)) {
             setPreviousSearchTerm(searchTerm);
+            setSearchIndex(options.result);
             fetchSearchResults(searchTerm);
           }
           // options = { ...searchTerm };
@@ -55,6 +57,7 @@ const SearchPage = ({
           };
           if (!shallow(options, previousSearchTerm)) {
             setPreviousSearchTerm(options);
+            setSearchIndex(options.result);
             fetchSearchResults(options, hashedNav);
           }
         }
@@ -63,6 +66,7 @@ const SearchPage = ({
       } else if (searchTerm.query && !options.query) {
         setPreviousSearchTerm({});
         setSearchTerm({});
+        setSearchIndex("multi");
         fetchSearchResults({});
       }
       if (hashTerm) {

@@ -7,9 +7,7 @@ import CopyrightIcon from "@material-ui/icons/Copyright";
 
 const Footer = ({ types, fetchTypes }) => {
   useEffect(() => {
-    if (Object.keys(types).length == 0) {
-      fetchTypes("taxon");
-    }
+    fetchTypes("multi");
   }, []);
   return (
     <footer>

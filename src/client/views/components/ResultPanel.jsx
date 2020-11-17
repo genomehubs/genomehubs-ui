@@ -17,20 +17,23 @@ const ResultPanel = ({
   taxon_id,
   taxon_rank,
   fields,
-  // fetchRecord,
   summaryField,
   setSummaryField,
   setPreferSearchTerm,
+  searchIndex,
   sequence,
   summaryId,
   summary,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  console.log(searchIndex);
   const handleTaxonClick = () => {
     setPreferSearchTerm(false);
     navigate(
-      `records?taxon_id=${taxon_id}#${encodeURIComponent(scientific_name)}`
+      `records?taxon_id=${taxon_id}&result=${searchIndex}#${encodeURIComponent(
+        scientific_name
+      )}`
     );
     // setRecordId(taxon_id);
   };
@@ -40,7 +43,7 @@ const ResultPanel = ({
     setSummaryField(fieldId);
     setPreferSearchTerm(false);
     navigate(
-      `explore?taxon_id=${taxon_id}&field_id=${fieldId}${location.hash}`
+      `explore?taxon_id=${taxon_id}&result=${searchIndex}&field_id=${fieldId}${location.hash}`
     );
   };
   let css = classnames(

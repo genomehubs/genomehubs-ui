@@ -36,10 +36,10 @@ const ExplorePage = ({
       if (options.taxon_id != taxon_id || options.field_id != summaryField) {
         fetchSearchResults({
           query: `tax_eq(${options.taxon_id})`,
-          result: "taxon",
+          result: options.result,
           includeEstimates: true,
         });
-        fetchRecord(options.taxon_id);
+        fetchRecord(options.taxon_id, options.result);
         setRecordId(options.taxon_id);
         setSummaryField(options.field_id);
       }

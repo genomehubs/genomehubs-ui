@@ -153,11 +153,12 @@ export const getTreeNodes = createSelector(
 
 export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   if (!nodes) return undefined;
+  console.log(nodes);
   let { treeNodes, rootNode, ancNode, maxDepth } = nodes;
   if (!treeNodes || !rootNode) return undefined;
   let radius = 500;
   let rScale = scalePow()
-    .exponent(2)
+    .exponent(1.5)
     .domain([-1, maxDepth + 1])
     .range([0, radius]);
   let cScale = scaleLinear()
@@ -294,9 +295,14 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
     addlabel(node.scientific_name, {});
 
     if (recurse && node.hasOwnProperty("children")) {
+      let children = [];
       Object.keys(node.children).forEach((key) => {
-        drawArcs({ node: treeNodes[key], depth: depth + 1, start });
-        start += treeNodes[key].count;
+        children.push(treeNodes[key]);
+      });
+      children.sort((a, b) => b.count - a.count);
+      children.forEach((child) => {
+        drawArcs({ node: child, depth: depth + 1, start });
+        start += child.count;
       });
     }
   };

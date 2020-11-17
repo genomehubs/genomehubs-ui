@@ -74,9 +74,6 @@ const SearchSettings = ({
     });
     return initialState;
   });
-  // let [index, setIndex] = useState(
-  //   searchTerm.result ? searchTerm.result : "taxon"
-  // );
   let index = searchIndex;
   let setIndex = setSearchIndex;
 

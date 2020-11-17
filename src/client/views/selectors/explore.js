@@ -166,22 +166,3 @@ export const getHistograms = createSelector(getSummaries, (summaries) => {
   });
   return histograms;
 });
-
-// export function fetchLineage(taxon, result = "taxon") {
-//   return async function (dispatch) {
-//     dispatch(requestLineage());
-//     let url = `${apiUrl}/record?recordId=${taxon}&result=${result}`;
-//     try {
-//       let json;
-//       try {
-//         const response = await fetch(url);
-//         json = await response.json();
-//       } catch (error) {
-//         json = console.log("An error occured.", error);
-//       }
-//       dispatch(receiveLineage(json));
-//     } catch (err) {
-//       return dispatch(setApiStatus(false));
-//     }
-//   };
-// }

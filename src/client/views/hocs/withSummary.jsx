@@ -9,7 +9,7 @@ const withSummary = (WrappedComponent) => (props) => {
   });
 
   const mapDispatchToProps = (dispatch) => ({
-    fetchSummary: (taxon, field, summary, result = "taxon") => {
+    fetchSummary: (taxon, field, summary, result) => {
       dispatch(fetchSummary(taxon, field, summary, result));
     },
     setSummaryField: (field) => dispatch(setSummaryField(field)),

@@ -188,6 +188,7 @@ const ResultTable = ({
   searchResults,
   searchTerm,
   setSearchTerm,
+  searchIndex,
   setPreferSearchTerm,
 }) => {
   if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
@@ -200,7 +201,9 @@ const ResultTable = ({
   const handleTaxonClick = (taxon_id, scientific_name) => {
     setPreferSearchTerm(false);
     navigate(
-      `records?taxon_id=${taxon_id}#${encodeURIComponent(scientific_name)}`
+      `records?taxon_id=${taxon_id}&result=${searchIndex}#${encodeURIComponent(
+        scientific_name
+      )}`
     );
   };
   const arrToObj = (arr) => {

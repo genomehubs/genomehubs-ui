@@ -12,7 +12,7 @@ import {
   receiveSearch,
   setSearchIndex,
 } from "../reducers/search";
-import { fetchTypes } from "./types";
+// import { fetchTypes } from "./types";
 
 export function fetchSearchResults(options, navigate) {
   return async function (dispatch) {
@@ -24,17 +24,17 @@ export function fetchSearchResults(options, navigate) {
     dispatch(setSearchHistory(options));
 
     let searchTerm = options.query;
-    if (!options.query.match(/[\(\)<>=]/)) {
+    if (!options.hasOwnProperty("result")) {
+      options.result = "assembly";
+    }
+    if (options.result == "taxon" && !options.query.match(/[\(\)<>=]/)) {
       options.query = `tax_tree(${options.query})`;
     }
     if (!options.hasOwnProperty("summaryValues")) {
       options.summaryValues = "count";
     }
-    if (!options.hasOwnProperty("result")) {
-      options.result = "taxon";
-    }
-    dispatch(setSearchIndex(options.result));
-    dispatch(fetchTypes(options.result));
+    // dispatch(setSearchIndex(options.result));
+    // dispatch(fetchTypes(options.result));
     dispatch(requestSearch());
     dispatch(setSearchTerm(options));
     const queryString = qs.stringify(options);

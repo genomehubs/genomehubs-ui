@@ -66,6 +66,25 @@ const AutoCompleteSuggestion = ({ option }) => {
 
 const AutoCompleteOption = ({ option }) => {
   const classes = useStyles();
+  let secondaryText;
+  if (option.name_class) {
+    secondaryText = (
+      <Typography variant="body2" color="textSecondary">
+        {option.taxon_rank}
+        {option.name_class != "scientific name" &&
+          option.name_class != "taxon ID" && (
+            <span> :: {option.scientific_name}</span>
+          )}
+      </Typography>
+    );
+  } else if (option.identifier_class) {
+    secondaryText = (
+      <Typography variant="body2" color="textSecondary">
+        {option.scientific_name}
+      </Typography>
+    );
+  }
+
   return (
     <Grid container alignItems="center">
       <Grid item>
@@ -75,16 +94,10 @@ const AutoCompleteOption = ({ option }) => {
         <div>{option.title}</div>
         <span style={{ float: "right" }}>
           <Typography variant="body2" color="textSecondary">
-            {option.taxon_id}
+            {(option.name_class && option.taxon_id) || option.assembly_id}
           </Typography>
         </span>
-        <Typography variant="body2" color="textSecondary">
-          {option.taxon_rank}
-          {option.name_class != "scientific name" &&
-            option.name_class != "taxon ID" && (
-              <span> :: {option.scientific_name}</span>
-            )}
-        </Typography>
+        {secondaryText}
       </Grid>
     </Grid>
   );
@@ -99,6 +112,8 @@ const SearchBox = ({
   lookupTerms,
   fetchLookup,
   fetchSearchResults,
+  setSearchIndex,
+  searchIndex,
   setPreferSearchTerm,
 }) => {
   const classes = useStyles();
@@ -107,14 +122,16 @@ const SearchBox = ({
   let [open, setOpen] = useState(false);
   let [showOptions, setShowOptions] = useState(false);
   let [showSettings, setShowSettings] = useState(false);
-  let result = "taxon";
+  let [result, setResult] = useState(searchIndex);
+  console.log(searchIndex);
   const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
     setPreferSearchTerm(false);
     navigate(`search?${qs.stringify(options)}#${term}`);
   };
 
-  const doSearch = (query, term) => {
+  const doSearch = (query, result, term) => {
+    setSearchIndex(result);
     dispatchSearch({ query, result }, term);
     resetLookup();
   };
@@ -134,7 +151,8 @@ const SearchBox = ({
         setOpen(true);
       } else {
         setOpen(false);
-        doSearch(newValue.taxon_id, newValue.title);
+        setResult(newValue.result);
+        doSearch(newValue.unique_term, newValue.result, newValue.title);
       }
     } else {
       resetLookup();
@@ -143,7 +161,8 @@ const SearchBox = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    doSearch(lookupTerm, lookupTerm);
+
+    doSearch(lookupTerm, result, lookupTerm);
   };
 
   let terms;
@@ -158,33 +177,57 @@ const SearchBox = ({
     terms = [];
     lookupTerms.results.forEach((result, i) => {
       let value;
-      if (result.reason) {
-        value = result.reason[0].fields["taxon_names.name.raw"][0];
-      } else {
-        value = result.result.scientific_name;
+      if (lookupTerms.status.result == "taxon") {
+        if (result.reason) {
+          value = result.reason[0].fields["taxon_names.name.raw"][0];
+        } else {
+          value = result.result.scientific_name;
+        }
+        options.push({
+          title: value,
+          result: "taxon",
+          unique_term: result.result.taxon_id,
+          taxon_id: result.result.taxon_id,
+          taxon_rank: result.result.taxon_rank,
+          scientific_name: result.result.scientific_name,
+          name_class: result.reason
+            ? result.reason[0].fields["taxon_names.class"]
+            : "taxon ID",
+        });
+        terms.push(
+          <div key={i} className={styles.term}>
+            <span className={styles.value}>{value}</span>
+            <div
+              className={styles.extra}
+            >{`\u2014 ${result.result.taxon_rank}`}</div>
+          </div>
+        );
+      } else if (lookupTerms.status.result == "assembly") {
+        if (result.reason) {
+          value = result.reason[0].fields["identifiers.identifier.raw"][0];
+        } else {
+          value = result.result.assembly_id;
+        }
+        options.push({
+          title: value,
+          result: "assembly",
+          unique_term: result.result.assembly_id,
+          taxon_id: result.result.taxon_id,
+          scientific_name: result.result.scientific_name,
+          assembly_id: result.result.assembly_id,
+          identifier_class: result.reason
+            ? result.reason[0].fields["identifiers.class"]
+            : "assembly ID",
+        });
+        terms.push(
+          <div key={i} className={styles.term}>
+            <span className={styles.value}>{value}</span>
+            <div
+              className={styles.extra}
+            >{`\u2014 ${result.result.scientific_name}`}</div>
+          </div>
+        );
       }
-      options.push({
-        title: value,
-        taxon_id: result.result.taxon_id,
-        taxon_rank: result.result.taxon_rank,
-        scientific_name: result.result.scientific_name,
-        name_class: result.reason
-          ? result.reason[0].fields["taxon_names.class"]
-          : "taxon ID",
-      });
-
-      terms.push(
-        <div
-          key={i}
-          className={styles.term}
-          onClick={() => updateSearch(value)}
-        >
-          <span className={styles.value}>{value}</span>
-          <div
-            className={styles.extra}
-          >{`\u2014 ${result.result.taxon_rank}`}</div>
-        </div>
-      );
     });
   }
   if (
