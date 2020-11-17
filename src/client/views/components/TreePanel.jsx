@@ -39,7 +39,6 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
     styles.resultPanel
   );
 
-  //   console.log(nodes);
   let paths = [];
   if (arcs) {
     arcs.forEach((segment) => {

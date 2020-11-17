@@ -31,7 +31,6 @@ const RecordPage = ({
   let taxon = {};
   let options = qs.parse(location.search.replace(/^\?/, ""));
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
-  console.log(options);
   useEffect(() => {
     if (options.result != searchIndex) {
       setSearchIndex(options.result);

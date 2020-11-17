@@ -17,8 +17,13 @@ const defaultState = () => ({
 
 function onReceiveTypes(state, action) {
   const { payload, meta } = action;
-  const { status, fields } = payload;
+  const { status, fields, index } = payload;
   let byId = {};
+  if (index == "multi") {
+    byId = fields;
+  } else {
+    byId = { [index]: fields };
+  }
   Object.values(fields).forEach((field) => {
     if (!byId[field.group]) {
       byId[field.group] = {};

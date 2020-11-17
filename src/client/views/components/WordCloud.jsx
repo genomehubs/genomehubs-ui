@@ -19,6 +19,7 @@ const WordCloud = ({
   scientific_name,
   summaryById,
   fetchSummary,
+  searchIndex,
   fetchSearchResults,
   setPreferSearchTerm,
   resetLookup,
@@ -30,7 +31,7 @@ const WordCloud = ({
   useEffect(() => {
     if (summaryId && visible) {
       setTimeout(() => {
-        fetchSummary(parts[0], parts[1], parts[2]);
+        fetchSummary(parts[0], parts[1], parts[2], searchIndex);
       }, sequence * 100);
     }
   }, [summaryId, visible]);

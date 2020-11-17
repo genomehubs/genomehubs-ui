@@ -41,7 +41,6 @@ export const getActiveTypes = createSelector(
         }
       });
     }
-
     return activeTypes;
   }
 );
@@ -67,7 +66,7 @@ export const getGroupedTypes = createSelector(
     let groupedTypes = {};
     Object.keys(types).forEach((key) => {
       let type = types[key];
-      let group = type.display_level;
+      let group = type.display_group;
       if (!groupedTypes[group]) {
         groupedTypes[group] = {};
       }

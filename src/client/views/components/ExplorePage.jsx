@@ -11,6 +11,7 @@ import withSetLookup from "../hocs/withSetLookup";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
 import qs from "qs";
+import { setSearchIndex } from "../reducers/search";
 
 const ExplorePage = ({
   lineage,
@@ -20,6 +21,7 @@ const ExplorePage = ({
   summaryField,
   setSummaryField,
   setLookupTerm,
+  setSearchIndex,
   fetchSearchResults,
   setRecordId,
   types,
@@ -41,6 +43,7 @@ const ExplorePage = ({
         });
         fetchRecord(options.taxon_id, options.result);
         setRecordId(options.taxon_id);
+        setSearchIndex(options.result);
         setSummaryField(options.field_id);
       }
     }

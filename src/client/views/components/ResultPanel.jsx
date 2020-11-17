@@ -27,7 +27,6 @@ const ResultPanel = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  console.log(searchIndex);
   const handleTaxonClick = () => {
     setPreferSearchTerm(false);
     navigate(

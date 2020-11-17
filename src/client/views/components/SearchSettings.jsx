@@ -176,11 +176,11 @@ const SearchSettings = ({
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-label="Expand"
-            aria-controls={`Group ${key}-content`}
-            id={`Group ${key}-header`}
+            aria-controls={`${key}-content`}
+            id={`${key}-header`}
           >
             <FormControlLabel
-              aria-label={`Group ${key}`}
+              aria-label={`${key}`}
               onClick={(e) => handleGroupChange(e, key, checked)}
               onFocus={(e) => e.stopPropagation()}
               control={
@@ -190,7 +190,7 @@ const SearchSettings = ({
                   indeterminate={indeterminate}
                 />
               }
-              label={`Group ${key}`}
+              label={key}
             />
           </AccordionSummary>
           <AccordionDetails>

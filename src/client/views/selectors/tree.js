@@ -158,7 +158,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   if (!treeNodes || !rootNode) return undefined;
   let radius = 500;
   let rScale = scalePow()
-    .exponent(1.5)
+    .exponent(1)
     .domain([-1, maxDepth + 1])
     .range([0, radius]);
   let cScale = scaleLinear()
