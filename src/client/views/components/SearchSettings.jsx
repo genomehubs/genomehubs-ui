@@ -63,12 +63,12 @@ const SearchSettings = ({
     let initialState = {};
     Object.keys(groupedTypes).forEach((key) => {
       let group = groupedTypes[key];
-      initialState[key] = 0;
+      initialState[`group-${key}`] = 0;
       Object.keys(group).forEach((id) => {
         let active = group[id].active == true;
         initialState[id] = active;
         if (active) {
-          initialState[key] += active ? 1 : 0;
+          initialState[`group-${key}`] += 1;
         }
       });
     });
@@ -90,7 +90,7 @@ const SearchSettings = ({
       newState[id] = !checked;
       sum++;
     });
-    newState[group] = checked ? 0 : sum;
+    newState[`group-${group}`] = checked ? 0 : sum;
     setState({
       ...state,
       ...newState,
@@ -99,11 +99,11 @@ const SearchSettings = ({
 
   const handleChange = (event, name, group) => {
     event.stopPropagation();
-    let sum = state[group] + (state[name] ? -1 : 1);
+    let sum = state[`group-${group}`] + (state[name] ? -1 : 1);
     setState({
       ...state,
       [name]: !state[name],
-      [group]: sum,
+      [`group-${group}`]: sum,
     });
   };
   const classes = useStyles();
@@ -168,8 +168,9 @@ const SearchSettings = ({
         </Grid>
       );
     });
-    let checked = state[key] == totals[key];
-    let indeterminate = state[key] > 0 && state[key] < totals[key];
+    let checked = state[`group-${key}`] == totals[key];
+    let indeterminate =
+      state[`group-${key}`] > 0 && state[`group-${key}`] < totals[key];
     groups.push(
       <Grid item key={key}>
         <Accordion>

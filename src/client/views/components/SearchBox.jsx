@@ -123,7 +123,6 @@ const SearchBox = ({
   let [showOptions, setShowOptions] = useState(false);
   let [showSettings, setShowSettings] = useState(false);
   let [result, setResult] = useState(searchIndex);
-  console.log(searchIndex);
   const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
     setPreferSearchTerm(false);
