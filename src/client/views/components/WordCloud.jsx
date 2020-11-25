@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
+
+import Skeleton from "@material-ui/lab/Skeleton";
+import { TagCloud } from "react-tagcloud";
+import Tooltip from "@material-ui/core/Tooltip";
 import { compose } from "recompose";
+import { formatter } from "../functions/formatter";
+import qs from "qs";
+import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
+import { useVisible } from "react-hooks-visible";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withSummaryById from "../hocs/withSummaryById";
-import Tooltip from "@material-ui/core/Tooltip";
-import { formatter } from "../functions/formatter";
-import { TagCloud } from "react-tagcloud";
-import styles from "./Styles.scss";
-import { useVisible } from "react-hooks-visible";
-import Skeleton from "@material-ui/lab/Skeleton";
-import { useNavigate } from "@reach/router";
-import qs from "qs";
 
 const WordCloud = ({
   summaryId,
@@ -41,6 +42,7 @@ const WordCloud = ({
       query,
       searchRawValues: true,
       includeEstimates: false,
+      result: "taxon",
     });
   };
   const updateSearch = (options) => {

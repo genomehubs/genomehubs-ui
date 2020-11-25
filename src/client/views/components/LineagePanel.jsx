@@ -1,13 +1,13 @@
 import React from "react";
-import { compose } from "recompose";
 import classnames from "classnames";
-import styles from "./Styles.scss";
+import { compose } from "recompose";
 import { format } from "d3-format";
-import withSetLookup from "../hocs/withSetLookup";
+import qs from "qs";
+import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
-import { useNavigate } from "@reach/router";
-import qs from "qs";
+import withSetLookup from "../hocs/withSetLookup";
 
 const LineagePanel = ({
   taxon_id,
@@ -23,9 +23,9 @@ const LineagePanel = ({
   const handleTaxonClick = (taxon, name) => {
     if (taxon != taxon_id) {
       setRecordId(taxon);
-      fetchSearchResults({ query: `tax_eq(${taxon})` });
+      fetchSearchResults({ query: `tax_eq(${taxon})`, result: "taxon" });
       setPreferSearchTerm(false);
-      navigate(`?taxon_id=${taxon}#${encodeURIComponent(name)}`);
+      navigate(`?taxon_id=${taxon}&result=taxon#${encodeURIComponent(name)}`);
       setLookupTerm(name);
     }
   };

@@ -1,25 +1,26 @@
-import { createSelector } from "reselect";
-import store from "../store";
-import qs from "qs";
-import { scaleLinear, scalePow } from "d3-scale";
 import {
-  schemeReds,
-  schemeGreys,
-  schemeGreens,
-  schemeOranges,
-  schemePaired,
-} from "d3-scale-chromatic";
-import { arc, lineRadial } from "d3-shape";
-import {
+  apiUrl,
   cancelNodesRequest,
   getNodes,
   getRootNode,
-  setRootNode,
-  requestNodes,
-  apiUrl,
   receiveNodes,
+  requestNodes,
   resetNodes,
+  setRootNode,
 } from "../reducers/tree";
+import { arc, lineRadial } from "d3-shape";
+import { scaleLinear, scalePow } from "d3-scale";
+import {
+  schemeGreens,
+  schemeGreys,
+  schemeOranges,
+  schemePaired,
+  schemeReds,
+} from "d3-scale-chromatic";
+
+import { createSelector } from "reselect";
+import qs from "qs";
+import store from "../store";
 
 export function fetchNodes(options) {
   return async function (dispatch) {
@@ -159,7 +160,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let radius = 500;
   let rScale = scalePow()
     .exponent(1)
-    .domain([-1, maxDepth + 1])
+    .domain([-0.5, maxDepth + 1])
     .range([0, radius]);
   let cScale = scaleLinear()
     .domain([0, treeNodes[rootNode] ? treeNodes[rootNode].count : 0])

@@ -1,16 +1,17 @@
 import React, { useEffect } from "react";
+
+import Skeleton from "@material-ui/lab/Skeleton";
+import Tooltip from "@material-ui/core/Tooltip";
 import { compose } from "recompose";
+import { formatter } from "../functions/formatter";
+import qs from "qs";
+import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
+import { useVisible } from "react-hooks-visible";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withSummaryById from "../hocs/withSummaryById";
-import styles from "./Styles.scss";
-import Tooltip from "@material-ui/core/Tooltip";
-import { formatter } from "../functions/formatter";
-import { useVisible } from "react-hooks-visible";
-import Skeleton from "@material-ui/lab/Skeleton";
-import { useNavigate } from "@reach/router";
-import qs from "qs";
 
 const HistogramSVG = ({
   summaryId,
@@ -47,6 +48,7 @@ const HistogramSVG = ({
       query,
       searchRawValues: true,
       includeEstimates: false,
+      result: "taxon",
     });
   };
   const updateSearch = (options) => {
