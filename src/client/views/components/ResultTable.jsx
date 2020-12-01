@@ -1,34 +1,35 @@
 import React, { useState } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
-import Tooltip from "@material-ui/core/Tooltip";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { useLocation, useNavigate } from "@reach/router";
+
+import AggregationIcon from "./AggregationIcon";
 import Box from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Checkbox from "@material-ui/core/Checkbox";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import Checkbox from "@material-ui/core/Checkbox";
+import DownloadButton from "./DownloadButton";
 import Grid from "@material-ui/core/Grid";
 import Grow from "@material-ui/core/Grow";
-import Popper from "@material-ui/core/Popper";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import withSearch from "../hocs/withSearch";
-import withTypes from "../hocs/withTypes";
-import { formatter } from "../functions/formatter";
-import AggregationIcon from "./AggregationIcon";
-import { useLocation, useNavigate } from "@reach/router";
-import DownloadButton from "./DownloadButton";
+import Popper from "@material-ui/core/Popper";
 import SearchPagination from "./SearchPagination";
 import Skeleton from "@material-ui/lab/Skeleton";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
+import Tooltip from "@material-ui/core/Tooltip";
+import classnames from "classnames";
+import { compose } from "recompose";
+import { formatter } from "../functions/formatter";
 import { setPreferSearchTerm } from "../reducers/search";
+import styles from "./Styles.scss";
+import withSearch from "../hocs/withSearch";
+import withTypes from "../hocs/withTypes";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -68,7 +69,7 @@ const StyledCheckbox = (props) => {
   return (
     <Checkbox
       style={{
-        padding: "2px",
+        padding: "1px",
         color: props.color,
       }}
       icon={<CheckBoxOutlineBlankIcon style={{ fontSize: "small" }} />}
@@ -89,13 +90,15 @@ const SortableCell = ({
   excludeDirect,
   excludeAncestral,
   excludeDescendant,
+  excludeMissing,
 }) => {
   let css = styles.aggregationToggle;
   if (excludeAncestral) {
     if (
       excludeDirect.hasOwnProperty(name) ||
       excludeDescendant.hasOwnProperty(name) ||
-      excludeAncestral.hasOwnProperty(name)
+      excludeAncestral.hasOwnProperty(name) ||
+      excludeMissing.hasOwnProperty(name)
     ) {
       css = classnames(
         styles.aggregationToggle,
@@ -152,7 +155,7 @@ const SortableCell = ({
             />
           </Tooltip>
           <Tooltip
-            key={"direct"}
+            key={"descendant"}
             title={"Toggle values inferred from descendant taxa"}
             arrow
           >
@@ -164,7 +167,7 @@ const SortableCell = ({
             />
           </Tooltip>
           <Tooltip
-            key={"direct"}
+            key={"ancestral"}
             title={"Toggle values inferred from ancestral taxa"}
             arrow
           >
@@ -173,6 +176,14 @@ const SortableCell = ({
               onChange={() => handleTableSort({ toggleAncestral: name })}
               color={"red"}
               inputProps={{ "aria-label": "ancestral checkbox" }}
+            />
+          </Tooltip>
+          <Tooltip key={"missing"} title={"Toggle missing values"} arrow>
+            <StyledCheckbox
+              checked={!excludeMissing.hasOwnProperty(name)}
+              onChange={() => handleTableSort({ toggleMissing: name })}
+              color={"black"}
+              inputProps={{ "aria-label": "missing checkbox" }}
             />
           </Tooltip>
         </span>
@@ -222,6 +233,7 @@ const ResultTable = ({
     toggleAncestral,
     toggleDescendant,
     toggleDirect,
+    toggleMissing,
   }) => {
     let options = { ...searchTerm };
     if (sortBy && sortBy != "") {
@@ -259,6 +271,16 @@ const ResultTable = ({
     Object.keys(direct).forEach((key) => {
       if (direct[key]) {
         options.excludeDirect.push(key);
+      }
+    });
+    let missing = arrToObj(options.excludeMissing);
+    if (toggleMissing) {
+      missing[toggleMissing] = !missing[toggleMissing];
+    }
+    options.excludeMissing = [];
+    Object.keys(missing).forEach((key) => {
+      if (missing[key]) {
+        options.excludeMissing.push(key);
       }
     });
     if (location.search.match(/tax_tree%28/)) {
@@ -384,6 +406,7 @@ const ResultTable = ({
           excludeAncestral={arrToObj(searchTerm.excludeAncestral)}
           excludeDescendant={arrToObj(searchTerm.excludeDescendant)}
           excludeDirect={arrToObj(searchTerm.excludeDirect)}
+          excludeMissing={arrToObj(searchTerm.excludeMissing)}
         />
       );
     }

@@ -1,33 +1,33 @@
 import React, { memo, useState } from "react";
-import { compose } from "recompose";
-import styles from "./Styles.scss";
-import withSearch from "../hocs/withSearch";
-import withTypes from "../hocs/withTypes";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import qs from "qs";
-import Button from "@material-ui/core/Button";
+import { useLocation, useNavigate } from "@reach/router";
+
+import Accordion from "@material-ui/core/Accordion";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
-import ReplayIcon from "@material-ui/icons/Replay";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
+import BasicSelect from "./BasicSelect";
+import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import Paper from "@material-ui/core/Paper";
+import ReplayIcon from "@material-ui/icons/Replay";
 import Select from "@material-ui/core/Select";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import Checkbox from "@material-ui/core/Checkbox";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import SettingsButton from "./SettingsButton";
-import BasicSelect from "./BasicSelect";
-
 import Switch from "@material-ui/core/Switch";
-import { useLocation, useNavigate } from "@reach/router";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import { compose } from "recompose";
+import { makeStyles } from "@material-ui/core/styles";
+import qs from "qs";
+import styles from "./Styles.scss";
+import withSearch from "../hocs/withSearch";
+import withTypes from "../hocs/withTypes";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -127,6 +127,7 @@ const SearchSettings = ({
     delete options.excludeAncestral;
     delete options.excludeDescendant;
     delete options.excludeDirect;
+    delete options.excludeMissing;
     setPreferSearchTerm(false);
     navigate(`search?${qs.stringify(options)}${location.hash}`);
   };
@@ -140,6 +141,7 @@ const SearchSettings = ({
     delete options.excludeAncestral;
     delete options.excludeDescendant;
     delete options.excludeDirect;
+    delete options.excludeMissing;
     setPreferSearchTerm(false);
     navigate(`search?${qs.stringify(options)}${location.hash}`);
   };

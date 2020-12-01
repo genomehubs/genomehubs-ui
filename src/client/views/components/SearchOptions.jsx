@@ -1,27 +1,28 @@
 import React, { useState } from "react";
+
+import AddIcon from "@material-ui/icons/Add";
+import BasicComplete from "./BasicComplete";
+import BasicSelect from "./BasicSelect";
+import BasicTextField from "./BasicTextField";
+import Button from "@material-ui/core/Button";
+import CloseIcon from "@material-ui/icons/Close";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import Grid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
+import Paper from "@material-ui/core/Paper";
+import SearchIcon from "@material-ui/icons/Search";
+import Switch from "@material-ui/core/Switch";
+import Typography from "@material-ui/core/Typography";
 import { compose } from "recompose";
+import { makeStyles } from "@material-ui/core/styles";
+import qs from "qs";
 import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withTypes from "../hocs/withTypes";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import qs from "qs";
-import Button from "@material-ui/core/Button";
-import SearchIcon from "@material-ui/icons/Search";
-import CloseIcon from "@material-ui/icons/Close";
-import AddIcon from "@material-ui/icons/Add";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import Switch from "@material-ui/core/Switch";
-import { useNavigate } from "@reach/router";
-import BasicComplete from "./BasicComplete";
-import BasicTextField from "./BasicTextField";
-import BasicSelect from "./BasicSelect";
-import IconButton from "@material-ui/core/IconButton";
 
 export const useStyles = makeStyles((theme) => ({
   paper: {
@@ -360,6 +361,7 @@ const SearchOptions = ({
     delete opts.excludeAncestral;
     delete opts.excludeDescendant;
     delete opts.excludeDirect;
+    delete opts.excludeMissing;
     return opts;
   });
 

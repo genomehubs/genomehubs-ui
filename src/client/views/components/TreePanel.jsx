@@ -1,14 +1,15 @@
+import { useLocation, useNavigate } from "@reach/router";
+
 import React from "react";
-import { compose } from "recompose";
+import Tooltip from "@material-ui/core/Tooltip";
 import classnames from "classnames";
-import styles from "./Styles.scss";
+import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
+import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withTree from "../hocs/withTree";
-import Tooltip from "@material-ui/core/Tooltip";
-import { useLocation, useNavigate } from "@reach/router";
 
 const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
   const location = useLocation();
@@ -46,7 +47,7 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
         <Tooltip
           key={segment.taxon_id}
           title={segment.scientific_name}
-          onMouseMove={(e) => setPosition({ x: e.clientX, y: e.clientY })}
+          onPointerMove={(e) => setPosition({ x: e.clientX, y: e.clientY })}
           PopperProps={{
             anchorEl: {
               clientHeight: 0,
