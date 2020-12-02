@@ -162,8 +162,9 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
     .exponent(1)
     .domain([-0.5, maxDepth + 1])
     .range([0, radius]);
+  let cMax = treeNodes[rootNode] ? treeNodes[rootNode].count : 0;
   let cScale = scaleLinear()
-    .domain([0, treeNodes[rootNode] ? treeNodes[rootNode].count : 0])
+    .domain([0, cMax])
     .range([0, Math.PI * 2]);
   let arcs = [];
   let tonalRange = 9;
@@ -219,8 +220,14 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
     }
     let innerRadius = rScale(depth);
     let outerRadius = rScale(outer);
-    let startAngle = cScale(start);
-    let endAngle = cScale(start + node.count);
+    let cStart = start;
+    let cEnd = start + node.count;
+    if (cEnd - cStart == cMax) {
+      cStart = cMax / 10000;
+      cEnd -= cStart;
+    }
+    let startAngle = cScale(cStart);
+    let endAngle = cScale(cEnd);
     arcs.push({
       ...node,
       arc: arc()({
@@ -300,7 +307,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
       Object.keys(node.children).forEach((key) => {
         children.push(treeNodes[key]);
       });
-      children.sort((a, b) => b.count - a.count);
+      children.sort((a, b) => a.count - b.count);
       children.forEach((child) => {
         drawArcs({ node: child, depth: depth + 1, start });
         start += child.count;

@@ -131,8 +131,10 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
               xmlnsXlink="http://www.w3.org/1999/xlink"
             >
               <defs>{defs}</defs>
-              {paths}
-              {text}
+              <g transform="rotate(180)">
+                {paths}
+                {text}
+              </g>
             </svg>
           </div>
         )}

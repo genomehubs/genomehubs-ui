@@ -1,13 +1,14 @@
-import { createSelector } from "reselect";
-import { setApiStatus } from "../reducers/api";
-import store from "../store";
+import { getSearchFields, getSearchIndex } from "../reducers/search";
 import {
   getTypes,
   getTypesFetching,
-  requestTypes,
   receiveTypes,
+  requestTypes,
 } from "../reducers/types";
-import { getSearchFields, getSearchIndex } from "../reducers/search";
+
+import { createSelector } from "reselect";
+import { setApiStatus } from "../reducers/api";
+import store from "../store";
 
 export const apiUrl = API_URL || "/api/v1";
 
@@ -35,8 +36,6 @@ export const getActiveTypes = createSelector(
       Object.keys(types).forEach((key) => {
         let type = types[key];
         if (type.display_level == 1) {
-          activeTypes[key] = true;
-        } else if (type.name == "assembly_span") {
           activeTypes[key] = true;
         }
       });
