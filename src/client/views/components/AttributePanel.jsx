@@ -1,27 +1,28 @@
 import React, { useState } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
-import { makeStyles } from "@material-ui/core/styles";
-import withRecord from "../hocs/withRecord";
-import withSummary from "../hocs/withSummary";
+
 import AggregationIcon from "./AggregationIcon";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import Typography from "@material-ui/core/Typography";
-import Collapse from "@material-ui/core/Box";
 import Box from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Tooltip from "@material-ui/core/Tooltip";
-import { formatter } from "../functions/formatter";
-import loadable from "@loadable/component";
+import Collapse from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
+import TableRow from "@material-ui/core/TableRow";
+import Tooltip from "@material-ui/core/Tooltip";
+import Typography from "@material-ui/core/Typography";
+import classnames from "classnames";
+import { compose } from "recompose";
+import { formatter } from "../functions/formatter";
+import loadable from "@loadable/component";
+import { makeStyles } from "@material-ui/core/styles";
+import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
+import withRecord from "../hocs/withRecord";
+import withSummary from "../hocs/withSummary";
 
 const LocationMap = loadable(() => import("./LocationMap"));
 
@@ -45,7 +46,6 @@ const NestedTable = ({ values }) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
   return (
     <span className={styles.disableTheme}>
       <Box margin={1}>
@@ -54,6 +54,7 @@ const NestedTable = ({ values }) => {
             <TableRow>
               <TableCell>Value</TableCell>
               <TableCell>Source</TableCell>
+              <TableCell>Comment</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -65,6 +66,7 @@ const NestedTable = ({ values }) => {
                     {row.value}
                   </TableCell>
                   <TableCell>{row.source}</TableCell>
+                  <TableCell>{row.comment}</TableCell>
                 </TableRow>
               ))}
           </TableBody>
