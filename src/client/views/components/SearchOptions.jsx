@@ -247,6 +247,7 @@ const SearchOptions = ({
     "float",
     "half_float",
     "scaled_float",
+    "keyword",
   ];
   Object.keys(types).forEach((key) => {
     let type = types[key];

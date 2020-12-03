@@ -1,31 +1,32 @@
 import React, { memo, useRef, useState } from "react";
-import { findDOMNode } from "react-dom";
-import { compose } from "recompose";
-import classnames from "classnames";
-import withLookup from "../hocs/withLookup";
-import withSearch from "../hocs/withSearch";
-import styles from "./Styles.scss";
-import { useNavigate } from "@reach/router";
-import qs from "qs";
-import SearchOptions from "./SearchOptions";
-import SearchSettings from "./SearchSettings";
-import TextField from "@material-ui/core/TextField";
+
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import IconButton from "@material-ui/core/IconButton";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import SearchIcon from "@material-ui/icons/Search";
-import SettingsIcon from "@material-ui/icons/Settings";
 // import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 // import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Grid from "@material-ui/core/Grid";
+import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import IconButton from "@material-ui/core/IconButton";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 import Popper from "@material-ui/core/Popper";
+import SearchIcon from "@material-ui/icons/Search";
+import SearchOptions from "./SearchOptions";
+import SearchSettings from "./SearchSettings";
+import SettingsIcon from "@material-ui/icons/Settings";
+import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import classnames from "classnames";
+import { compose } from "recompose";
 import { createFilterOptions } from "@material-ui/lab/Autocomplete";
+import { findDOMNode } from "react-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import qs from "qs";
+import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
+import withLookup from "../hocs/withLookup";
+import withSearch from "../hocs/withSearch";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -114,6 +115,7 @@ const SearchBox = ({
   fetchSearchResults,
   setSearchIndex,
   searchIndex,
+  searchTerm,
   setPreferSearchTerm,
 }) => {
   const classes = useStyles();
@@ -123,6 +125,7 @@ const SearchBox = ({
   let [showOptions, setShowOptions] = useState(false);
   let [showSettings, setShowSettings] = useState(false);
   let [result, setResult] = useState(searchIndex);
+  let fields = searchTerm.fields;
   const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
     setPreferSearchTerm(false);
@@ -131,7 +134,7 @@ const SearchBox = ({
 
   const doSearch = (query, result, term) => {
     setSearchIndex(result);
-    dispatchSearch({ query, result }, term);
+    dispatchSearch({ query, result, fields }, term);
     resetLookup();
   };
   const updateTerm = (value) => {
