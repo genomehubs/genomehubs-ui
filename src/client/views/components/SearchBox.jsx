@@ -123,7 +123,7 @@ const SearchBox = ({
   const searchBoxRef = useRef(null);
   let [open, setOpen] = useState(false);
   let [multiline, setMultiline] = useState(() => {
-    if (searchTerm && searchTerm.query && searchTerm.query.match(/\n/)) {
+    if (searchTerm && searchTerm.query && searchTerm.query.match(/[\r\n]/)) {
       return true;
     }
     return false;
@@ -160,11 +160,13 @@ const SearchBox = ({
         e.stopPropagation();
         setMultiline(true);
         setLookupTerm(`${lookupTerm}\n`);
+      } else {
+        handleSubmit(e);
       }
     }
   };
   const handleMultilineChange = (e, x) => {
-    if (!e.target.value.match(/\n/)) {
+    if (!e.target.value.match(/[\r\n]/)) {
       setMultiline(false);
     }
     setLookupTerm(e.target.value);
@@ -331,6 +333,8 @@ const SearchBox = ({
                       label={`Search ${siteName}`}
                       variant="outlined"
                       fullWidth
+                      multiline
+                      rowsMax={3}
                     />
                   )}
                   renderOption={(option) => {
