@@ -122,6 +122,12 @@ const SearchBox = ({
   const navigate = useNavigate();
   const searchBoxRef = useRef(null);
   let [open, setOpen] = useState(false);
+  let [multiline, setMultiline] = useState(() => {
+    if (searchTerm && searchTerm.query && searchTerm.query.match(/\n/)) {
+      return true;
+    }
+    return false;
+  });
   let [showOptions, setShowOptions] = useState(false);
   let [showSettings, setShowSettings] = useState(false);
   let [result, setResult] = useState(searchIndex);
@@ -129,7 +135,7 @@ const SearchBox = ({
   const dispatchSearch = (options, term) => {
     fetchSearchResults(options);
     setPreferSearchTerm(false);
-    navigate(`search?${qs.stringify(options)}#${term}`);
+    navigate(`search?${qs.stringify(options)}#${encodeURIComponent(term)}`);
   };
 
   const doSearch = (query, result, term) => {
@@ -146,6 +152,22 @@ const SearchBox = ({
       updateTerm(newValue);
       setOpen(true);
     }
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      if (e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        setMultiline(true);
+        setLookupTerm(`${lookupTerm}\n`);
+      }
+    }
+  };
+  const handleMultilineChange = (e, x) => {
+    if (!e.target.value.match(/\n/)) {
+      setMultiline(false);
+    }
+    setLookupTerm(e.target.value);
   };
   const handleKeyDown = (e, newValue) => {
     if (newValue) {
@@ -272,38 +294,53 @@ const SearchBox = ({
         <Grid container alignItems="center" direction="row">
           <Grid item style={{ width: "600px" }} ref={searchBoxRef}>
             <FormControl className={classes.formControl}>
-              <Autocomplete
-                id="main-search"
-                getOptionLabel={(option) =>
-                  typeof option === "string" ? option : option.title
-                }
-                getOptionSelected={(option, value) =>
-                  option.title === value.title
-                }
-                options={options}
-                autoComplete
-                includeInputInList
-                freeSolo
-                value={lookupTerm}
-                open={open}
-                onChange={handleKeyDown}
-                onInputChange={handleChange}
-                PopperComponent={PlacedPopper}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={`Search ${siteName}`}
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-                renderOption={(option) => {
-                  if (option.highlighted) {
-                    return <AutoCompleteSuggestion option={option} />;
+              {(multiline && (
+                <TextField
+                  onKeyPress={handleKeyPress}
+                  id="main-search"
+                  value={lookupTerm}
+                  onChange={handleMultilineChange}
+                  label={`Search ${siteName}`}
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rowsMax={3}
+                />
+              )) || (
+                <Autocomplete
+                  id="main-search"
+                  getOptionLabel={(option) =>
+                    typeof option === "string" ? option : option.title
                   }
-                  return <AutoCompleteOption option={option} />;
-                }}
-              />
+                  getOptionSelected={(option, value) =>
+                    option.title === value.title
+                  }
+                  options={options}
+                  autoComplete
+                  includeInputInList
+                  freeSolo
+                  value={lookupTerm}
+                  open={open}
+                  onChange={handleKeyDown}
+                  onInputChange={handleChange}
+                  PopperComponent={PlacedPopper}
+                  renderInput={(params) => (
+                    <TextField
+                      onKeyPress={handleKeyPress}
+                      {...params}
+                      label={`Search ${siteName}`}
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                  renderOption={(option) => {
+                    if (option.highlighted) {
+                      return <AutoCompleteSuggestion option={option} />;
+                    }
+                    return <AutoCompleteOption option={option} />;
+                  }}
+                />
+              )}
 
               <FormHelperText
                 labelPlacement="end"

@@ -1,18 +1,19 @@
 import React, { memo, useEffect } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
-import TreePanel from "./TreePanel";
+
 import ResultTable from "./ResultTable";
-import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
 import SearchSummary from "./SearchSummary";
-import withSetLookup from "../hocs/withSetLookup";
+import TextPanel from "./TextPanel";
+import TreePanel from "./TreePanel";
+import classnames from "classnames";
+import { compose } from "recompose";
+import qs from "qs";
+import shallow from "shallowequal";
+import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
-import shallow from "shallowequal";
-import qs from "qs";
-import { useNavigate } from "@reach/router";
+import withSetLookup from "../hocs/withSetLookup";
 
 const SearchPage = ({
   searchResults,
@@ -50,7 +51,7 @@ const SearchPage = ({
             let from = `search?${qs.stringify(previousSearchTerm)}${
               location.hash
             }`;
-            let to = `${path}#${hashTerm}`;
+            let to = `${path}#${encodeURIComponent(hashTerm)}`;
             if (to != from) {
               navigate(to);
             }

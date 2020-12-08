@@ -1,16 +1,17 @@
+import { useLocation, useNavigate } from "@reach/router";
+
+import AggregationIcon from "./AggregationIcon";
+import HistogramSVG from "./HistogramSVG";
 import React from "react";
-import { compose } from "recompose";
+import Tooltip from "@material-ui/core/Tooltip";
+import WordCloud from "./WordCloud";
 import classnames from "classnames";
-import styles from "./Styles.scss";
+import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
+import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
-import HistogramSVG from "./HistogramSVG";
-import WordCloud from "./WordCloud";
-import Tooltip from "@material-ui/core/Tooltip";
-import AggregationIcon from "./AggregationIcon";
-import { useLocation, useNavigate } from "@reach/router";
 
 const ResultPanel = ({
   scientific_name,
@@ -42,7 +43,9 @@ const ResultPanel = ({
     setSummaryField(fieldId);
     setPreferSearchTerm(false);
     navigate(
-      `explore?taxon_id=${taxon_id}&result=${searchIndex}&field_id=${fieldId}${location.hash}`
+      `explore?taxon_id=${taxon_id}&result=${searchIndex}&field_id=${fieldId}${encodeURIComponent(
+        location.hash
+      )}`
     );
   };
   let css = classnames(

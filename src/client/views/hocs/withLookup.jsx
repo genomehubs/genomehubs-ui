@@ -1,12 +1,13 @@
+import {
+  fetchLookup,
+  getLookupTerm,
+  getLookupTerms,
+  resetLookup,
+  setLookupTerm,
+} from "../reducers/lookup";
+
 import React from "react";
 import { connect } from "react-redux";
-import {
-  getLookupTerm,
-  setLookupTerm,
-  getLookupTerms,
-  fetchLookup,
-  resetLookup,
-} from "../reducers/lookup";
 
 const withLookup = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
@@ -22,7 +23,8 @@ const withLookup = (WrappedComponent) => (props) => {
         dispatch(resetLookup());
       }
     },
-    setLookupTerm: (lookupTerm) => dispatch(setLookupTerm(lookupTerm)),
+    setLookupTerm: (lookupTerm) =>
+      dispatch(setLookupTerm(decodeURIComponent(lookupTerm))),
     resetLookup: () => dispatch(resetLookup()),
   });
 

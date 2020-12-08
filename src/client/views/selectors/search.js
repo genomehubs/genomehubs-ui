@@ -1,17 +1,19 @@
-import { setApiStatus } from "../reducers/api";
-import store from "../store";
-import qs from "qs";
 import {
+  apiUrl,
   cancelSearch,
   getSearchHistory,
-  setSearchHistory,
-  requestSearch,
-  setSearchTerm,
-  apiUrl,
-  setPreferSearchTerm,
   receiveSearch,
+  requestSearch,
+  setPreferSearchTerm,
+  setSearchHistory,
   setSearchIndex,
+  setSearchTerm,
 } from "../reducers/search";
+
+import qs from "qs";
+import { setApiStatus } from "../reducers/api";
+import store from "../store";
+
 // import { fetchTypes } from "./types";
 
 export function fetchSearchResults(options, navigate) {
@@ -27,7 +29,7 @@ export function fetchSearchResults(options, navigate) {
     if (!options.hasOwnProperty("result")) {
       options.result = "assembly";
     }
-    if (options.result == "taxon" && !options.query.match(/[\(\)<>=]/)) {
+    if (options.result == "taxon" && !options.query.match(/[\(\)<>=\n]/)) {
       options.query = `tax_tree(${options.query})`;
     }
     if (!options.hasOwnProperty("summaryValues")) {
@@ -38,7 +40,8 @@ export function fetchSearchResults(options, navigate) {
     dispatch(requestSearch());
     dispatch(setSearchTerm(options));
     const queryString = qs.stringify(options);
-    let url = `${apiUrl}/search?${queryString}`;
+    const endpoint = "search";
+    let url = `${apiUrl}/${endpoint}?${queryString}`;
     try {
       let json;
       try {
@@ -48,7 +51,7 @@ export function fetchSearchResults(options, navigate) {
         json = console.log("An error occured.", error);
       }
       if (!json.results || json.results.length == 0) {
-        if (!searchTerm.match(/[\(\)<>=]/)) {
+        if (!searchTerm.match(/[\(\)<>=\n]/)) {
           options.query = `tax_name(${searchTerm})`;
           dispatch(setPreferSearchTerm(true));
           dispatch(fetchSearchResults(options, navigate));

@@ -1,18 +1,19 @@
 import React, { memo, useEffect } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
-import ResultPanel from "./ResultPanel";
-import LineagePanel from "./LineagePanel";
-import TextPanel from "./TextPanel";
+
 import AttributePanel from "./AttributePanel";
+import LineagePanel from "./LineagePanel";
 import NamesPanel from "./NamesPanel";
+import ResultPanel from "./ResultPanel";
 import SearchBox from "./SearchBox";
+import TextPanel from "./TextPanel";
+import classnames from "classnames";
+import { compose } from "recompose";
+import qs from "qs";
+import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSetLookup from "../hocs/withSetLookup";
 import withTypes from "../hocs/withTypes";
-import qs from "qs";
 
 const RecordPage = ({
   location,

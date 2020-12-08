@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
+
 import ResultPanel from "./ResultPanel";
-import TextPanel from "./TextPanel";
 import SearchBox from "./SearchBox";
+import TextPanel from "./TextPanel";
+import classnames from "classnames";
+import { compose } from "recompose";
+import qs from "qs";
+import { setSearchIndex } from "../reducers/search";
+import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSetLookup from "../hocs/withSetLookup";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
-import qs from "qs";
-import { setSearchIndex } from "../reducers/search";
 
 const ExplorePage = ({
   lineage,
