@@ -21,6 +21,7 @@ const TreePanel = ({
   types,
   treeRings,
   searchTerm,
+  searchResults,
   fetchNodes,
   treeHighlight,
   setTreeHighlight,
@@ -32,7 +33,28 @@ const TreePanel = ({
     arcs = treeRings.arcs;
     labels = treeRings.labels;
   }
-
+  if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
+    return null;
+  }
+  let css = classnames(
+    styles.infoPanel,
+    styles[`infoPanel1Column`],
+    styles.resultPanel
+  );
+  const count = searchResults.status.hits;
+  if (count > 10000) {
+    return (
+      <div className={css}>
+        <div className={styles.header} style={{ cursor: "default" }}>
+          <span className={styles.title}>Tree</span>
+          <span>
+            {" "}
+            (not available for queries returning over 10,000 results)
+          </span>
+        </div>
+      </div>
+    );
+  }
   const [position, setPosition] = React.useState({
     x: undefined,
     y: undefined,
@@ -59,12 +81,6 @@ const TreePanel = ({
     .domain([100, 1000])
     .range([1, 0.1])
     .clamp(true);
-
-  let css = classnames(
-    styles.infoPanel,
-    styles[`infoPanel1Column`],
-    styles.resultPanel
-  );
 
   let strokeWidth = strokeScale((arcs || 1).length);
 
@@ -163,6 +179,9 @@ const TreePanel = ({
 
   const handleHighlightUpdate = (e) => {
     e.stopPropagation();
+    if (!treeRings) {
+      fetchTree();
+    }
     setTreeHighlight(highlightParams);
   };
 
@@ -177,10 +196,25 @@ const TreePanel = ({
 
   return (
     <div className={css}>
-      <div className={styles.header} onClick={(e) => fetchTree()}>
+      <div className={styles.header} style={{ cursor: "default" }}>
         <span className={styles.title}>Tree</span>
-        <span> (experimental - click to view)</span>
       </div>
+      <Grid container alignItems="center" direction="row" spacing={2}>
+        <Grid item>
+          {Object.keys(fields).length > 1 && (
+            <VariableFilter
+              field={highlightParams.field}
+              fields={fields}
+              operator={highlightParams.operator}
+              value={highlightParams.value}
+              handleVariableChange={(e) => handleHighlightChange(e, "field")}
+              handleOperatorChange={(e) => handleHighlightChange(e, "operator")}
+              handleValueChange={(e) => handleHighlightChange(e, "value")}
+              handleUpdate={handleHighlightUpdate}
+            />
+          )}
+        </Grid>
+      </Grid>
       {treeRings && (
         <div>
           <div>
@@ -215,24 +249,6 @@ const TreePanel = ({
               </svg>
             </div>
             <Grid container alignItems="center" direction="row" spacing={2}>
-              <Grid item>
-                {Object.keys(fields).length > 1 && (
-                  <VariableFilter
-                    field={highlightParams.field}
-                    fields={fields}
-                    operator={highlightParams.operator}
-                    value={highlightParams.value}
-                    handleVariableChange={(e) =>
-                      handleHighlightChange(e, "field")
-                    }
-                    handleOperatorChange={(e) =>
-                      handleHighlightChange(e, "operator")
-                    }
-                    handleValueChange={(e) => handleHighlightChange(e, "value")}
-                    handleUpdate={handleHighlightUpdate}
-                  />
-                )}
-              </Grid>
               <Grid item style={{ marginLeft: "auto" }}>
                 <SVGDownloadButton targetRef={anchorRef} filename="tree" />
               </Grid>

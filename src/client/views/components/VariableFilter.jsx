@@ -1,6 +1,7 @@
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import BasicSelect from "./BasicSelect";
 import BasicTextField from "./BasicTextField";
+import Button from "@material-ui/core/Button";
 import CloseIcon from "@material-ui/icons/Close";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
@@ -76,13 +77,15 @@ const VariableFilter = ({
       )}
       {handleUpdate && (
         <Grid item>
-          <IconButton
-            aria-label="update filter"
-            size="inherit"
+          <Button
+            variant="contained"
+            color="default"
+            startIcon={<AutorenewIcon />}
             onClick={handleUpdate}
+            disableElevation
           >
-            <AutorenewIcon />
-          </IconButton>
+            Update
+          </Button>
         </Grid>
       )}
     </Grid>

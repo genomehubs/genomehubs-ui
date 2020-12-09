@@ -1,16 +1,16 @@
-import React from "react";
-import { compose } from "recompose";
-import styles from "./Styles.scss";
-import classnames from "classnames";
-import withSearch from "../hocs/withSearch";
-import withTypes from "../hocs/withTypes";
-import { makeStyles } from "@material-ui/core/styles";
+import FormControl from "@material-ui/core/FormControl";
+import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
+import React from "react";
 import Select from "@material-ui/core/Select";
-import Grid from "@material-ui/core/Grid";
 import Skeleton from "@material-ui/lab/Skeleton";
+import classnames from "classnames";
+import { compose } from "recompose";
+import { makeStyles } from "@material-ui/core/styles";
+import styles from "./Styles.scss";
+import withSearch from "../hocs/withSearch";
+import withTypes from "../hocs/withTypes";
 
 const SearchSummary = ({ searchTerm, searchResults }) => {
   if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
