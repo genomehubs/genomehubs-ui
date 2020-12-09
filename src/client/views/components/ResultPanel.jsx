@@ -12,6 +12,7 @@ import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
+import withTypes from "../hocs/withTypes";
 
 const ResultPanel = ({
   scientific_name,
@@ -25,6 +26,7 @@ const ResultPanel = ({
   sequence,
   summaryId,
   summary,
+  types,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,6 +56,7 @@ const ResultPanel = ({
     styles.resultPanel
   );
   let fieldDivs = [];
+  let additionalDivs = [];
   if (fields) {
     fields.forEach((field) => {
       let value = field.value;
@@ -68,7 +71,7 @@ const ResultPanel = ({
       if (location.pathname == "/view/explore" && field.id == summaryField) {
         highlight = styles["fieldNameHighlight"];
       }
-      fieldDivs.push(
+      let newDiv = (
         <Tooltip key={field.id} title={"Click to view summary plot"} arrow>
           <div
             key={field.id}
@@ -88,6 +91,11 @@ const ResultPanel = ({
           </div>
         </Tooltip>
       );
+      if (types[field.id] && types[field.id].display_level == 1) {
+        fieldDivs.push(newDiv);
+      } else {
+        additionalDivs.push(newDiv);
+      }
     });
   }
   let summaryPlot;
@@ -143,10 +151,18 @@ const ResultPanel = ({
 
       <div>
         <div className={styles.flexRow}>{fieldDivs}</div>
+        {additionalDivs.length > 0 && (
+          <div className={styles.flexRow}>{additionalDivs}</div>
+        )}
         <div>{summaryPlot}</div>
       </div>
     </div>
   );
 };
 
-export default compose(withRecord, withSearch, withSummary)(ResultPanel);
+export default compose(
+  withRecord,
+  withSearch,
+  withSummary,
+  withTypes
+)(ResultPanel);

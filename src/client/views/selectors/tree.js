@@ -215,8 +215,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   if (!nodes) return undefined;
   let { treeNodes, rootNode, ancNode, maxDepth } = nodes;
   if (!treeNodes || !rootNode) return undefined;
-  let radius = 500;
-  let metaRadius = 520;
+  let radius = 498;
   let rScale = scalePow()
     .exponent(1)
     .domain([-0.5, maxDepth + 1])
@@ -231,7 +230,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let greens = schemeGreens[tonalRange];
   let oranges = schemeOranges[tonalRange];
   // let alternator = {};
-  let charLen = 7.5;
+  let charLen = 7;
   var radialLine = lineRadial()
     .angle((d) => d.a)
     .radius((d) => d.r);
