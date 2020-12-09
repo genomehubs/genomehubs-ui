@@ -23,6 +23,7 @@ import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSummary from "../hocs/withSummary";
+import withTypes from "../hocs/withTypes";
 
 const LocationMap = loadable(() => import("./LocationMap"));
 
@@ -34,10 +35,9 @@ const useRowStyles = makeStyles({
   },
 });
 
-const NestedTable = ({ values }) => {
+const NestedTable = ({ values, types }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -60,15 +60,39 @@ const NestedTable = ({ values }) => {
           <TableBody>
             {values
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, i) => (
-                <TableRow key={i}>
-                  <TableCell component="th" scope="row">
-                    {row.value}
-                  </TableCell>
-                  <TableCell>{row.source}</TableCell>
-                  <TableCell>{row.comment}</TableCell>
-                </TableRow>
-              ))}
+              .map((row, i) => {
+                let link, link_url;
+                link = row.source;
+                let url_stub = row.source_url_stub || types.source_url_stub;
+                let url = row.source_url || types.source_url || types.url;
+                if (url_stub) {
+                  if (row.source_slug) {
+                    link_url = `${url_stub}${row.source_slug}`;
+                    link = `${link} [${row.source_slug}]`;
+                  } else {
+                    link_url = url ? url : url_stub;
+                  }
+                } else if (url) {
+                  link_url = url;
+                }
+                return (
+                  <TableRow key={i}>
+                    <TableCell component="th" scope="row">
+                      {row.value}
+                    </TableCell>
+                    <TableCell>
+                      {link_url ? (
+                        <a href={link_url} target="_blank">
+                          {link}
+                        </a>
+                      ) : (
+                        link
+                      )}
+                    </TableCell>
+                    <TableCell>{row.comment}</TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
         <TablePagination
@@ -85,7 +109,7 @@ const NestedTable = ({ values }) => {
   );
 };
 
-const AttributePanel = ({ field, meta }) => {
+const AttributePanel = ({ field, meta, types }) => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
@@ -170,7 +194,7 @@ const AttributePanel = ({ field, meta }) => {
             colSpan={colSpan}
           >
             <Collapse in={open.toString()} timeout="auto">
-              <NestedTable values={field.values} />
+              <NestedTable types={types[field.id]} values={field.values} />
             </Collapse>
           </TableCell>
         </TableRow>
@@ -213,4 +237,4 @@ const AttributePanel = ({ field, meta }) => {
   );
 };
 
-export default compose(withRecord, withSummary)(AttributePanel);
+export default compose(withRecord, withSummary, withTypes)(AttributePanel);
