@@ -5,16 +5,15 @@ import BasicComplete from "./BasicComplete";
 import BasicSelect from "./BasicSelect";
 import BasicTextField from "./BasicTextField";
 import Button from "@material-ui/core/Button";
-import CloseIcon from "@material-ui/icons/Close";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
-import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import SearchIcon from "@material-ui/icons/Search";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
+import VariableFilter from "./VariableFilter";
 import { compose } from "recompose";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "qs";
@@ -39,73 +38,6 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
 }));
-
-const VariableFilter = ({
-  field,
-  operator = "",
-  value = "",
-  bool,
-  label,
-  fields,
-  handleVariableChange,
-  handleOperatorChange,
-  handleValueChange,
-  handleDismiss,
-}) => {
-  const classes = useStyles();
-  const allowedOperators = {
-    "": "",
-    ">": ">",
-    ">=": ">=",
-    "<": "<",
-    "<=": "<=",
-    "=": "=",
-  };
-  return (
-    <Grid container alignItems="center" direction="row" spacing={2}>
-      {bool && (
-        <Grid item>
-          <Typography>{bool}</Typography>
-        </Grid>
-      )}
-      <Grid item>
-        <BasicSelect
-          current={field}
-          id={`variable-${field}-select`}
-          handleChange={handleVariableChange}
-          helperText={"field"}
-          values={fields}
-        />
-      </Grid>
-      <Grid item>
-        <BasicSelect
-          current={operator}
-          id={`variable-${field}-operator-select`}
-          handleChange={handleOperatorChange}
-          helperText={"operator"}
-          values={allowedOperators}
-        />
-      </Grid>
-      <Grid item>
-        <BasicTextField
-          id={`variable-${field}-value-input`}
-          handleChange={handleValueChange}
-          helperText={"value"}
-          value={value}
-        />
-      </Grid>
-      <Grid item style={{ marginLeft: "auto" }}>
-        <IconButton
-          aria-label="remove filter"
-          size="inherit"
-          onClick={handleDismiss}
-        >
-          <CloseIcon />
-        </IconButton>
-      </Grid>
-    </Grid>
-  );
-};
 
 // const handleValueChange =
 

@@ -1,17 +1,30 @@
+import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
-import React from "react";
+import Grid from "@material-ui/core/Grid";
+import SVGDownloadButton from "./SVGDownloadButton";
 import Tooltip from "@material-ui/core/Tooltip";
+import VariableFilter from "./VariableFilter";
 import classnames from "classnames";
 import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
+import { scaleLog } from "d3-scale";
 import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withTree from "../hocs/withTree";
+import withTypes from "../hocs/withTypes";
 
-const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
+const TreePanel = ({
+  root_id,
+  types,
+  treeRings,
+  searchTerm,
+  fetchNodes,
+  treeHighlight,
+  setTreeHighlight,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
   let arcs, labels;
@@ -25,6 +38,10 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
     y: undefined,
   });
 
+  const [highlight, setHighlight] = React.useState();
+
+  const anchorRef = useRef(null);
+
   const fetchTree = (root) => {
     fetchNodes({});
     let query = searchTerm.query;
@@ -34,11 +51,22 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
     fetchNodes({ ...searchTerm, query });
   };
 
+  const highlightSegment = (segment) => {
+    setHighlight(segment);
+  };
+
+  const strokeScale = scaleLog()
+    .domain([100, 1000])
+    .range([1, 0.1])
+    .clamp(true);
+
   let css = classnames(
     styles.infoPanel,
     styles[`infoPanel1Column`],
     styles.resultPanel
   );
+
+  let strokeWidth = strokeScale((arcs || 1).length);
 
   let paths = [];
   if (arcs) {
@@ -68,9 +96,14 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
           <path
             key={segment.taxon_id}
             fill={segment.color}
-            onClick={(e) => fetchTree(segment.taxon_id)}
+            onPointerEnter={(e) => highlightSegment(segment)}
+            onPointerLeave={(e) => highlightSegment()}
+            onClick={(e) => {
+              highlightSegment();
+              fetchTree(segment.taxon_id);
+            }}
             stroke="white"
-            strokeWidth={1}
+            strokeWidth={strokeWidth}
             d={segment.arc}
           />
         </Tooltip>
@@ -78,6 +111,20 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
     });
   }
 
+  let highlightPath;
+  if (highlight) {
+    highlightPath = (
+      <g style={{ pointerEvents: "none" }}>
+        <path
+          fill={"white"}
+          strokeWidth={3}
+          stroke={highlight.highlightColor}
+          fillOpacity={0.25}
+          d={highlight.highlight}
+        />
+      </g>
+    );
+  }
   let text = [];
   let defs = [];
   if (labels) {
@@ -107,40 +154,87 @@ const TreePanel = ({ root_id, treeRings, searchTerm, fetchNodes }) => {
     });
   }
 
+  const [highlightParams, setHighlightParams] = useState(treeHighlight);
+
+  const handleHighlightChange = (e, key) => {
+    e.stopPropagation();
+    setHighlightParams({ ...highlightParams, [key]: e.target.value });
+  };
+
+  const handleHighlightUpdate = (e) => {
+    e.stopPropagation();
+    setTreeHighlight(highlightParams);
+  };
+
+  let fields = {};
+  let index = "";
+  Object.keys(types).forEach((key) => {
+    if (key == highlightParams.field) {
+      index = key;
+    }
+    fields[key] = key;
+  });
+
   return (
     <div className={css}>
       <div className={styles.header} onClick={(e) => fetchTree()}>
         <span className={styles.title}>Tree</span>
         <span> (experimental - click to view)</span>
       </div>
-
-      <div>
-        {treeRings && (
-          <div
-            style={{
-              maxHeight: "1200px",
-              maxWidth: "1200px",
-              minHeight: "600px",
-              minWidth: "600px",
-            }}
-          >
-            <svg
-              preserveAspectRatio="xMinYMin"
-              viewBox="-500 -500 1000 1000"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
+      {treeRings && (
+        <div>
+          <div>
+            <div
+              style={{
+                maxHeight: "1200px",
+                maxWidth: "1200px",
+                minHeight: "600px",
+                minWidth: "600px",
+              }}
             >
-              <defs>{defs}</defs>
-              <g transform="rotate(180)">
-                {paths}
-                {text}
-              </g>
-            </svg>
+              <svg
+                preserveAspectRatio="xMinYMin"
+                ref={anchorRef}
+                viewBox="0 0 1000 1000"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
+                <defs>{defs}</defs>
+                <g transform="translate(500, 500)">
+                  {paths}
+                  {text}
+                  {highlightPath}
+                </g>
+              </svg>
+            </div>
+            <Grid container alignItems="center" direction="row" spacing={2}>
+              <Grid item>
+                {Object.keys(fields).length > 1 && (
+                  <VariableFilter
+                    field={highlightParams.field}
+                    fields={fields}
+                    operator={highlightParams.operator}
+                    value={highlightParams.value}
+                    handleVariableChange={(e) =>
+                      handleHighlightChange(e, "field")
+                    }
+                    handleOperatorChange={(e) =>
+                      handleHighlightChange(e, "operator")
+                    }
+                    handleValueChange={(e) => handleHighlightChange(e, "value")}
+                    handleUpdate={handleHighlightUpdate}
+                  />
+                )}
+              </Grid>
+              <Grid item style={{ marginLeft: "auto" }}>
+                <SVGDownloadButton targetRef={anchorRef} filename="tree" />
+              </Grid>
+            </Grid>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default compose(withSearch, withTree)(TreePanel);
+export default compose(withSearch, withTree, withTypes)(TreePanel);

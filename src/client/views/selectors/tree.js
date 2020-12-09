@@ -3,6 +3,7 @@ import {
   cancelNodesRequest,
   getNodes,
   getRootNode,
+  getTreeHighlight,
   receiveNodes,
   requestNodes,
   resetNodes,
@@ -59,12 +60,38 @@ const deepGet = (obj, path, value) => {
   return retVal;
 };
 
+const isNumeric = (n) => {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+};
+
+const compare = {
+  ">": (a, b) => a > b,
+  ">=": (a, b) => a >= b,
+  "<": (a, b) => a < b,
+  "<=": (a, b) => a <= b,
+  "=": (a, b) => (Array.isArray(a) ? a.includes(b) : a == b),
+};
+
+const test_condition = (meta, operator, value) => {
+  if (!meta || !meta.value) {
+    return false;
+  }
+  if (!value) {
+    return true;
+  }
+  if (!operator) operator = "=";
+  return compare[operator](meta.value, value);
+};
+
 export const getTreeNodes = createSelector(
   getNodes,
   getRootNode,
-  (nodes, rootNode) => {
+  getTreeHighlight,
+  (nodes, rootNode, treeHighlight) => {
     if (!nodes) return undefined;
-    let field = "assembly_span";
+    let field = treeHighlight.field;
+    let operator = treeHighlight.operator;
+    let filterValue = treeHighlight.value;
     let treeNodes = {};
     let maxDepth = 0;
     let shared = {};
@@ -88,15 +115,31 @@ export const getTreeNodes = createSelector(
         lineage.push(anc);
       }
       let child = nodes[key].taxon_id;
-      let source = deepGet(nodes[key], `fields.${field}.aggregation_source`);
-      let anc_source;
+      let meta = deepGet(nodes[key], `fields.${field}`);
+      let source, anc_source;
+      let value = 1;
+      if (meta) {
+        source = meta["aggregation_source"];
+        value = meta.value ? meta.value : true;
+      }
       if (source) {
-        anc_source = source != "ancestor" ? "descendant" : "ancestor";
+        if (meta && meta.value) {
+          let pass = test_condition(meta, operator, filterValue);
+          if (pass) {
+            anc_source = source != "ancestor" ? "descendant" : "ancestor";
+          } else {
+            anc_source = "ancestor";
+            source = "ancestor";
+          }
+        } else {
+          anc_source = source != "ancestor" ? "descendant" : "ancestor";
+        }
       }
       let newShared = {};
       lineage.forEach((obj) => {
         if (!treeNodes[obj.taxon_id]) {
-          treeNodes[obj.taxon_id] = { count: 0, children: {}, ...obj };
+          if (isNaN(value)) value = 1;
+          treeNodes[obj.taxon_id] = { count: 0, children: {}, ...obj, value };
         }
         ancestors[child] = obj.taxon_id;
 
@@ -116,7 +159,13 @@ export const getTreeNodes = createSelector(
       shared = newShared;
       tips[key] = true;
       if (!treeNodes.hasOwnProperty(key)) {
-        treeNodes[key] = { count: 0, children: {}, ...nodes[key], source };
+        treeNodes[key] = {
+          count: 0,
+          children: {},
+          ...nodes[key],
+          source,
+          value,
+        };
       }
     });
     Object.keys(tips).forEach((key) => {
@@ -152,20 +201,28 @@ export const getTreeNodes = createSelector(
   }
 );
 
+const outerArc = ({ innerRadius, outerRadius, startAngle, endAngle }) => {
+  let arcAttrs = arc()({
+    innerRadius,
+    outerRadius,
+    startAngle,
+    endAngle,
+  }).split(/[A-Z]/);
+  return `M${arcAttrs[1]}A${arcAttrs[2]}`;
+};
+
 export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   if (!nodes) return undefined;
-  console.log(nodes);
   let { treeNodes, rootNode, ancNode, maxDepth } = nodes;
   if (!treeNodes || !rootNode) return undefined;
   let radius = 500;
+  let metaRadius = 520;
   let rScale = scalePow()
     .exponent(1)
     .domain([-0.5, maxDepth + 1])
     .range([0, radius]);
   let cMax = treeNodes[rootNode] ? treeNodes[rootNode].count : 0;
-  let cScale = scaleLinear()
-    .domain([0, cMax])
-    .range([0, Math.PI * 2]);
+  let cScale = scaleLinear().domain([0, cMax]).range([-Math.PI, Math.PI]);
   let arcs = [];
   let tonalRange = 9;
   let baseTone = 3;
@@ -173,7 +230,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let reds = schemeReds[tonalRange];
   let greens = schemeGreens[tonalRange];
   let oranges = schemeOranges[tonalRange];
-  let alternator = {};
+  // let alternator = {};
   let charLen = 7.5;
   var radialLine = lineRadial()
     .angle((d) => d.a)
@@ -196,19 +253,23 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
 
   const drawArcs = ({ node, depth = 0, start = 0, recurse = true }) => {
     if (!node) return {};
-    if (!alternator.hasOwnProperty(depth)) {
-      alternator[depth] = depth % 1;
-    } else {
-      alternator[depth] = (alternator[depth] + 1) % 1;
-    }
-    let color = greys[baseTone + alternator[depth]];
+    // if (!alternator.hasOwnProperty(depth)) {
+    //   alternator[depth] = depth % 1;
+    // } else {
+    //   alternator[depth] = (alternator[depth] + 1) % 1;
+    // }
+    let color = greys[baseTone];
+    let highlightColor = greys[baseTone + 1];
     if (!recurse) {
       color = "white";
+      highlightColor = "white";
     } else if (node) {
       if (node.source == "direct") {
-        color = greens[baseTone + alternator[depth] + 1];
+        color = greens[baseTone + 1];
+        highlightColor = greens[baseTone + 2];
       } else if (node.source == "descendant") {
-        color = oranges[baseTone + alternator[depth]];
+        color = oranges[baseTone];
+        highlightColor = oranges[baseTone + 1];
       }
     }
     let outer = depth + 1;
@@ -220,6 +281,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
     }
     let innerRadius = rScale(depth);
     let outerRadius = rScale(outer);
+    let farOuterRadius = rScale(maxDepth + 1);
     let cStart = start;
     let cEnd = start + node.count;
     if (cEnd - cStart == cMax) {
@@ -228,6 +290,8 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
     }
     let startAngle = cScale(cStart);
     let endAngle = cScale(cEnd);
+    let midAngle = (startAngle + endAngle) / 2;
+
     arcs.push({
       ...node,
       arc: arc()({
@@ -236,9 +300,16 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
         startAngle,
         endAngle,
       }),
+      highlight: arc()({
+        innerRadius,
+        outerRadius: farOuterRadius,
+        startAngle,
+        endAngle,
+      }),
       start: start,
       depth: depth,
       color,
+      highlightColor,
     });
 
     const addlabel = (label, { truncate = false, stopIteration = false }) => {
@@ -253,18 +324,17 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
       let arcLen = (endAngle - startAngle) * innerRadius;
       let radLen = outerRadius - innerRadius;
       if (labelLen < arcLen) {
-        let arcAttrs = arc()({
+        let labelArc = outerArc({
           innerRadius: midRadius,
           outerRadius: midRadius,
           startAngle,
           endAngle,
-        }).split(/[A-Z]/);
+        });
         labels.push({
           ...node,
-          arc: `M${arcAttrs[1]}A${arcAttrs[2]}`,
+          arc: labelArc,
         });
       } else if (arcLen > charLen && labelLen <= radLen) {
-        let midAngle = (startAngle + endAngle) / 2;
         labels.push({
           ...node,
           scientific_name: label,
@@ -316,6 +386,5 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   };
   drawArcs({ node: treeNodes[ancNode], depth: -1, recurse: false });
   drawArcs({ node: treeNodes[rootNode] });
-
   return { arcs, labels };
 });

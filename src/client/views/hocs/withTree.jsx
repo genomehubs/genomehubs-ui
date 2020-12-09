@@ -1,12 +1,15 @@
-import React from "react";
-import { connect } from "react-redux";
+import { fetchNodes, getTreeNodes, getTreeRings } from "../selectors/tree";
 import {
   getNodes,
   getRootNode,
+  getTreeHighlight,
   resetNodes,
   setRootNode,
+  setTreeHighlight,
 } from "../reducers/tree";
-import { getTreeNodes, fetchNodes, getTreeRings } from "../selectors/tree";
+
+import React from "react";
+import { connect } from "react-redux";
 
 const withTree = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
@@ -14,6 +17,7 @@ const withTree = (WrappedComponent) => (props) => {
     treeNodes: getTreeNodes(state),
     treeRings: getTreeRings(state),
     rootNode: getRootNode(state),
+    treeHighlight: getTreeHighlight(state),
     // ...(props.recordId && {
     //   searchById: getSearchResultById(state, props.recordId),
     // }),
@@ -28,6 +32,7 @@ const withTree = (WrappedComponent) => (props) => {
       }
     },
     setRootNode: (id) => dispatch(setRootNode(id)),
+    setTreeHighlight: (obj) => dispatch(setTreeHighlight(obj)),
   });
 
   const Connected = connect(
