@@ -35,6 +35,7 @@ const SVGDownloadButton = ({ targetRef, filename }) => {
     let format = options[key].format;
     let opts = {
       excludeCss: true,
+      scale: 2,
     };
     if (format == "png") {
       saveSvgAsPng(targetRef.current, `${filename}.png`, opts);

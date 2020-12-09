@@ -200,7 +200,14 @@ const TreePanel = ({
                 xmlnsXlink="http://www.w3.org/1999/xlink"
               >
                 <defs>{defs}</defs>
-                <g transform="translate(500, 500)">
+                <g
+                  transform="translate(500, 500)"
+                  style={{
+                    fontFamily:
+                      '"Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif',
+                    fontSize: "10pt",
+                  }}
+                >
                   {paths}
                   {text}
                   {highlightPath}
