@@ -188,6 +188,13 @@ const TreePanel = ({
     setTreeHighlight(highlightParams);
   };
 
+  const handleDismissTree = (e) => {
+    e.stopPropagation();
+    fetchNodes({});
+    setTreeHighlight({});
+    setTreeQuery();
+  };
+
   let fields = {};
   let index = "";
   Object.keys(types).forEach((key) => {
@@ -214,6 +221,7 @@ const TreePanel = ({
               handleOperatorChange={(e) => handleHighlightChange(e, "operator")}
               handleValueChange={(e) => handleHighlightChange(e, "value")}
               handleUpdate={handleHighlightUpdate}
+              handleDismiss={(e) => handleDismissTree(e, "value")}
             />
           )}
         </Grid>

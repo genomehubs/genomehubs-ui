@@ -53,11 +53,17 @@ export const rootNode = handleAction(
 );
 export const getRootNode = (state) => state.rootNode;
 
+const treeHighlightDefault = {
+  field: "assembly_span",
+  condition: undefined,
+  value: undefined,
+};
 export const setTreeHighlight = createAction("SET_TREE_HIGHLIGHT");
 export const treeHighlight = handleAction(
   "SET_TREE_HIGHLIGHT",
-  (state, action) => action.payload,
-  { field: "assembly_span", condition: undefined, value: undefined }
+  (state, action) =>
+    action.payload.field ? action.payload : treeHighlightDefault,
+  treeHighlightDefault
 );
 export const getTreeHighlight = (state) => state.treeHighlight;
 
