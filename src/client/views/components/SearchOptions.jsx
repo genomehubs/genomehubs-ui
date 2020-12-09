@@ -284,7 +284,7 @@ const SearchOptions = ({
   );
   let [moreOptions, setMoreOptions] = useState(() => {
     let opts = { ...searchTerm };
-    if (opts.includeEstimates == "false") {
+    if (!opts.includeEstimates || opts.includeEstimates == "false") {
       opts.includeEstimates = false;
     } else {
       opts.includeEstimates = true;
