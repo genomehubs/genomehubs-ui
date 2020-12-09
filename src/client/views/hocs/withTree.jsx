@@ -3,9 +3,11 @@ import {
   getNodes,
   getRootNode,
   getTreeHighlight,
+  getTreeQuery,
   resetNodes,
   setRootNode,
   setTreeHighlight,
+  setTreeQuery,
 } from "../reducers/tree";
 
 import React from "react";
@@ -18,6 +20,7 @@ const withTree = (WrappedComponent) => (props) => {
     treeRings: getTreeRings(state),
     rootNode: getRootNode(state),
     treeHighlight: getTreeHighlight(state),
+    treeQuery: getTreeQuery(state),
     // ...(props.recordId && {
     //   searchById: getSearchResultById(state, props.recordId),
     // }),
@@ -33,6 +36,7 @@ const withTree = (WrappedComponent) => (props) => {
     },
     setRootNode: (id) => dispatch(setRootNode(id)),
     setTreeHighlight: (obj) => dispatch(setTreeHighlight(obj)),
+    setTreeQuery: (obj) => dispatch(setTreeQuery(obj)),
   });
 
   const Connected = connect(

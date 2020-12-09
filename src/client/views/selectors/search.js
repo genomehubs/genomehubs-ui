@@ -12,6 +12,7 @@ import {
 
 import qs from "qs";
 import { setApiStatus } from "../reducers/api";
+import { setTreeQuery } from "../reducers/tree";
 import store from "../store";
 
 // import { fetchTypes } from "./types";
@@ -39,6 +40,7 @@ export function fetchSearchResults(options, navigate) {
     // dispatch(fetchTypes(options.result));
     dispatch(requestSearch());
     dispatch(setSearchTerm(options));
+    dispatch(setTreeQuery(null));
     const queryString = qs.stringify(options);
     const endpoint = "search";
     let url = `${apiUrl}/${endpoint}?${queryString}`;

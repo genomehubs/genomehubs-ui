@@ -25,6 +25,8 @@ const TreePanel = ({
   fetchNodes,
   treeHighlight,
   setTreeHighlight,
+  treeQuery,
+  setTreeQuery,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,12 +57,12 @@ const TreePanel = ({
       </div>
     );
   }
-  const [position, setPosition] = React.useState({
+  const [position, setPosition] = useState({
     x: undefined,
     y: undefined,
   });
 
-  const [highlight, setHighlight] = React.useState();
+  const [highlight, setHighlight] = useState();
 
   const anchorRef = useRef(null);
 
@@ -70,6 +72,7 @@ const TreePanel = ({
     if (root) {
       query = query.replace(/tax_tree\(\w+?\)/, `tax_tree(${root})`);
     }
+    setTreeQuery({ ...searchTerm, query });
     fetchNodes({ ...searchTerm, query });
   };
 
@@ -179,7 +182,7 @@ const TreePanel = ({
 
   const handleHighlightUpdate = (e) => {
     e.stopPropagation();
-    if (!treeRings) {
+    if (!treeQuery) {
       fetchTree();
     }
     setTreeHighlight(highlightParams);
@@ -224,6 +227,7 @@ const TreePanel = ({
                 maxWidth: "1200px",
                 minHeight: "600px",
                 minWidth: "600px",
+                opacity: treeQuery ? "1" : "0.67",
               }}
             >
               <svg

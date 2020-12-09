@@ -61,8 +61,17 @@ export const treeHighlight = handleAction(
 );
 export const getTreeHighlight = (state) => state.treeHighlight;
 
+export const setTreeQuery = createAction("SET_TREE_QUERY");
+export const treeQuery = handleAction(
+  "SET_TREE_QUERY",
+  (state, action) => action.payload,
+  null
+);
+export const getTreeQuery = (state) => state.treeQuery;
+
 export const treeReducers = {
   nodes,
   rootNode,
   treeHighlight,
+  treeQuery,
 };
