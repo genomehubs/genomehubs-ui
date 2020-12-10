@@ -117,13 +117,17 @@ export const getTreeNodes = createSelector(
       let child = nodes[key].taxon_id;
       let meta = deepGet(nodes[key], `fields.${field}`);
       let source, anc_source;
+      let status = 0;
       let value = 1;
       if (meta) {
         source = meta["aggregation_source"];
         value = meta.value ? meta.value : true;
+      } else if (!operator || filterValue === undefined) {
+        status = 1;
       }
       if (source) {
         if (meta && meta.value) {
+          status = 1;
           let pass = test_condition(meta, operator, filterValue);
           if (pass) {
             anc_source = source != "ancestor" ? "descendant" : "ancestor";
@@ -139,7 +143,13 @@ export const getTreeNodes = createSelector(
       lineage.forEach((obj) => {
         if (!treeNodes[obj.taxon_id]) {
           if (isNaN(value)) value = 1;
-          treeNodes[obj.taxon_id] = { count: 0, children: {}, ...obj, value };
+          treeNodes[obj.taxon_id] = {
+            count: 0,
+            children: {},
+            ...obj,
+            value,
+            status,
+          };
         }
         ancestors[child] = obj.taxon_id;
 
@@ -149,6 +159,9 @@ export const getTreeNodes = createSelector(
           treeNodes[obj.taxon_id].source == "ancestor"
         ) {
           treeNodes[obj.taxon_id].source = anc_source;
+        }
+        if (!treeNodes[obj.taxon_id].status) {
+          treeNodes[obj.taxon_id].status = status;
         }
 
         child = obj.taxon_id;
@@ -165,6 +178,7 @@ export const getTreeNodes = createSelector(
           ...nodes[key],
           source,
           value,
+          status,
         };
       }
     });
@@ -224,51 +238,32 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let cScale = scaleLinear().domain([0, cMax]).range([-Math.PI, Math.PI]);
   let arcs = [];
   let tonalRange = 9;
-  let baseTone = 3;
+  let baseTone = 2;
   let greys = schemeGreys[tonalRange];
   let reds = schemeReds[tonalRange];
   let greens = schemeGreens[tonalRange];
   let oranges = schemeOranges[tonalRange];
-  // let alternator = {};
   let charLen = 7;
   var radialLine = lineRadial()
     .angle((d) => d.a)
     .radius((d) => d.r);
 
   let labels = [];
-  // let rings = ranks.map((rank, depth) => {
-  //   return {
-  //     arc: arc()({
-  //       innerRadius: rScale(-1),
-  //       outerRadius: rScale(depth),
-  //       startAngle: cScale(0),
-  //       endAngle: cScale(cScale.domain()[1]),
-  //     }),
-  //     taxon_id,
-  //     scientific_name,
-  //     rank,
-  //   };
-  // });
 
   const drawArcs = ({ node, depth = 0, start = 0, recurse = true }) => {
     if (!node) return {};
-    // if (!alternator.hasOwnProperty(depth)) {
-    //   alternator[depth] = depth % 1;
-    // } else {
-    //   alternator[depth] = (alternator[depth] + 1) % 1;
-    // }
-    let color = greys[baseTone];
-    let highlightColor = greys[baseTone + 1];
+    let color = greys[baseTone + node.status];
+    let highlightColor = greys[baseTone + 1 + node.status];
     if (!recurse) {
       color = "white";
       highlightColor = "white";
     } else if (node) {
       if (node.source == "direct") {
-        color = greens[baseTone + 1];
-        highlightColor = greens[baseTone + 2];
+        color = greens[baseTone + 1 + node.status];
+        highlightColor = greens[baseTone + 2 + node.status];
       } else if (node.source == "descendant") {
-        color = oranges[baseTone];
-        highlightColor = oranges[baseTone + 1];
+        color = oranges[baseTone + node.status];
+        highlightColor = oranges[baseTone + 1 + node.status];
       }
     }
     let outer = depth + 1;
