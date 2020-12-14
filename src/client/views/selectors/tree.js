@@ -92,6 +92,7 @@ export const getTreeNodes = createSelector(
     let field = treeHighlight.field;
     let operator = treeHighlight.operator;
     let filterValue = treeHighlight.value;
+    let treatAncestralAsMissing = true;
     let treeNodes = {};
     let maxDepth = 0;
     let shared = {};
@@ -127,13 +128,20 @@ export const getTreeNodes = createSelector(
       }
       if (source) {
         if (meta && meta.value) {
-          status = 1;
-          let pass = test_condition(meta, operator, filterValue);
-          if (pass) {
-            anc_source = source != "ancestor" ? "descendant" : "ancestor";
-          } else {
+          if (source == "ancestor" && treatAncestralAsMissing == true) {
             anc_source = "ancestor";
-            source = "ancestor";
+            if (!operator || filterValue === undefined) {
+              status = 1;
+            }
+          } else {
+            status = 1;
+            let pass = test_condition(meta, operator, filterValue);
+            if (pass) {
+              anc_source = source != "ancestor" ? "descendant" : "ancestor";
+            } else {
+              anc_source = "ancestor";
+              source = "ancestor";
+            }
           }
         } else {
           anc_source = source != "ancestor" ? "descendant" : "ancestor";
