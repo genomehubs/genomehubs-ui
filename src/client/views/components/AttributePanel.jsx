@@ -6,6 +6,7 @@ import Collapse from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import LaunchIcon from "@material-ui/icons/Launch";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -83,7 +84,7 @@ const NestedTable = ({ values, types }) => {
                     <TableCell>
                       {link_url ? (
                         <a href={link_url} target="_blank">
-                          {link}
+                          {link} <LaunchIcon fontSize="inherit" />
                         </a>
                       ) : (
                         link
@@ -95,15 +96,17 @@ const NestedTable = ({ values, types }) => {
               })}
           </TableBody>
         </Table>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 100]}
-          component="div"
-          count={values.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+        {values.length > 5 && (
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, 100]}
+            component="div"
+            count={values.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        )}
       </Box>
     </span>
   );

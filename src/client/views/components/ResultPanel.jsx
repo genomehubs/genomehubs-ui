@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "@reach/router";
 
 import AggregationIcon from "./AggregationIcon";
+import Grid from "@material-ui/core/Grid";
 import HistogramSVG from "./HistogramSVG";
 import React from "react";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -55,8 +56,9 @@ const ResultPanel = ({
     styles[`infoPanel1Column`],
     styles.resultPanel
   );
+  let groupedDivs = {};
   let fieldDivs = [];
-  let additionalDivs = [];
+
   if (fields) {
     fields.forEach((field) => {
       let value = field.value;
@@ -73,31 +75,45 @@ const ResultPanel = ({
       }
       let newDiv = (
         <Tooltip key={field.id} title={"Click to view summary plot"} arrow>
-          <div
-            key={field.id}
-            className={styles.field}
-            onClick={() => handleFieldClick(field.id)}
-          >
-            <div className={classnames(styles.fieldName, highlight)}>
-              {field.id}
-            </div>
-            <div className={styles.fieldValue}>
-              <AggregationIcon method={field.aggregation_source} />
-              {value}
-            </div>
+          <Grid item>
             <div
-              className={styles.fieldCount}
-            >{`${field.aggregation_method}, n=${field.count}`}</div>
-          </div>
+              key={field.id}
+              className={styles.field}
+              onClick={() => handleFieldClick(field.id)}
+              // style={{ minWidth: "150px" }}
+            >
+              <div className={classnames(styles.fieldName, highlight)}>
+                {field.id}
+              </div>
+              <div className={styles.fieldValue}>
+                <AggregationIcon method={field.aggregation_source} />
+                {value}
+              </div>
+              <div
+                className={styles.fieldCount}
+              >{`${field.aggregation_method}, n=${field.count}`}</div>
+            </div>
+          </Grid>
         </Tooltip>
       );
-      if (types[field.id] && types[field.id].display_level == 1) {
-        fieldDivs.push(newDiv);
-      } else {
-        additionalDivs.push(newDiv);
+      if (types[field.id].traverse) {
+        let group = types[field.id].display_group;
+        if (!groupedDivs.hasOwnProperty(group)) {
+          groupedDivs[group] = [];
+        }
+        if (types[field.id] && types[field.id].display_level == 1) {
+          // fieldDivs.push(newDiv);
+          groupedDivs[group].unshift(newDiv);
+        } else {
+          // additionalDivs.push(newDiv);
+          groupedDivs[group].push(newDiv);
+        }
       }
     });
   }
+  Object.keys(groupedDivs).forEach((key) => {
+    fieldDivs = fieldDivs.concat(groupedDivs[key]);
+  });
   let summaryPlot;
   if (summaryId) {
     if (summary == "histogram") {
@@ -150,10 +166,13 @@ const ResultPanel = ({
       )}
 
       <div>
-        <div className={styles.flexRow}>{fieldDivs}</div>
+        <Grid container alignItems="center" direction="row" spacing={0}>
+          {fieldDivs}
+        </Grid>
+        {/* <div className={styles.flexRow}>{fieldDivs}</div>
         {additionalDivs.length > 0 && (
           <div className={styles.flexRow}>{additionalDivs}</div>
-        )}
+        )} */}
         <div>{summaryPlot}</div>
       </div>
     </div>
