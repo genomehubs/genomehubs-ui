@@ -149,8 +149,14 @@ const SearchBox = ({
   };
   const handleChange = (e, newValue) => {
     if (newValue != lookupTerm) {
-      updateTerm(newValue);
-      setOpen(true);
+      if (!newValue.match(/[\r\n]/)) {
+        setMultiline(false);
+        updateTerm(newValue);
+        setOpen(true);
+      } else if (!multiline) {
+        updateTerm(newValue);
+        setOpen(true);
+      }
     }
   };
   const handleKeyPress = (e) => {
@@ -160,17 +166,17 @@ const SearchBox = ({
         e.stopPropagation();
         setMultiline(true);
         setLookupTerm(`${lookupTerm}\n`);
-      } else {
+      } else if (!multiline) {
         handleSubmit(e);
       }
     }
   };
-  const handleMultilineChange = (e, x) => {
-    if (!e.target.value.match(/[\r\n]/)) {
-      setMultiline(false);
-    }
-    setLookupTerm(e.target.value);
-  };
+  // const handleMultilineChange = (e, x) => {
+  //   if (!e.target.value.match(/[\r\n]/)) {
+  //     setMultiline(false);
+  //   }
+  //   setLookupTerm(e.target.value);
+  // };
   const handleKeyDown = (e, newValue) => {
     if (newValue) {
       if (newValue.highlighted) {
@@ -178,10 +184,15 @@ const SearchBox = ({
       } else {
         setOpen(false);
         setResult(newValue.result);
-        doSearch(newValue.unique_term, newValue.result, newValue.title);
+        doSearch(
+          newValue.unique_term || e.target.value,
+          newValue.result || "taxon",
+          newValue.title || e.target.value
+        );
       }
     } else {
       resetLookup();
+      setMultiline(false);
     }
   };
 
@@ -296,56 +307,41 @@ const SearchBox = ({
         <Grid container alignItems="center" direction="row">
           <Grid item style={{ width: "600px" }} ref={searchBoxRef}>
             <FormControl className={classes.formControl}>
-              {(multiline && (
-                <TextField
-                  onKeyPress={handleKeyPress}
-                  id="main-search"
-                  value={lookupTerm}
-                  onChange={handleMultilineChange}
-                  label={`Search ${siteName}`}
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                  rowsMax={3}
-                />
-              )) || (
-                <Autocomplete
-                  id="main-search"
-                  getOptionLabel={(option) =>
-                    typeof option === "string" ? option : option.title
+              <Autocomplete
+                id="main-search"
+                getOptionLabel={(option) =>
+                  typeof option === "string" ? option : option.title
+                }
+                getOptionSelected={(option, value) =>
+                  option.title === value.title
+                }
+                options={options}
+                autoComplete
+                includeInputInList
+                freeSolo
+                value={lookupTerm}
+                open={open}
+                onChange={handleKeyDown}
+                onInputChange={handleChange}
+                PopperComponent={PlacedPopper}
+                renderInput={(params) => (
+                  <TextField
+                    onKeyPress={handleKeyPress}
+                    {...params}
+                    label={`Search ${siteName}`}
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    rowsMax={3}
+                  />
+                )}
+                renderOption={(option) => {
+                  if (option.highlighted) {
+                    return <AutoCompleteSuggestion option={option} />;
                   }
-                  getOptionSelected={(option, value) =>
-                    option.title === value.title
-                  }
-                  options={options}
-                  autoComplete
-                  includeInputInList
-                  freeSolo
-                  value={lookupTerm}
-                  open={open}
-                  onChange={handleKeyDown}
-                  onInputChange={handleChange}
-                  PopperComponent={PlacedPopper}
-                  renderInput={(params) => (
-                    <TextField
-                      onKeyPress={handleKeyPress}
-                      {...params}
-                      label={`Search ${siteName}`}
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                      rowsMax={3}
-                    />
-                  )}
-                  renderOption={(option) => {
-                    if (option.highlighted) {
-                      return <AutoCompleteSuggestion option={option} />;
-                    }
-                    return <AutoCompleteOption option={option} />;
-                  }}
-                />
-              )}
-
+                  return <AutoCompleteOption option={option} />;
+                }}
+              />
               <FormHelperText
                 labelPlacement="end"
                 onClick={() => {
