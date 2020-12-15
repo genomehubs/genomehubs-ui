@@ -46,9 +46,7 @@ const ResultPanel = ({
     setSummaryField(fieldId);
     setPreferSearchTerm(false);
     navigate(
-      `explore?taxon_id=${taxon_id}&result=${searchIndex}&field_id=${fieldId}${encodeURIComponent(
-        location.hash
-      )}`
+      `explore?taxon_id=${taxon_id}&result=${searchIndex}&field_id=${fieldId}${location.hash}`
     );
   };
   let css = classnames(

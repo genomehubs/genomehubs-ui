@@ -129,9 +129,7 @@ const SearchSettings = ({
     delete options.excludeDirect;
     delete options.excludeMissing;
     setPreferSearchTerm(false);
-    navigate(
-      `search?${qs.stringify(options)}${encodeURIComponent(location.hash)}`
-    );
+    navigate(`search?${qs.stringify(options)}${location.hash}`);
   };
 
   const handleResetClick = () => {
@@ -145,9 +143,7 @@ const SearchSettings = ({
     delete options.excludeDirect;
     delete options.excludeMissing;
     setPreferSearchTerm(false);
-    navigate(
-      `search?${qs.stringify(options)}${encodeURIComponent(location.hash)}`
-    );
+    navigate(`search?${qs.stringify(options)}${location.hash}`);
   };
 
   let groups = [];
