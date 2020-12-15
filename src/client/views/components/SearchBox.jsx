@@ -121,6 +121,7 @@ const SearchBox = ({
   const classes = useStyles();
   const navigate = useNavigate();
   const searchBoxRef = useRef(null);
+  const searchInputRef = useRef(null);
   let [open, setOpen] = useState(false);
   let [multiline, setMultiline] = useState(() => {
     if (searchTerm && searchTerm.query && searchTerm.query.match(/[\r\n]/)) {
@@ -198,8 +199,8 @@ const SearchBox = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    doSearch(lookupTerm, result, lookupTerm);
+    let term = searchInputRef.current.value;
+    doSearch(term, result, term);
   };
 
   let terms;
@@ -328,6 +329,7 @@ const SearchBox = ({
                   <TextField
                     onKeyPress={handleKeyPress}
                     {...params}
+                    inputRef={searchInputRef}
                     label={`Search ${siteName}`}
                     variant="outlined"
                     fullWidth
