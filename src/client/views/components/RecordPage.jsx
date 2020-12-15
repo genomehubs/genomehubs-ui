@@ -24,6 +24,7 @@ const RecordPage = ({
   setLookupTerm,
   fetchSearchResults,
   setSearchIndex,
+  setPreviousSearchTerm,
   searchIndex,
   types,
   searchById = {},
@@ -38,11 +39,13 @@ const RecordPage = ({
     }
     if (options.taxon_id && options.taxon_id != recordId) {
       setRecordId(options.taxon_id);
-      fetchSearchResults({
+      let searchTerm = {
         query: `tax_eq(${options.taxon_id})`,
         result: options.result,
         includeEstimates: true,
-      });
+      };
+      setPreviousSearchTerm(searchTerm);
+      fetchSearchResults(searchTerm);
     } else if (recordId) {
       fetchRecord(recordId, options.result);
     }
