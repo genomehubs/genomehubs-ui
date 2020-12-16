@@ -12,7 +12,6 @@ import Grid from "@material-ui/core/Grid";
 import Grow from "@material-ui/core/Grow";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import Popper from "@material-ui/core/Popper";
 import SearchPagination from "./SearchPagination";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Table from "@material-ui/core/Table";
@@ -33,20 +32,17 @@ import withTypes from "../hocs/withTypes";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
-    "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
-    },
-    // "&:last-child th, &:last-child td": {
-    //   borderBottom: 0,
-    // },
+    width: "100%",
   },
 }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    maxWidth: "95%",
+    marginBottom: "1em",
   },
   table: {
+    maxWidth: "95%",
     minWidth: 750,
   },
   ["PrivateSwitchBase-root-4"]: {
@@ -414,8 +410,14 @@ const ResultTable = ({
   heads.push(<TableCell key={"last"}></TableCell>);
 
   return (
-    <span>
-      <Box margin={1}>
+    <Grid
+      container
+      alignItems="center"
+      direction="column"
+      spacing={1}
+      className={classes.root}
+    >
+      <Grid item className={classes.table}>
         {/* {searchResults.isFetching ? (
           <Skeleton variant="rect" width={800} height={200} />
         ) : ( */}
@@ -428,23 +430,37 @@ const ResultTable = ({
           </Table>
         </TableContainer>
         {/* )} */}
-      </Box>
+      </Grid>
 
-      <Box
-        style={{
-          display: "flex",
-          justifyContent: "flex-start",
-          position: "relative",
-          overflow: "visible",
-        }}
+      {/* <Grid
+        item
+        // style={{
+        //   display: "flex",
+        //   justifyContent: "flex-start",
+        //   position: "relative",
+        //   overflow: "visible",
+        // }}
+      > */}
+      <Grid
+        container
+        alignItems="center"
+        justify="center"
+        direction="row"
+        spacing={1}
+        className={classes.root}
       >
-        <DownloadButton
-          onButtonClick={saveSearchResults}
-          searchTerm={searchTerm}
-        />
-        <SearchPagination />
-      </Box>
-    </span>
+        <Grid item>
+          <SearchPagination />
+        </Grid>
+        <Grid item style={{ marginLeft: "auto" }}>
+          <DownloadButton
+            onButtonClick={saveSearchResults}
+            searchTerm={searchTerm}
+          />
+        </Grid>
+      </Grid>
+      {/* </Grid> */}
+    </Grid>
   );
 };
 

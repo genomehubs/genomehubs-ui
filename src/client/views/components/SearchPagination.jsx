@@ -1,11 +1,11 @@
 import React from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
-import withSearch from "../hocs/withSearch";
-import { makeStyles } from "@material-ui/core/styles";
 // import Pagination from "@material-ui/lab/Pagination";
 import TablePagination from "@material-ui/core/TablePagination";
+import classnames from "classnames";
+import { compose } from "recompose";
+import { makeStyles } from "@material-ui/core/styles";
+import styles from "./Styles.scss";
+import withSearch from "../hocs/withSearch";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,24 +43,24 @@ const SearchPagination = ({
   };
 
   return (
-    <div
-      style={{
-        flex: "0 1 auto",
-        position: "absolute",
-        left: "50%",
-        transform: "translateX(-50%)",
-      }}
-    >
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 50, 100]}
-        component="div"
-        count={resultCount}
-        rowsPerPage={pageSize}
-        page={page}
-        onChangePage={handleChange}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </div>
+    // <div
+    //   style={{
+    //     flex: "0 1 auto",
+    //     position: "absolute",
+    //     left: "50%",
+    //     transform: "translateX(-50%)",
+    //   }}
+    // >
+    <TablePagination
+      rowsPerPageOptions={[10, 25, 50, 100]}
+      component="div"
+      count={resultCount}
+      rowsPerPage={pageSize}
+      page={page}
+      onChangePage={handleChange}
+      onChangeRowsPerPage={handleChangeRowsPerPage}
+    />
+    // </div>
   );
 };
 

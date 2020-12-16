@@ -2,14 +2,10 @@ import React, { memo, useRef, useState } from "react";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
-// import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-// import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Grid from "@material-ui/core/Grid";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import IconButton from "@material-ui/core/IconButton";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
 import Popper from "@material-ui/core/Popper";
 import SearchIcon from "@material-ui/icons/Search";
 import SearchOptions from "./SearchOptions";
@@ -19,8 +15,6 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import classnames from "classnames";
 import { compose } from "recompose";
-import { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { findDOMNode } from "react-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "qs";
 import styles from "./Styles.scss";
@@ -172,12 +166,6 @@ const SearchBox = ({
       }
     }
   };
-  // const handleMultilineChange = (e, x) => {
-  //   if (!e.target.value.match(/[\r\n]/)) {
-  //     setMultiline(false);
-  //   }
-  //   setLookupTerm(e.target.value);
-  // };
   const handleKeyDown = (e, newValue) => {
     if (newValue) {
       if (newValue.highlighted) {
@@ -366,17 +354,6 @@ const SearchBox = ({
             </IconButton>
           </Grid>
           <Grid item>
-            {/* <IconButton
-              className={classes.search}
-              aria-label="expand row"
-              onClick={() => setShowOptions(!showOptions)}
-            >
-              {showOptions ? (
-                <KeyboardArrowUpIcon />
-              ) : (
-                <KeyboardArrowDownIcon />
-              )}
-            </IconButton> */}
             <IconButton
               className={classes.search}
               aria-label="search settings"
