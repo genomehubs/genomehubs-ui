@@ -158,16 +158,17 @@ const SearchBox = ({
     if (e.key === "Enter") {
       if (e.shiftKey) {
         e.preventDefault();
-        e.stopPropagation();
         setMultiline(true);
-        setLookupTerm(`${lookupTerm}\n`);
+        setLookupTerm(`${searchInputRef.current.value}\n`);
       } else if (!multiline) {
         handleSubmit(e);
       }
     }
   };
   const handleKeyDown = (e, newValue) => {
-    if (newValue) {
+    if (e.shiftKey) {
+      handleKeyPress(e);
+    } else if (newValue) {
       if (newValue.highlighted) {
         setOpen(true);
       } else {
@@ -271,122 +272,123 @@ const SearchBox = ({
     });
   }
   return (
-    <div
-      className={classnames(styles.flexColumn, styles.flexCenter)}
-      style={{
-        height: "6em",
-        minWidth: "600px",
-        overflow: "visible",
-        zIndex: 10,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+    <Grid
+      container
+      alignItems="center"
+      direction="column"
+      // justify="center"
+      // alignItems="center"
+      // style={{
+      //   minHeight: "6em",
+      //   minWidth: "600px",
+      //   zIndex: 10,
+      // }}
     >
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          minWidth: "800px",
-          flex: "0 1 auto",
-          position: "absolute",
-          marginRight: "100px",
-          left: "50%",
-          transform: "translateX(calc(100px - 50%))",
-        }}
-      >
-        <Grid container alignItems="center" direction="row">
-          <Grid item style={{ width: "600px" }} ref={searchBoxRef}>
-            <FormControl className={classes.formControl}>
-              <Autocomplete
-                id="main-search"
-                getOptionLabel={(option) =>
-                  typeof option === "string" ? option : option.title
-                }
-                getOptionSelected={(option, value) =>
-                  option.title === value.title
-                }
-                options={options}
-                autoComplete
-                includeInputInList
-                freeSolo
-                value={lookupTerm}
-                open={open}
-                onChange={handleKeyDown}
-                onInputChange={handleChange}
-                PopperComponent={PlacedPopper}
-                renderInput={(params) => (
-                  <TextField
-                    onKeyPress={handleKeyPress}
-                    {...params}
-                    inputRef={searchInputRef}
-                    label={`Search ${siteName}`}
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                    rowsMax={3}
-                  />
-                )}
-                renderOption={(option) => {
-                  if (option.highlighted) {
-                    return <AutoCompleteSuggestion option={option} />;
+      <Grid item>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            minWidth: "900px",
+            width: "100%",
+          }}
+        >
+          <Grid container direction="row" alignItems="center">
+            <Grid item xs={1}></Grid>
+            <Grid item xs={1}></Grid>
+            <Grid item ref={searchBoxRef} xs={"auto"}>
+              <FormControl className={classes.formControl}>
+                <Autocomplete
+                  id="main-search"
+                  getOptionLabel={(option) =>
+                    typeof option === "string" ? option : option.title
                   }
-                  return <AutoCompleteOption option={option} />;
-                }}
-              />
-              <FormHelperText
-                labelPlacement="end"
-                onClick={() => {
-                  setShowOptions(!showOptions);
-                  setShowSettings(false);
-                }}
-                style={{ textAlign: "right", cursor: "pointer" }}
+                  getOptionSelected={(option, value) =>
+                    option.title === value.title
+                  }
+                  options={options}
+                  autoComplete
+                  includeInputInList
+                  freeSolo
+                  value={lookupTerm}
+                  open={open}
+                  onChange={handleKeyDown}
+                  onInputChange={handleChange}
+                  PopperComponent={PlacedPopper}
+                  renderInput={(params) => (
+                    <TextField
+                      onKeyPress={handleKeyPress}
+                      {...params}
+                      inputRef={searchInputRef}
+                      label={`Search ${siteName}`}
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                      rowsMax={5}
+                    />
+                  )}
+                  renderOption={(option) => {
+                    if (option.highlighted) {
+                      return <AutoCompleteSuggestion option={option} />;
+                    }
+                    return <AutoCompleteOption option={option} />;
+                  }}
+                />
+                <FormHelperText
+                  labelPlacement="end"
+                  onClick={() => {
+                    setShowOptions(!showOptions);
+                    setShowSettings(false);
+                  }}
+                  style={{ textAlign: "right", cursor: "pointer" }}
+                >
+                  Advanced search
+                </FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1}>
+              <IconButton
+                className={classes.search}
+                aria-label="submit search"
+                type="submit"
               >
-                Advanced search
-              </FormHelperText>
-            </FormControl>
+                <SearchIcon />
+              </IconButton>
+            </Grid>
+            <Grid item xs={1}>
+              <IconButton
+                className={classes.search}
+                aria-label="search settings"
+                onClick={() => {
+                  setShowSettings(!showSettings);
+                  setShowOptions(false);
+                }}
+              >
+                <SettingsIcon
+                  style={{ transform: showSettings ? "rotate(90deg)" : "" }}
+                />
+              </IconButton>
+            </Grid>
           </Grid>
-          <Grid item>
-            <IconButton
-              className={classes.search}
-              aria-label="submit search"
-              type="submit"
-            >
-              <SearchIcon />
-            </IconButton>
-          </Grid>
-          <Grid item>
-            <IconButton
-              className={classes.search}
-              aria-label="search settings"
-              onClick={() => {
-                setShowSettings(!showSettings);
-                setShowOptions(false);
-              }}
-            >
-              <SettingsIcon
-                style={{ transform: showSettings ? "rotate(90deg)" : "" }}
-              />
-            </IconButton>
-          </Grid>
-        </Grid>
-        <Popper
-          id={"search-options"}
-          open={showOptions}
-          anchorEl={searchBoxRef.current}
-          placement={"bottom"}
-        >
-          <SearchOptions />
-        </Popper>
-        <Popper
-          id={"search-settings"}
-          style={{ maxWidth: "800px" }}
-          open={showSettings}
-          anchorEl={searchBoxRef.current}
-          placement={"bottom"}
-        >
-          <SearchSettings />
-        </Popper>
-      </form>
-    </div>
+          <Popper
+            id={"search-options"}
+            open={showOptions}
+            anchorEl={searchBoxRef.current}
+            placement={"bottom"}
+          >
+            <SearchOptions />
+          </Popper>
+          <Popper
+            id={"search-settings"}
+            style={{ maxWidth: "800px" }}
+            open={showSettings}
+            anchorEl={searchBoxRef.current}
+            placement={"bottom"}
+          >
+            <SearchSettings />
+          </Popper>
+        </form>
+      </Grid>
+    </Grid>
   );
 };
 
