@@ -1,5 +1,7 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
+
 import immutableUpdate from "immutable-update";
+import qs from "qs";
 import { setApiStatus } from "./api";
 
 const apiUrl = API_URL || "/api/v1";
@@ -44,8 +46,12 @@ export function fetchLookup(lookupTerm, result = "multi") {
     if (!lookupTerm) dispatch(receiveLookup(defaultState));
     if (lookupTerm.match(/[\(\)<>=]/)) return;
     dispatch(requestLookup());
-    let url = `${apiUrl}/lookup?searchTerm=${lookupTerm}&result=${result}`;
-    // return;
+    let options = {
+      searchTerm: lookupTerm,
+      result,
+    };
+    const queryString = qs.stringify(options);
+    let url = `${apiUrl}/lookup?${queryString}`;
     return fetch(url)
       .then(
         (response) => response.json(),

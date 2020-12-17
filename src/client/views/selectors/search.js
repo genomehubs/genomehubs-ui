@@ -30,7 +30,7 @@ export function fetchSearchResults(options, navigate) {
     if (!options.hasOwnProperty("result")) {
       options.result = "assembly";
     }
-    if (options.result == "taxon" && !options.query.match(/[\(\)<>=\n]/)) {
+    if (options.result == "taxon" && !options.query.match(/[\(\)<>=\n\*]/)) {
       options.query = `tax_tree(${options.query})`;
     }
     if (!options.hasOwnProperty("summaryValues")) {
@@ -53,7 +53,7 @@ export function fetchSearchResults(options, navigate) {
         json = console.log("An error occured.", error);
       }
       if (!json.results || json.results.length == 0) {
-        if (!searchTerm.match(/[\(\)<>=\n]/)) {
+        if (!searchTerm.match(/[\(\)<>=\n\*]/)) {
           options.query = `tax_name(${searchTerm})`;
           dispatch(setPreferSearchTerm(true));
           dispatch(fetchSearchResults(options, navigate));
