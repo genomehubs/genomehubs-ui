@@ -55,7 +55,7 @@ const HistogramSVG = ({
     // fetchSearchResults(options);
     setPreferSearchTerm(false);
     navigate(
-      `search?${qs.stringify(options)}#${encodeURIComponent(scientific_name)}`
+      `search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
     );
     resetLookup();
   };
