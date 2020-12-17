@@ -1,4 +1,9 @@
-import { fetchNodes, getTreeNodes, getTreeRings } from "../selectors/tree";
+import {
+  fetchNodes,
+  getNewickString,
+  getTreeNodes,
+  getTreeRings,
+} from "../selectors/tree";
 import {
   getNodes,
   getRootNode,
@@ -21,6 +26,7 @@ const withTree = (WrappedComponent) => (props) => {
     rootNode: getRootNode(state),
     treeHighlight: getTreeHighlight(state),
     treeQuery: getTreeQuery(state),
+    newickString: getNewickString(state),
     // ...(props.recordId && {
     //   searchById: getSearchResultById(state, props.recordId),
     // }),

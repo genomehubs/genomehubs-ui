@@ -21,14 +21,24 @@ const ColorButtonGroup = withStyles((theme) => ({
   },
 }))(ButtonGroup);
 
-const SVGDownloadButton = ({ targetRef, filename }) => {
+const SVGDownloadButton = ({ targetRef, filename, string }) => {
   const options = {
     PNG: { format: "png" },
     SVG: { format: "svg" },
+    NWK: { format: "nwk" },
   };
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  const downloadLink = (uri, filename) => {
+    const link = document.createElement("a");
+    link.href = uri;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+  };
 
   const handleClick = () => {
     let key = Object.keys(options)[selectedIndex];
@@ -39,15 +49,12 @@ const SVGDownloadButton = ({ targetRef, filename }) => {
     };
     if (format == "png") {
       saveSvgAsPng(targetRef.current, `${filename}.png`, opts);
-    } else {
+    } else if (format == "svg") {
       svgAsDataUri(targetRef.current, opts).then((uri) => {
-        const link = document.createElement("a");
-        link.href = uri;
-        link.setAttribute("download", `${filename}.svg`);
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
+        downloadLink(uri, `${filename}.svg`);
       });
+    } else if (format == "nwk") {
+      downloadLink(`data:text/plain;base64,${btoa(string)}`, `${filename}.nwk`);
     }
   };
 

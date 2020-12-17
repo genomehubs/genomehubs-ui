@@ -27,10 +27,12 @@ const TreePanel = ({
   setTreeHighlight,
   treeQuery,
   setTreeQuery,
+  newickString,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
   let arcs, labels;
+  // console.log(newickString);
   if (treeRings) {
     arcs = treeRings.arcs;
     labels = treeRings.labels;
@@ -262,7 +264,11 @@ const TreePanel = ({
             </div>
             <Grid container alignItems="center" direction="row" spacing={2}>
               <Grid item style={{ marginLeft: "auto" }}>
-                <SVGDownloadButton targetRef={anchorRef} filename="tree" />
+                <SVGDownloadButton
+                  targetRef={anchorRef}
+                  filename="tree"
+                  string={newickString}
+                />
               </Grid>
             </Grid>
           </div>

@@ -392,3 +392,25 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   drawArcs({ node: treeNodes[rootNode] });
   return { arcs, labels };
 });
+
+export const getNewickString = createSelector(getTreeNodes, (nodes) => {
+  if (!nodes) return undefined;
+  let { treeNodes, rootNode } = nodes;
+  if (!treeNodes || !rootNode) return undefined;
+  const writeNewickString = ({ node }) => {
+    if (
+      node.hasOwnProperty("children") &&
+      Object.keys(node.children).length > 0
+    ) {
+      let children = Object.keys(node.children).map((key) =>
+        writeNewickString({ node: treeNodes[key] })
+      );
+      return children.length > 1
+        ? `(${children.join(",")})${node.scientific_name}`
+        : children[0];
+    }
+    return node.scientific_name;
+  };
+  let newick = writeNewickString({ node: treeNodes[rootNode] });
+  return `${newick};`;
+});
