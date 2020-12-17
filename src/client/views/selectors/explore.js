@@ -1,19 +1,19 @@
-import { createSelector } from "reselect";
-import { setApiStatus } from "../reducers/api";
-import { createCachedSelector } from "re-reselect";
-import { interpolateGreens } from "d3-scale-chromatic";
-import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
-import { formatter } from "../functions/formatter";
-import store from "../store";
 import {
-  getSummariesFetching,
-  getSummaries,
-  requestSummary,
   apiUrl,
+  getSummaries,
+  getSummariesFetching,
   receiveSummary,
-  // requestLineage,
-  // receiveLineage,
+  requestSummary,
 } from "../reducers/explore";
+import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
+
+import { createCachedSelector } from "re-reselect";
+import { createSelector } from "reselect";
+import { format } from "d3-format";
+import { formatter } from "../functions/formatter";
+import { interpolateGreens } from "d3-scale-chromatic";
+import { setApiStatus } from "../reducers/api";
+import store from "../store";
 
 export function fetchSummary(lineage, field, summary, result) {
   return async function (dispatch) {
@@ -92,9 +92,13 @@ const processHistogram = (summary) => {
         count,
         x,
         width,
-        ...(bin > xBinDomain[0] && { min: xBinScale(bin) }),
+        ...(bin > xBinDomain[0] && {
+          min: format(",.3~r")(xBinScale(bin)).replaceAll(",", ""),
+        }),
         ...(bin < xBinDomain[1] - 0.3 && {
-          max: xBinScale(summary.summary.buckets[i + 1].key),
+          max: format(",.3~r")(
+            xBinScale(summary.summary.buckets[i + 1].key)
+          ).replaceAll(",", ""),
         }),
       });
       max = Math.max(max, count);
