@@ -138,42 +138,48 @@ const SortableCell = ({
       <br />
       {(showExcludeBoxes && (
         <span className={css}>
-          <Tooltip
-            key={"direct"}
-            title={"Toggle directly measured values"}
-            arrow
-          >
-            <StyledCheckbox
-              checked={!excludeDirect.hasOwnProperty(name)}
-              onChange={() => handleTableSort({ toggleDirect: name })}
-              color={"green"}
-              inputProps={{ "aria-label": "direct checkbox" }}
-            />
-          </Tooltip>
-          <Tooltip
-            key={"descendant"}
-            title={"Toggle values inferred from descendant taxa"}
-            arrow
-          >
-            <StyledCheckbox
-              checked={!excludeDescendant.hasOwnProperty(name)}
-              onChange={() => handleTableSort({ toggleDescendant: name })}
-              color={"orange"}
-              inputProps={{ "aria-label": "descendant checkbox" }}
-            />
-          </Tooltip>
-          <Tooltip
-            key={"ancestral"}
-            title={"Toggle values inferred from ancestral taxa"}
-            arrow
-          >
-            <StyledCheckbox
-              checked={!excludeAncestral.hasOwnProperty(name)}
-              onChange={() => handleTableSort({ toggleAncestral: name })}
-              color={"red"}
-              inputProps={{ "aria-label": "ancestral checkbox" }}
-            />
-          </Tooltip>
+          {showExcludeBoxes == "all" && (
+            <Tooltip
+              key={"direct"}
+              title={"Toggle directly measured values"}
+              arrow
+            >
+              <StyledCheckbox
+                checked={!excludeDirect.hasOwnProperty(name)}
+                onChange={() => handleTableSort({ toggleDirect: name })}
+                color={"green"}
+                inputProps={{ "aria-label": "direct checkbox" }}
+              />
+            </Tooltip>
+          )}
+          {showExcludeBoxes == "all" && (
+            <Tooltip
+              key={"descendant"}
+              title={"Toggle values inferred from descendant taxa"}
+              arrow
+            >
+              <StyledCheckbox
+                checked={!excludeDescendant.hasOwnProperty(name)}
+                onChange={() => handleTableSort({ toggleDescendant: name })}
+                color={"orange"}
+                inputProps={{ "aria-label": "descendant checkbox" }}
+              />
+            </Tooltip>
+          )}
+          {showExcludeBoxes == "all" && (
+            <Tooltip
+              key={"ancestral"}
+              title={"Toggle values inferred from ancestral taxa"}
+              arrow
+            >
+              <StyledCheckbox
+                checked={!excludeAncestral.hasOwnProperty(name)}
+                onChange={() => handleTableSort({ toggleAncestral: name })}
+                color={"red"}
+                inputProps={{ "aria-label": "ancestral checkbox" }}
+              />
+            </Tooltip>
+          )}
           <Tooltip key={"missing"} title={"Toggle missing values"} arrow>
             <StyledCheckbox
               checked={!excludeMissing.hasOwnProperty(name)}
@@ -205,11 +211,19 @@ const ResultTable = ({
   const classes = useStyles();
   let sortBy = searchTerm.sortBy || "";
   let sortOrder = searchTerm.sortOrder || "asc";
-  const handleTaxonClick = (taxon_id, scientific_name) => {
+  const handleRecordClick = (record) => {
     setPreferSearchTerm(false);
+    let recordId, searchText;
+    if (searchIndex == "assembly") {
+      recordId = record.assembly_id;
+      searchText = record.assembly_id;
+    } else {
+      recordId = record.taxon_id;
+      searchText = record.scientific_name;
+    }
     navigate(
-      `records?taxon_id=${taxon_id}&result=${searchIndex}#${encodeURIComponent(
-        scientific_name
+      `records?record_id=${recordId}&result=${searchIndex}#${encodeURIComponent(
+        searchText
       )}`
     );
   };
@@ -299,12 +313,7 @@ const ResultTable = ({
         <TableCell
           key={"name"}
           style={{ cursor: "pointer" }}
-          onClick={() =>
-            handleTaxonClick(
-              result.result.taxon_id,
-              result.result.scientific_name
-            )
-          }
+          onClick={() => handleRecordClick(result.result)}
         >
           {name}
         </TableCell>
@@ -313,17 +322,25 @@ const ResultTable = ({
         <TableCell
           key={"taxon_id"}
           style={{ cursor: "pointer" }}
-          onClick={() =>
-            handleTaxonClick(
-              result.result.taxon_id,
-              result.result.scientific_name
-            )
-          }
+          onClick={() => handleRecordClick(result.result)}
         >
           {result.result.taxon_id}
         </TableCell>
       </Tooltip>,
     ];
+    if (searchIndex == "assembly") {
+      cells.push(
+        <Tooltip title={"Click to view record"} arrow>
+          <TableCell
+            key={"assembly_id"}
+            style={{ cursor: "pointer" }}
+            onClick={() => handleRecordClick(result.result)}
+          >
+            {result.result.assembly_id}
+          </TableCell>
+        </Tooltip>
+      );
+    }
     displayTypes.forEach((type) => {
       if (type.name != "sex_determination_system") {
         if (result.result.fields.hasOwnProperty(type.name)) {
@@ -338,10 +355,19 @@ const ResultTable = ({
           }
           cells.push(
             <TableCell key={type.name}>
-              <div className={styles.fieldValue}>
-                {value}
-                <AggregationIcon method={field.aggregation_source} />
-              </div>
+              <Grid
+                container
+                direction="row"
+                wrap="nowrap"
+                spacing={1}
+                alignItems={"center"}
+              >
+                <Grid item>
+                  <AggregationIcon method={field.aggregation_source} />
+                </Grid>
+
+                <Grid item>{value}</Grid>
+              </Grid>
             </TableCell>
           );
         } else {
@@ -355,12 +381,7 @@ const ResultTable = ({
           <IconButton
             aria-label="go to record"
             size="small"
-            onClick={() =>
-              handleTaxonClick(
-                result.result.taxon_id,
-                result.result.scientific_name
-              )
-            }
+            onClick={() => handleRecordClick(result.result)}
           >
             <KeyboardArrowRightIcon />
           </IconButton>
@@ -387,6 +408,18 @@ const ResultTable = ({
       handleTableSort={handleTableSort}
     />,
   ];
+  if (searchIndex == "assembly") {
+    heads.push(
+      <SortableCell
+        name={"assembly_id"}
+        classes={classes}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        sortDirection={sortBy === "assembly_id" ? sortOrder : false}
+        handleTableSort={handleTableSort}
+      />
+    );
+  }
   displayTypes.forEach((type) => {
     if (type.name != "sex_determination_system") {
       let sortDirection = sortBy === type.name ? sortOrder : false;
@@ -398,7 +431,7 @@ const ResultTable = ({
           sortOrder={sortOrder}
           sortDirection={sortDirection}
           handleTableSort={handleTableSort}
-          showExcludeBoxes={true}
+          showExcludeBoxes={searchIndex == "taxon" ? "all" : "missing"}
           excludeAncestral={arrToObj(searchTerm.excludeAncestral)}
           excludeDescendant={arrToObj(searchTerm.excludeDescendant)}
           excludeDirect={arrToObj(searchTerm.excludeDirect)}

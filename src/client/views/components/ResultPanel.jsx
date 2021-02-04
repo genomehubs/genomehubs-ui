@@ -84,8 +84,19 @@ const ResultPanel = ({
                 {field.id}
               </div>
               <div className={styles.fieldValue}>
-                <AggregationIcon method={field.aggregation_source} />
-                {value}
+                <Grid
+                  container
+                  direction="row"
+                  wrap="nowrap"
+                  spacing={1}
+                  alignItems={"center"}
+                >
+                  <Grid item>
+                    <AggregationIcon method={field.aggregation_source} />
+                  </Grid>
+
+                  <Grid item>{value}</Grid>
+                </Grid>
               </div>
               <div
                 className={styles.fieldCount}

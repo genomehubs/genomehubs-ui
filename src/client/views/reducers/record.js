@@ -1,4 +1,5 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
+
 import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
 import { setApiStatus } from "./api";
@@ -24,7 +25,7 @@ function onReceiveRecord(state, action) {
   const { payload, meta } = action;
   const { status, records } = payload;
   const record = records[0];
-  const id = record.record.taxon_id;
+  const id = record.record.record_id;
 
   const updatedWithRecordState = immutableUpdate(state, {
     byId: { [id]: record },
@@ -56,6 +57,7 @@ const records = handleActions(
 );
 
 export const getRecords = (state) => state.records.byId;
+export const getRecordIsFetching = (state) => state.records.isFetching;
 
 export function fetchRecord(taxonId, result) {
   return async function (dispatch) {
@@ -93,6 +95,8 @@ export const getCurrentRecord = createSelector(
   getRecords,
   getCurrentRecordId,
   (records, recordId) => {
+    console.log(records);
+    console.log(recordId);
     if (!recordId || !records[recordId]) {
       return {};
     }

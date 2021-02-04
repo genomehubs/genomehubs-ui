@@ -64,6 +64,13 @@ const TreePanel = ({
     y: undefined,
   });
 
+  const [dimensions, setDimensions] = useState({
+    x: 0,
+    y: 0,
+    height: 1000,
+    width: 1000,
+  });
+
   const [highlight, setHighlight] = useState();
 
   const anchorRef = useRef(null);
@@ -120,8 +127,14 @@ const TreePanel = ({
             onPointerEnter={(e) => highlightSegment(segment)}
             onPointerLeave={(e) => highlightSegment()}
             onClick={(e) => {
-              highlightSegment();
-              fetchTree(segment.taxon_id);
+              // highlightSegment();
+              // fetchTree(segment.taxon_id);
+              setDimensions({
+                x: 0,
+                y: 0,
+                width: 2000,
+                height: 1000,
+              });
             }}
             stroke="white"
             strokeWidth={strokeWidth}
@@ -162,6 +175,7 @@ const TreePanel = ({
           fill={"white"}
           style={{ pointerEvents: "none" }}
           textAnchor="middle"
+          fontSize={label.labelScale > 1 && `${label.labelScale * 10}pt`}
         >
           <textPath
             xlinkHref={`#${label.taxon_id}-label-path`}
@@ -243,7 +257,7 @@ const TreePanel = ({
               <svg
                 preserveAspectRatio="xMinYMin"
                 ref={anchorRef}
-                viewBox="0 0 1000 1000"
+                viewBox={`${dimensions.x} ${dimensions.y} ${dimensions.width} ${dimensions.height}`}
                 xmlns="http://www.w3.org/2000/svg"
                 xmlnsXlink="http://www.w3.org/1999/xlink"
               >

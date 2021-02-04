@@ -1,16 +1,19 @@
-import React from "react";
-import { connect } from "react-redux";
 import {
-  getCurrentRecord,
   fetchRecord,
+  getCurrentRecord,
   getCurrentRecordId,
+  getRecordIsFetching,
   setCurrentRecordId,
 } from "../reducers/record";
+
+import React from "react";
+import { connect } from "react-redux";
 import { getLineage } from "../selectors/record";
 
 const withRecord = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
     record: getCurrentRecord(state),
+    recordIsFetching: getRecordIsFetching(state),
     recordId: getCurrentRecordId(state),
     lineage: getLineage(state),
   });

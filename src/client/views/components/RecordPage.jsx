@@ -8,6 +8,7 @@ import SearchBox from "./SearchBox";
 import TextPanel from "./TextPanel";
 import classnames from "classnames";
 import { compose } from "recompose";
+import { getRecordIsFetching } from "../reducers/record";
 import qs from "qs";
 import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
@@ -20,6 +21,7 @@ const RecordPage = ({
   record,
   recordId,
   fetchRecord,
+  recordIsFetching,
   setRecordId,
   setLookupTerm,
   fetchSearchResults,
@@ -34,23 +36,44 @@ const RecordPage = ({
   let options = qs.parse(location.search.replace(/^\?/, ""));
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
   useEffect(() => {
+    console.log(recordIsFetching);
     if (options.result != searchIndex) {
+      console.log(1);
       setSearchIndex(options.result);
     }
-    if (options.taxon_id && options.taxon_id != recordId) {
-      setRecordId(options.taxon_id);
+    if (options.record_id && options.record_id != recordId) {
+      console.log(2);
+      setRecordId(options.record_id);
       let searchTerm = {
-        query: `tax_eq(${options.taxon_id})`,
         result: options.result,
         includeEstimates: true,
       };
+      if (options.result == "taxon") {
+        searchTerm.query = `tax_eq(${options.record_id})`;
+      } else {
+        searchTerm.query = "";
+      }
       setPreviousSearchTerm(searchTerm);
       fetchSearchResults(searchTerm);
     } else if (recordId) {
-      fetchRecord(recordId, options.result);
-    }
-    if (hashTerm) {
-      setLookupTerm(hashTerm);
+      if (
+        options.result == "taxon" &&
+        (!record.record || recordId != record.record.taxon_id)
+      ) {
+        console.log(3);
+        if (!recordIsFetching) fetchRecord(recordId, options.result);
+        if (hashTerm) setLookupTerm(hashTerm);
+      } else if (
+        options.result == "assembly" &&
+        (!record.record || recordId != record.record.assembly_id)
+      ) {
+        console.log(4);
+        console.log(options);
+        console.log(record);
+        console.log(recordId);
+        if (!recordIsFetching) fetchRecord(recordId, options.result);
+        if (hashTerm) setLookupTerm(hashTerm);
+      }
     }
   }, [options]);
   if (record && record.record && record.record.taxon_id) {
@@ -95,6 +118,7 @@ const RecordPage = ({
       });
     }
   }
+  console.log(record);
 
   let text = <TextPanel view={"records"}></TextPanel>;
 
