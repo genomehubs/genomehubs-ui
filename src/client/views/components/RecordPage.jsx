@@ -3,8 +3,8 @@ import React, { memo, useEffect } from "react";
 import AttributePanel from "./AttributePanel";
 import LineagePanel from "./LineagePanel";
 import NamesPanel from "./NamesPanel";
+import Page from "./Page";
 import ResultPanel from "./ResultPanel";
-import SearchBox from "./SearchBox";
 import TextPanel from "./TextPanel";
 import classnames from "classnames";
 import { compose } from "recompose";
@@ -118,25 +118,10 @@ const RecordPage = ({
       });
     }
   }
-  console.log(record);
 
   let text = <TextPanel view={"records"}></TextPanel>;
 
-  return (
-    <div className={styles.infoPage}>
-      <SearchBox />
-      <div
-        className={classnames(
-          styles.flexCenter,
-          styles.flexCenterHorizontal,
-          styles.fullWidth
-        )}
-      >
-        {results}
-        {text}
-      </div>
-    </div>
-  );
+  return <Page searchBox panels={[{ panel: results }]} text={text} />;
 };
 
 export default compose(

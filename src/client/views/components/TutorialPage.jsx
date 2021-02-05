@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import { compose } from "recompose";
+import Page from "./Page";
+import React from "react";
+import TextPanel from "./TextPanel";
 import classnames from "classnames";
 import styles from "./Styles.scss";
-import TextPanel from "./TextPanel";
 
 const TutorialPage = ({}) => {
   let direct = classnames(styles.underscore, styles.underscoreHigh);
@@ -98,19 +98,7 @@ const TutorialPage = ({}) => {
       </div>
     </TextPanel>
   );
-  return (
-    <div className={styles.infoPage}>
-      <div
-        className={classnames(
-          styles.flexCenter,
-          styles.flexCenterHorizontal,
-          styles.fullWidth
-        )}
-      >
-        {text}
-      </div>
-    </div>
-  );
+  return <Page searchBox text={text} />;
 };
 
 export default TutorialPage;

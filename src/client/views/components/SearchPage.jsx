@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from "react";
 
+import Page from "./Page";
 import ResultTable from "./ResultTable";
-import SearchBox from "./SearchBox";
 import SearchSummary from "./SearchSummary";
 import TextPanel from "./TextPanel";
 import TreePanel from "./TreePanel";
@@ -85,21 +85,15 @@ const SearchPage = ({
   let text = <TextPanel view={"search"}></TextPanel>;
 
   return (
-    <div className={styles.infoPage}>
-      <SearchBox />
-      <div
-        className={classnames(
-          styles.flexCenter,
-          styles.flexCenterHorizontal,
-          styles.fullWidth
-        )}
-      >
-        {summary}
-        {results}
-        {tree}
-        {text}
-      </div>
-    </div>
+    <Page
+      searchBox
+      panels={[
+        { panel: summary },
+        { panel: results, maxWidth: "100%" },
+        { panel: tree },
+      ]}
+      test={text}
+    />
   );
 };
 

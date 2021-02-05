@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 
+import Page from "./Page";
 import ResultPanel from "./ResultPanel";
-import SearchBox from "./SearchBox";
 import TextPanel from "./TextPanel";
 import classnames from "classnames";
 import { compose } from "recompose";
 import qs from "qs";
-import { setSearchIndex } from "../reducers/search";
 import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
@@ -98,21 +97,7 @@ const ExplorePage = ({
 
   let text = <TextPanel view={"explore"}></TextPanel>;
 
-  return (
-    <div className={styles.infoPage}>
-      <SearchBox />
-      <div
-        className={classnames(
-          styles.flexCenter,
-          styles.flexCenterHorizontal,
-          styles.fullWidth
-        )}
-      >
-        {results}
-        {text}
-      </div>
-    </div>
-  );
+  return <Page searchBox panels={[{ panel: results }]} text={text} />;
 };
 
 export default compose(

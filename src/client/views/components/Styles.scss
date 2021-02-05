@@ -18,6 +18,7 @@ body,
   overflow: visible;
   overscroll-behavior: none;
   width: 100%;
+  min-height: 100%;
 }
 
 .layout {
@@ -183,7 +184,7 @@ body,
     .infoPanel {
       background-color: transparent;
       margin: 1em 0;
-      width: 80%;
+      width: 100%;
       font-family: themed("bodyFont");
       font-size: themed("bodyFontSize");
 

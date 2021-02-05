@@ -95,8 +95,6 @@ export const getCurrentRecord = createSelector(
   getRecords,
   getCurrentRecordId,
   (records, recordId) => {
-    console.log(records);
-    console.log(recordId);
     if (!recordId || !records[recordId]) {
       return {};
     }

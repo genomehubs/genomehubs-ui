@@ -1,7 +1,7 @@
+import InfoPane from "./InfoPane";
 import React from "react";
 import classnames from "classnames";
 import styles from "./Styles.scss";
-import InfoPane from "./InfoPane";
 
 const InfoPanel = (props) => {
   let css = classnames(

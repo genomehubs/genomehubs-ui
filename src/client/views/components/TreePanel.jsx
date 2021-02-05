@@ -127,14 +127,14 @@ const TreePanel = ({
             onPointerEnter={(e) => highlightSegment(segment)}
             onPointerLeave={(e) => highlightSegment()}
             onClick={(e) => {
-              // highlightSegment();
-              // fetchTree(segment.taxon_id);
-              setDimensions({
-                x: 0,
-                y: 0,
-                width: 2000,
-                height: 1000,
-              });
+              highlightSegment();
+              fetchTree(segment.taxon_id);
+              // setDimensions({
+              //   x: 0,
+              //   y: 0,
+              //   width: 2000,
+              //   height: 1000,
+              // });
             }}
             stroke="white"
             strokeWidth={strokeWidth}
