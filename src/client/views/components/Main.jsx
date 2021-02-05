@@ -1,10 +1,11 @@
-import React, { memo } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import { Router } from "@reach/router";
+import React, { Fragment, memo } from "react";
 
-import styles from "./Styles.scss";
+import { Router } from "@reach/router";
+import classnames from "classnames";
+import { compose } from "recompose";
 import loadable from "@loadable/component";
+import styles from "./Styles.scss";
+
 const Landing = loadable(() => import("./Landing"));
 const ExplorePage = loadable(() => import("./ExplorePage"));
 const RecordPage = loadable(() => import("./RecordPage"));
@@ -16,12 +17,12 @@ const basename = BASENAME || "view";
 
 const Main = (props) => {
   let css = classnames(
-    styles.flexCenter,
-    styles.flexCenterHorizontal,
+    // styles.flexCenter,
+    // styles.flexCenterHorizontal,
     styles.fillParent
   );
   return (
-    <main className={css}>
+    <Fragment>
       <Router className={css} basepath={basename} primary={false}>
         <Landing path="/" />
         <SearchPage path="/search" />
@@ -30,7 +31,7 @@ const Main = (props) => {
         <TutorialPage path="/tutorials" />
         <AboutPage path="/about" />
       </Router>
-    </main>
+    </Fragment>
   );
 };
 

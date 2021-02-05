@@ -38,11 +38,12 @@ const StyledTableRow = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: "95%",
+    maxWidth: "100%",
     marginBottom: "1em",
+    minWidth: 750,
   },
   table: {
-    maxWidth: "95%",
+    maxWidth: "100%",
     minWidth: 750,
   },
   ["PrivateSwitchBase-root-4"]: {

@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
+import Page from "./Page";
+import React from "react";
 import TextPanel from "./TextPanel";
+import styles from "./Styles.scss";
 
 const AboutPage = ({}) => {
   let text = (
@@ -80,19 +79,7 @@ const AboutPage = ({}) => {
     </TextPanel>
   );
 
-  return (
-    <div className={styles.infoPage}>
-      <div
-        className={classnames(
-          styles.flexCenter,
-          styles.flexCenterHorizontal,
-          styles.fullWidth
-        )}
-      >
-        {text}
-      </div>
-    </div>
-  );
+  return <Page searchBox text={text} />;
 };
 
 export default AboutPage;
