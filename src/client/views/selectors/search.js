@@ -30,7 +30,10 @@ export function fetchSearchResults(options, navigate) {
       options.result = "assembly";
     }
     if (options.result == "taxon" && !options.query.match(/[\(\)<>=\n\*]/)) {
-      options.query = `tax_tree(${options.query})`;
+      if (!options.hasOwnProperty("includeEstimates")) {
+        options.includeEstimates = true;
+      }
+      options.query = `tax_name(${options.query})`;
     }
     if (!options.hasOwnProperty("summaryValues")) {
       options.summaryValues = "count";
@@ -54,6 +57,7 @@ export function fetchSearchResults(options, navigate) {
       if (!json.results || json.results.length == 0) {
         if (!searchTerm.match(/[\(\)<>=\n\*]/)) {
           options.query = `tax_name(${searchTerm})`;
+          console.log(options);
           dispatch(setPreferSearchTerm(true));
           dispatch(fetchSearchResults(options, navigate));
           // } else if (searchTerm.match(/tax_tree/)) {

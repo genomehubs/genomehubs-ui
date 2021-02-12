@@ -12,6 +12,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import SearchIcon from "@material-ui/icons/Search";
 import Switch from "@material-ui/core/Switch";
+import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import VariableFilter from "./VariableFilter";
 import { compose } from "recompose";
@@ -339,66 +340,99 @@ const SearchOptions = ({
     <Paper className={classes.paper}>
       <Grid container alignItems="center" direction="column" spacing={2}>
         <Grid container alignItems="center" direction="row" spacing={2}>
-          <Grid item>
-            <BasicTextField
-              id={"taxon-filter-taxon"}
-              handleChange={handleTaxonFilterChange}
-              helperText={"taxon"}
-              value={taxFilter.taxon}
-            />
-          </Grid>
+          <Tooltip title="Taxon ID or scientific name" arrow placement={"top"}>
+            <Grid item>
+              <BasicTextField
+                id={"taxon-filter-taxon"}
+                handleChange={handleTaxonFilterChange}
+                helperText={"taxon"}
+                value={taxFilter.taxon}
+              />
+            </Grid>
+          </Tooltip>
           {taxFilter.taxon && (
+            <Tooltip
+              title={`Toggle switch to ${
+                taxFilter.filter == "tax_tree"
+                  ? "exclude descendant taxa from"
+                  : "include descendant taxa in"
+              } results`}
+              arrow
+              placement={"top"}
+            >
+              <Grid item>
+                <FormControl className={classes.formControl}>
+                  <Switch
+                    id={"taxon-filter-filter"}
+                    checked={taxFilter.filter == "tax_tree"}
+                    onChange={handleTaxonFilterChange}
+                    name="filter-type"
+                    color="default"
+                  />
+                  <FormHelperText>
+                    {taxFilter.filter == "tax_tree"
+                      ? "include descendants"
+                      : "ignore descendants"}
+                  </FormHelperText>
+                </FormControl>
+              </Grid>
+            </Tooltip>
+          )}
+          <Tooltip
+            title="Restrict results to a given taxonomic rank"
+            arrow
+            placement={"top"}
+          >
+            <Grid item>
+              <BasicSelect
+                id={"taxon-filter-rank"}
+                handleChange={handleTaxonFilterChange}
+                helperText={"rank"}
+                current={taxFilter.rank}
+                values={ranks}
+              />
+            </Grid>
+          </Tooltip>
+          <Tooltip
+            title={`Toggle switch to ${
+              moreOptions.includeEstimates
+                ? "exclude taxa with only estimated values from"
+                : "include all taxa in"
+            } results`}
+            arrow
+            placement={"top"}
+          >
             <Grid item>
               <FormControl className={classes.formControl}>
                 <Switch
-                  id={"taxon-filter-filter"}
-                  checked={taxFilter.filter == "tax_tree"}
+                  id={"taxon-filter-estimates"}
+                  checked={moreOptions.includeEstimates}
                   onChange={handleTaxonFilterChange}
-                  name="filter-type"
+                  name="filter-estimates"
                   color="default"
                 />
                 <FormHelperText>
-                  {taxFilter.filter == "tax_tree"
-                    ? "include descendants"
-                    : "ignore descendants"}
+                  {moreOptions.includeEstimates
+                    ? "include estimates"
+                    : "ignore estimates"}
                 </FormHelperText>
               </FormControl>
             </Grid>
-          )}
-
-          <Grid item>
-            <BasicSelect
-              id={"taxon-filter-rank"}
-              handleChange={handleTaxonFilterChange}
-              helperText={"rank"}
-              current={taxFilter.rank}
-              values={ranks}
-            />
-          </Grid>
-          <Grid item>
-            <FormControl className={classes.formControl}>
-              <Switch
-                id={"taxon-filter-estimates"}
-                checked={moreOptions.includeEstimates}
-                onChange={handleTaxonFilterChange}
-                name="filter-estimates"
-                color="default"
+          </Tooltip>
+          <Tooltip
+            title="Limit search to a given taxonomic depth"
+            arrow
+            placement={"top"}
+          >
+            <Grid item>
+              <BasicTextField
+                id={"taxon-filter-depth"}
+                handleChange={handleTaxonFilterChange}
+                helperText={"depth"}
+                value={taxFilter.depth}
               />
-              <FormHelperText>
-                {moreOptions.includeEstimates
-                  ? "include estimates"
-                  : "ignore estimates"}
-              </FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item>
-            <BasicTextField
-              id={"taxon-filter-depth"}
-              handleChange={handleTaxonFilterChange}
-              helperText={"depth"}
-              value={taxFilter.depth}
-            />
-          </Grid>
+            </Grid>
+          </Tooltip>
         </Grid>
         {filterOptions}
         <Grid container alignItems="right" direction="row">
