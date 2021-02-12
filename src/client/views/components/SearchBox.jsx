@@ -129,6 +129,9 @@ const SearchBox = ({
   let [result, setResult] = useState(searchIndex);
   let fields = searchTerm.fields;
   const dispatchSearch = (options, term) => {
+    if (!options.hasOwnProperty("includeEstimates")) {
+      options.includeEstimates = true;
+    }
     fetchSearchResults(options);
     setPreferSearchTerm(false);
     navigate(`search?${qs.stringify(options)}#${encodeURIComponent(term)}`);
