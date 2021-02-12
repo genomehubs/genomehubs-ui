@@ -76,8 +76,10 @@ const SearchPage = ({
     }
   }, [options, hashTerm, isFetching]);
   let summary;
+  let resultCount;
   if (searchResults.status && searchResults.status.hasOwnProperty("hits")) {
-    summary = <SearchSummary />;
+    resultCount = searchResults.isFetching ? -1 : searchResults.status.hits;
+    // summary = <SearchSummary />;
   }
   results = <ResultTable />;
 
@@ -88,11 +90,12 @@ const SearchPage = ({
     <Page
       searchBox
       panels={[
-        { panel: summary },
+        // { panel: summary },
         { panel: results, maxWidth: "100%" },
         { panel: tree },
       ]}
       test={text}
+      resultCount={resultCount}
     />
   );
 };

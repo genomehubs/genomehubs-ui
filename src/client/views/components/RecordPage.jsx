@@ -78,24 +78,25 @@ const RecordPage = ({
     results.push(
       <ResultPanel key={taxon.taxon_id} {...searchById} {...taxon} />
     );
-
-    if (record.record.lineage) {
-      results.push(
-        <LineagePanel
-          key={"lineage"}
-          taxon_id={taxon.taxon_id}
-          lineage={record.record.lineage.slice().reverse()}
-        />
-      );
-    }
-    if (record.record.taxon_names) {
-      results.push(
-        <NamesPanel
-          key={"names"}
-          taxon_id={taxon.taxon_id}
-          names={record.record.taxon_names}
-        />
-      );
+    if (options.result == "taxon") {
+      if (record.record.lineage) {
+        results.push(
+          <LineagePanel
+            key={"lineage"}
+            taxon_id={taxon.taxon_id}
+            lineage={record.record.lineage.slice().reverse()}
+          />
+        );
+      }
+      if (record.record.taxon_names) {
+        results.push(
+          <NamesPanel
+            key={"names"}
+            taxon_id={taxon.taxon_id}
+            names={record.record.taxon_names}
+          />
+        );
+      }
     }
 
     results.push(
@@ -105,20 +106,16 @@ const RecordPage = ({
         result={options.result}
       />
     );
-
+    console.log(record.record.attributes);
     if (record.record.attributes) {
-      Object.keys(record.record.attributes).forEach((key) => {
-        let field = record.record.attributes[key];
-        field.id = key;
-        results.push(
-          <AttributePanel
-            key={field.id}
-            taxon_id={taxon.taxon_id}
-            field={field}
-            meta={types[key]}
-          />
-        );
-      });
+      console.log(true);
+      results.push(
+        <AttributePanel
+          key={"attributes"}
+          attributes={record.record.attributes}
+          result={options.result}
+        />
+      );
     }
   }
 
@@ -127,6 +124,8 @@ const RecordPage = ({
   return (
     <Page
       id={"record-page"}
+      result={options.result}
+      recordId={recordId}
       searchBox
       panels={[{ panel: results }]}
       text={text}

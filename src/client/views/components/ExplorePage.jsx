@@ -97,7 +97,14 @@ const ExplorePage = ({
 
   let text = <TextPanel view={"explore"}></TextPanel>;
 
-  return <Page searchBox panels={[{ panel: results }]} text={text} />;
+  return (
+    <Page
+      searchBox
+      panels={[{ panel: results }]}
+      text={text}
+      fieldId={summaryField.replaceAll("_", " ")}
+    />
+  );
 };
 
 export default compose(
