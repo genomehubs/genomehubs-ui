@@ -1,5 +1,5 @@
+import { arc, lineRadial } from "d3-shape";
 import {
-  apiUrl,
   cancelNodesRequest,
   getNodes,
   getRootNode,
@@ -9,7 +9,6 @@ import {
   resetNodes,
   setRootNode,
 } from "../reducers/tree";
-import { arc, lineRadial } from "d3-shape";
 import { scaleLinear, scalePow } from "d3-scale";
 import {
   schemeGreens,
@@ -19,6 +18,7 @@ import {
   schemeReds,
 } from "d3-scale-chromatic";
 
+import { apiUrl } from "../reducers/api";
 import { createSelector } from "reselect";
 import qs from "qs";
 import store from "../store";

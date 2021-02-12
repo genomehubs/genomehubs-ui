@@ -105,7 +105,7 @@ const ResultPanel = ({
           </Grid>
         </Tooltip>
       );
-      if (types[field.id].traverse) {
+      if (types[field.id] && types[field.id].traverse) {
         let group = types[field.id].display_group;
         if (!groupedDivs.hasOwnProperty(group)) {
           groupedDivs[group] = [];

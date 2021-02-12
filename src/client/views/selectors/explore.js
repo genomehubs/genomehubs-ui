@@ -1,5 +1,5 @@
+import { apiUrl, setApiStatus } from "../reducers/api";
 import {
-  apiUrl,
   getSummaries,
   getSummariesFetching,
   receiveSummary,
@@ -12,7 +12,6 @@ import { createSelector } from "reselect";
 import { format } from "d3-format";
 import { formatter } from "../functions/formatter";
 import { interpolateGreens } from "d3-scale-chromatic";
-import { setApiStatus } from "../reducers/api";
 import store from "../store";
 
 export function fetchSummary(lineage, field, summary, result) {

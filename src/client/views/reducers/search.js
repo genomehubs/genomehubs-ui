@@ -1,10 +1,10 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
+
+import { apiUrl } from "./api";
+import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
-import { createCachedSelector } from "re-reselect";
 import qs from "qs";
-
-export const apiUrl = API_URL || "/api/v1";
 
 export const requestSearch = createAction("REQUEST_SEARCH");
 export const receiveSearch = createAction(

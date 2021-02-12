@@ -1,7 +1,6 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
-import immutableUpdate from "immutable-update";
 
-export const apiUrl = API_URL || "/api/v1";
+import immutableUpdate from "immutable-update";
 
 export const requestSummary = createAction("REQUEST_SUMMARY");
 export const receiveSummary = createAction(
