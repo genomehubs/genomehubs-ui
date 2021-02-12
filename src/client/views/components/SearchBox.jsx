@@ -12,6 +12,7 @@ import SearchOptions from "./SearchOptions";
 import SearchSettings from "./SearchSettings";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/TextField";
+import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import classnames from "classnames";
 import { compose } from "recompose";
@@ -341,32 +342,40 @@ const SearchBox = ({
                   }}
                   style={{ textAlign: "right", cursor: "pointer" }}
                 >
-                  Advanced search
+                  {showOptions ? "Hide" : "Show"} search options&hellip;
                 </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={1}>
-              <IconButton
-                className={classes.search}
-                aria-label="submit search"
-                type="submit"
-              >
-                <SearchIcon />
-              </IconButton>
+              <Tooltip title="Click to search" arrow placement={"top"}>
+                <IconButton
+                  className={classes.search}
+                  aria-label="submit search"
+                  type="submit"
+                >
+                  <SearchIcon />
+                </IconButton>
+              </Tooltip>
             </Grid>
             <Grid item xs={1}>
-              <IconButton
-                className={classes.search}
-                aria-label="search settings"
-                onClick={() => {
-                  setShowSettings(!showSettings);
-                  setShowOptions(false);
-                }}
+              <Tooltip
+                title="Open search setting to show/hide columns"
+                arrow
+                placement={"top"}
               >
-                <SettingsIcon
-                  style={{ transform: showSettings ? "rotate(90deg)" : "" }}
-                />
-              </IconButton>
+                <IconButton
+                  className={classes.search}
+                  aria-label="search settings"
+                  onClick={() => {
+                    setShowSettings(!showSettings);
+                    setShowOptions(false);
+                  }}
+                >
+                  <SettingsIcon
+                    style={{ transform: showSettings ? "rotate(90deg)" : "" }}
+                  />
+                </IconButton>
+              </Tooltip>
             </Grid>
           </Grid>
           <Popper
