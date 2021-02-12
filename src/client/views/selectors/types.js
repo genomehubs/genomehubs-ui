@@ -6,11 +6,10 @@ import {
   requestTypes,
 } from "../reducers/types";
 
+import { apiUrl } from "../reducers/api";
 import { createSelector } from "reselect";
 import { setApiStatus } from "../reducers/api";
 import store from "../store";
-
-export const apiUrl = API_URL || "/api/v1";
 
 export const getTypesMap = createSelector(
   getTypes,

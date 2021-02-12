@@ -17,3 +17,5 @@ export const formatter = (value) => {
   }
   return format(",.3~s")(value);
 };
+
+export default formatter;

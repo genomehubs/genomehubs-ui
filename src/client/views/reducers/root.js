@@ -1,8 +1,9 @@
-import { combineReducers } from "redux";
-
+import { analysisReducers } from "./analysis";
 import { apiReducers } from "./api";
 import { colorReducers } from "./color";
+import { combineReducers } from "redux";
 import { exploreReducers } from "./explore";
+import { fileReducers } from "./file";
 import { lookupReducers } from "./lookup";
 import { paneReducers } from "./panes";
 import { recordReducers } from "./record";
@@ -13,9 +14,11 @@ import { typeReducers } from "./types";
 
 const allReducers = Object.assign(
   {},
+  analysisReducers,
   apiReducers,
   colorReducers,
   exploreReducers,
+  fileReducers,
   lookupReducers,
   paneReducers,
   recordReducers,

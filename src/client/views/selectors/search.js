@@ -1,5 +1,5 @@
+import { apiUrl, setApiStatus } from "../reducers/api";
 import {
-  apiUrl,
   cancelSearch,
   getSearchHistory,
   receiveSearch,
@@ -11,7 +11,6 @@ import {
 } from "../reducers/search";
 
 import qs from "qs";
-import { setApiStatus } from "../reducers/api";
 import { setTreeQuery } from "../reducers/tree";
 import store from "../store";
 

@@ -5,8 +5,6 @@ import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
 import qs from "qs";
 
-export const apiUrl = API_URL || "/api/v1";
-
 export const requestNodes = createAction("REQUEST_NODES");
 export const receiveNodes = createAction("RECEIVE_NODES");
 export const cancelNodesRequest = createAction("CANCEL_NODES_REQUEST");

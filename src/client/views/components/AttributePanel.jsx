@@ -50,7 +50,7 @@ const NestedTable = ({ values, types }) => {
   return (
     <span className={styles.disableTheme}>
       <Box margin={1}>
-        <Table size="small" aria-label="purchases">
+        <Table size="small" aria-label="raw values">
           <TableHead>
             <TableRow>
               <TableCell>Value</TableCell>
@@ -189,7 +189,7 @@ const AttributePanel = ({ field, meta, types }) => {
       }
     });
 
-    if (source == "direct") {
+    if (source == "direct" && field.values) {
       raw = (
         <TableRow>
           <TableCell

@@ -1,5 +1,6 @@
 import React, { memo, useEffect } from "react";
 
+import AnalysisPanel from "./AnalysisPanel";
 import AttributePanel from "./AttributePanel";
 import LineagePanel from "./LineagePanel";
 import NamesPanel from "./NamesPanel";
@@ -36,13 +37,10 @@ const RecordPage = ({
   let options = qs.parse(location.search.replace(/^\?/, ""));
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
   useEffect(() => {
-    console.log(recordIsFetching);
     if (options.result != searchIndex) {
-      console.log(1);
       setSearchIndex(options.result);
     }
     if (options.record_id && options.record_id != recordId) {
-      console.log(2);
       setRecordId(options.record_id);
       let searchTerm = {
         result: options.result,
@@ -60,17 +58,12 @@ const RecordPage = ({
         options.result == "taxon" &&
         (!record.record || recordId != record.record.taxon_id)
       ) {
-        console.log(3);
         if (!recordIsFetching) fetchRecord(recordId, options.result);
         if (hashTerm) setLookupTerm(hashTerm);
       } else if (
         options.result == "assembly" &&
         (!record.record || recordId != record.record.assembly_id)
       ) {
-        console.log(4);
-        console.log(options);
-        console.log(record);
-        console.log(recordId);
         if (!recordIsFetching) fetchRecord(recordId, options.result);
         if (hashTerm) setLookupTerm(hashTerm);
       }
@@ -85,6 +78,7 @@ const RecordPage = ({
     results.push(
       <ResultPanel key={taxon.taxon_id} {...searchById} {...taxon} />
     );
+
     if (record.record.lineage) {
       results.push(
         <LineagePanel
@@ -103,6 +97,15 @@ const RecordPage = ({
         />
       );
     }
+
+    results.push(
+      <AnalysisPanel
+        key={"analysis"}
+        recordId={record.record.record_id}
+        result={options.result}
+      />
+    );
+
     if (record.record.attributes) {
       Object.keys(record.record.attributes).forEach((key) => {
         let field = record.record.attributes[key];
@@ -121,7 +124,14 @@ const RecordPage = ({
 
   let text = <TextPanel view={"records"}></TextPanel>;
 
-  return <Page searchBox panels={[{ panel: results }]} text={text} />;
+  return (
+    <Page
+      id={"record-page"}
+      searchBox
+      panels={[{ panel: results }]}
+      text={text}
+    />
+  );
 };
 
 export default compose(
