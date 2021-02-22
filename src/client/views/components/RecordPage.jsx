@@ -106,12 +106,12 @@ const RecordPage = ({
         result={options.result}
       />
     );
-    console.log(record.record.attributes);
+
     if (record.record.attributes) {
-      console.log(true);
       results.push(
         <AttributePanel
           key={"attributes"}
+          taxonId={taxon.taxon_id}
           attributes={record.record.attributes}
           result={options.result}
         />

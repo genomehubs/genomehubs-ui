@@ -30,6 +30,8 @@ const VariableFilter = ({
     "<": "<",
     "<=": "<=",
     "=": "=",
+    "==": "==",
+    contains: "contains",
   };
   return (
     <Grid container alignItems="center" direction="row" spacing={2}>

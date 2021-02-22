@@ -70,6 +70,9 @@ const compare = {
   "<": (a, b) => a < b,
   "<=": (a, b) => a <= b,
   "=": (a, b) => (Array.isArray(a) ? a.includes(b) : a == b),
+  "==": (a, b) => (Array.isArray(a) ? a.includes(b) : a == b),
+  contains: (a, b) =>
+    Array.isArray(a) ? a.some((value) => value.includes(b)) : a.includes(b),
 };
 
 const test_condition = (meta, operator, value) => {

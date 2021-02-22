@@ -1,10 +1,11 @@
 import React, { Fragment, useState } from "react";
+import { useLocation, useNavigate } from "@reach/router";
 
-import AggregationIcon from "./AggregationIcon";
 import Box from "@material-ui/core/TableContainer";
 import Collapse from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import LaunchIcon from "@material-ui/icons/Launch";
 import Table from "@material-ui/core/Table";
@@ -20,9 +21,10 @@ import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
 import loadable from "@loadable/component";
 import { makeStyles } from "@material-ui/core/styles";
+import qs from "qs";
 import styles from "./Styles.scss";
-import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
+import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
 
@@ -110,10 +112,40 @@ const NestedTable = ({ values, types }) => {
   );
 };
 
-const AttributeTableRow = ({ attributeId, meta, currentResult, types }) => {
+const AttributeTableRow = ({
+  attributeId,
+  taxonId,
+  meta,
+  currentResult,
+  types,
+  setSummaryField,
+  setPreferSearchTerm,
+}) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [open, setOpen] = useState(false);
+
+  const handleAncestorClick = (fieldId) => {
+    setSummaryField(fieldId);
+    setPreferSearchTerm(false);
+    navigate(
+      `explore?taxon_id=${taxonId}&result=${currentResult}&field_id=${fieldId}${location.hash}`
+    );
+  };
+
+  const handleDescendantClick = (fieldId) => {
+    let options = {
+      query: `tax_tree(${taxonId})`,
+      result: currentResult,
+      includeEstimates: false,
+      fields: fieldId,
+      summaryValues: "count",
+    };
+    navigate(
+      `search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
+    );
+  };
 
   const classes = useRowStyles();
   let fieldKeys = [];
@@ -167,6 +199,30 @@ const AttributeTableRow = ({ attributeId, meta, currentResult, types }) => {
                   onClick={() => setOpen(!open)}
                 >
                   {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                </IconButton>
+              </span>
+            );
+          } else if (meta[key.key] == "descendant") {
+            icon = (
+              <span className={styles.disableTheme}>
+                <IconButton
+                  aria-label="show descendant values"
+                  size="small"
+                  onClick={() => handleDescendantClick(attributeId)}
+                >
+                  <KeyboardArrowRightIcon />
+                </IconButton>
+              </span>
+            );
+          } else if (meta[key.key] == "ancestor") {
+            icon = (
+              <span className={styles.disableTheme}>
+                <IconButton
+                  aria-label="show ancestral values"
+                  size="small"
+                  onClick={() => handleAncestorClick(attributeId)}
+                >
+                  <KeyboardArrowRightIcon />
                 </IconButton>
               </span>
             );
@@ -225,4 +281,9 @@ const AttributeTableRow = ({ attributeId, meta, currentResult, types }) => {
   );
 };
 
-export default compose(withRecord, withSummary, withTypes)(AttributeTableRow);
+export default compose(
+  withRecord,
+  withSummary,
+  withSearch,
+  withTypes
+)(AttributeTableRow);

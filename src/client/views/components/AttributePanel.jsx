@@ -17,7 +17,7 @@ import { useNavigate } from "@reach/router";
 import withAnalysesByAnyId from "../hocs/withAnalysesByAnyId";
 import withAnalysis from "../hocs/withAnalysis";
 
-const AttributePanel = ({ attributes, result }) => {
+const AttributePanel = ({ attributes, result, taxonId }) => {
   let css = classnames(
     styles.infoPanel,
     styles[`infoPanel1Column`],
@@ -25,12 +25,13 @@ const AttributePanel = ({ attributes, result }) => {
   );
 
   let attributeTable;
-  console.log(attributes);
+  // console.log(attributes);
   if (attributes) {
     let tableRows = Object.keys(attributes).map((attributeId) => {
       return (
         <AttributeTableRow
           attributeId={attributeId}
+          taxonId={taxonId}
           key={attributeId}
           currentResult={result}
           meta={attributes[attributeId]}
