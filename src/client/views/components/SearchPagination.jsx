@@ -41,16 +41,10 @@ const SearchPagination = ({
     setPreferSearchTerm(true);
     setSearchTerm(options);
   };
-
+  if (resultCount <= 10) {
+    return null;
+  }
   return (
-    // <div
-    //   style={{
-    //     flex: "0 1 auto",
-    //     position: "absolute",
-    //     left: "50%",
-    //     transform: "translateX(-50%)",
-    //   }}
-    // >
     <TablePagination
       rowsPerPageOptions={[10, 25, 50, 100]}
       component="div"
@@ -60,7 +54,6 @@ const SearchPagination = ({
       onChangePage={handleChange}
       onChangeRowsPerPage={handleChangeRowsPerPage}
     />
-    // </div>
   );
 };
 

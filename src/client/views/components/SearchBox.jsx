@@ -132,6 +132,9 @@ const SearchBox = ({
     if (!options.hasOwnProperty("includeEstimates")) {
       options.includeEstimates = true;
     }
+    if (!options.hasOwnProperty("summaryValues")) {
+      options.summaryValues = "count";
+    }
     fetchSearchResults(options);
     setPreferSearchTerm(false);
     navigate(`search?${qs.stringify(options)}#${encodeURIComponent(term)}`);

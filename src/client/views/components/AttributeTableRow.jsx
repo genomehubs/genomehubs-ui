@@ -77,20 +77,33 @@ const NestedTable = ({ values, types }) => {
               } else if (url) {
                 link_url = url;
               }
+              let linkCell = (
+                <TableCell>
+                  {link_url ? (
+                    <a href={link_url} target="_blank">
+                      {link} <LaunchIcon fontSize="inherit" />
+                    </a>
+                  ) : (
+                    link
+                  )}
+                </TableCell>
+              );
               return (
                 <TableRow key={i}>
                   <TableCell component="th" scope="row">
                     {row.value}
                   </TableCell>
-                  <TableCell>
-                    {link_url ? (
-                      <a href={link_url} target="_blank">
-                        {link} <LaunchIcon fontSize="inherit" />
-                      </a>
-                    ) : (
-                      link
-                    )}
-                  </TableCell>
+                  {row.source_description ? (
+                    <Tooltip
+                      title={row.source_description}
+                      arrow
+                      placement={"top"}
+                    >
+                      {linkCell}
+                    </Tooltip>
+                  ) : (
+                    linkCell
+                  )}
                   <TableCell>{row.comment}</TableCell>
                 </TableRow>
               );

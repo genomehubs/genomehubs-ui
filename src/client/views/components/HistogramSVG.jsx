@@ -22,7 +22,7 @@ const HistogramSVG = ({
   searchIndex,
   fetchSearchResults,
   setPreferSearchTerm,
-  resetLookup,
+  setLookupTerm,
 }) => {
   const navigate = useNavigate();
 
@@ -48,16 +48,15 @@ const HistogramSVG = ({
       query,
       searchRawValues: true,
       includeEstimates: false,
+      summaryValues: "count",
       result: "taxon",
     });
   };
   const updateSearch = (options) => {
-    // fetchSearchResults(options);
+    let hashTerm = encodeURIComponent(options.query);
     setPreferSearchTerm(false);
-    navigate(
-      `search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
-    );
-    resetLookup();
+    setLookupTerm(hashTerm);
+    navigate(`search?${qs.stringify(options)}#${hashTerm}`);
   };
   let buckets = [];
   let ticks = [];

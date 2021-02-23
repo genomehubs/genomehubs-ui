@@ -11,6 +11,7 @@ import qs from "qs";
 import shallow from "shallowequal";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
+import withLookup from "../hocs/withLookup";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSetLookup from "../hocs/withSetLookup";
@@ -19,6 +20,7 @@ const SearchPage = ({
   searchResults,
   searchResultArray,
   setLookupTerm,
+  lookupTerm,
   searchTerm,
   setSearchTerm,
   setSearchIndex,
@@ -43,34 +45,36 @@ const SearchPage = ({
             setSearchIndex(options.result);
             fetchSearchResults(searchTerm);
           }
-          // options = { ...searchTerm };
-          // setPreferSearchTerm(false);
-          // navigate(`search?${qs.stringify(searchTerm)}${location.hash}`);
         } else {
-          let hashedNav = (path) => {
-            let from = `search?${qs.stringify(previousSearchTerm)}${
-              location.hash
-            }`;
-            let to = `${path}#${encodeURIComponent(hashTerm)}`;
-            if (to != from) {
-              navigate(to);
+          if (Object.keys(previousSearchTerm).length > 0) {
+            let hashedNav = (path) => {
+              let to = path;
+              let from = `search?${qs.stringify(previousSearchTerm)}`;
+              if (to != from) {
+                navigate(`${path}#${encodeURIComponent(hashTerm)}`);
+              }
+            };
+            if (!shallow(options, previousSearchTerm)) {
+              setPreviousSearchTerm(options);
+              setSearchIndex(options.result);
+              fetchSearchResults(options, hashedNav);
             }
-          };
-          if (!shallow(options, previousSearchTerm)) {
+          } else {
+            let hashedNav = (path) => {
+              navigate(`${path}#${encodeURIComponent(hashTerm)}`);
+            };
             setPreviousSearchTerm(options);
             setSearchIndex(options.result);
             fetchSearchResults(options, hashedNav);
           }
         }
-
-        // }
       } else if (searchTerm.query && !options.query) {
         setPreviousSearchTerm({});
         setSearchTerm({});
         setSearchIndex("multi");
         fetchSearchResults({});
       }
-      if (hashTerm) {
+      if (hashTerm != lookupTerm) {
         setLookupTerm(hashTerm);
       }
     }
@@ -100,4 +104,10 @@ const SearchPage = ({
   );
 };
 
-export default compose(memo, withSetLookup, withSearch, withRecord)(SearchPage);
+export default compose(
+  memo,
+  withSetLookup,
+  withLookup,
+  withSearch,
+  withRecord
+)(SearchPage);

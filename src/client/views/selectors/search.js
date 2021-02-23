@@ -35,9 +35,9 @@ export function fetchSearchResults(options, navigate) {
       }
       options.query = `tax_name(${options.query})`;
     }
-    if (!options.hasOwnProperty("summaryValues")) {
-      options.summaryValues = "count";
-    }
+    // if (!options.hasOwnProperty("summaryValues")) {
+    //   options.summaryValues = "count";
+    // }
     // dispatch(setSearchIndex(options.result));
     // dispatch(fetchTypes(options.result));
     dispatch(requestSearch());
