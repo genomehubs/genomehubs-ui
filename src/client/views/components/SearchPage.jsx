@@ -20,7 +20,7 @@ const SearchPage = ({
   searchResults,
   searchResultArray,
   setLookupTerm,
-  lookupTerm,
+  // lookupTerm,
   searchTerm,
   setSearchTerm,
   setSearchIndex,
@@ -36,6 +36,7 @@ const SearchPage = ({
   let options = qs.parse(location.search.replace(/^\?/, ""));
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
   let isFetching = searchResults.isFetching;
+  let values = Object.values(options);
   useEffect(() => {
     if (!isFetching) {
       if (options.query && !shallow(options, searchTerm)) {
@@ -43,6 +44,7 @@ const SearchPage = ({
           if (!shallow(searchTerm, previousSearchTerm)) {
             setPreviousSearchTerm(searchTerm);
             setSearchIndex(options.result);
+            setLookupTerm(hashTerm);
             fetchSearchResults(searchTerm);
           }
         } else {
@@ -51,12 +53,13 @@ const SearchPage = ({
               let to = path;
               let from = `search?${qs.stringify(previousSearchTerm)}`;
               if (to != from) {
-                navigate(`${path}#${encodeURIComponent(hashTerm)}`);
+                // navigate(`${path}#${encodeURIComponent(hashTerm)}`);
               }
             };
             if (!shallow(options, previousSearchTerm)) {
               setPreviousSearchTerm(options);
               setSearchIndex(options.result);
+              setLookupTerm(hashTerm);
               fetchSearchResults(options, hashedNav);
             }
           } else {
@@ -65,6 +68,7 @@ const SearchPage = ({
             };
             setPreviousSearchTerm(options);
             setSearchIndex(options.result);
+            setLookupTerm(hashTerm);
             fetchSearchResults(options, hashedNav);
           }
         }
@@ -74,11 +78,11 @@ const SearchPage = ({
         setSearchIndex("multi");
         fetchSearchResults({});
       }
-      if (hashTerm != lookupTerm) {
-        setLookupTerm(hashTerm);
-      }
+      // if (hashTerm != lookupTerm) {
+      //   // setLookupTerm(hashTerm);
+      // }
     }
-  }, [options, hashTerm, isFetching]);
+  }, [values, hashTerm, isFetching]);
   let summary;
   let resultCount;
   if (searchResults.status && searchResults.status.hasOwnProperty("hits")) {
@@ -104,10 +108,4 @@ const SearchPage = ({
   );
 };
 
-export default compose(
-  memo,
-  withSetLookup,
-  withLookup,
-  withSearch,
-  withRecord
-)(SearchPage);
+export default compose(memo, withSetLookup, withSearch, withRecord)(SearchPage);
