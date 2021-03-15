@@ -1,13 +1,13 @@
 import React from "react";
-// import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
+import { Router } from "@reach/router";
 import SiteName from "./SiteName";
 // import Preferences from "./Preferences";
 import Tabs from "./Tabs";
-import { Router } from "@reach/router";
+// import { compose } from "recompose";
+import classnames from "classnames";
+import styles from "./Styles.scss";
 
-const basename = BASENAME || "view";
+const basename = BASENAME || "";
 
 const Header = () => {
   return (

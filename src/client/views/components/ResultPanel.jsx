@@ -68,7 +68,7 @@ const ResultPanel = ({
         value = `${value} ...`;
       }
       let highlight = null;
-      if (location.pathname == "/view/explore" && field.id == summaryField) {
+      if (location.pathname == "/explore" && field.id == summaryField) {
         highlight = styles["fieldNameHighlight"];
       }
       let newDiv = (
@@ -160,7 +160,7 @@ const ResultPanel = ({
           </span>
         </div>
       </Tooltip>
-      {location.pathname != "/view/records" && (
+      {location.pathname != "/records" && (
         <div style={{ right: "0", top: "2em" }} onClick={handleTaxonClick}>
           <Tooltip title={"Click to view record"} arrow>
             <i

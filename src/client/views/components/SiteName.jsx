@@ -1,11 +1,11 @@
 import React, { memo } from "react";
+
+import { Link } from "@reach/router";
 import { compose } from "recompose";
 import styles from "./Styles.scss";
 
-import { Link } from "@reach/router";
-
 const siteName = SITENAME || "/";
-const basename = BASENAME || "view";
+const basename = BASENAME || "";
 
 const SiteName = () => {
   return (

@@ -1,13 +1,15 @@
-import React, { memo } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
 import { Link, useLocation } from "@reach/router";
+import React, { memo } from "react";
+
+import classnames from "classnames";
+import { compose } from "recompose";
+import styles from "./Styles.scss";
 
 const NavLink = (props) => {
   let parts = props.pathname.split("/");
   parts[2] = props.destination;
-  let to = parts.join("/") + props.search + props.hash;
+  let to = "/" + parts.join("/") + props.search + props.hash;
+  to = "/" + props.destination + props.search + props.hash;
   return (
     <Link
       {...props}

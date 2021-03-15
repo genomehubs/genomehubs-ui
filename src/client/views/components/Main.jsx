@@ -13,7 +13,7 @@ const SearchPage = loadable(() => import("./SearchPage"));
 const AboutPage = loadable(() => import("./AboutPage"));
 const TutorialPage = loadable(() => import("./TutorialPage"));
 
-const basename = BASENAME || "view";
+const basename = BASENAME || "";
 
 const Main = (props) => {
   let css = classnames(

@@ -5,6 +5,7 @@ const GH_SITENAME = process.env.GH_SITENAME || "Demo GenomeHub";
 const GH_HOST = process.env.GH_HOST || "localhost";
 const GH_CLIENT_PORT = Number(process.env.GH_CLIENT_PORT) || 8880;
 const GH_API_PORT = Number(process.env.GH_API_PORT) || 3000;
+const GH_API_VERSION = String(process.env.GH_API_VERSION) || "api/v0.0.1";
 const GH_HTTPS = String(process.env.GH_HTTPS) === "true";
 const GH_API_URL =
   process.env.GH_API_URL ||
@@ -13,7 +14,8 @@ const GH_API_URL =
     GH_HOST +
     ":" +
     GH_API_PORT +
-    "/api/v0.0.1";
+    "/" +
+    GH_API_VERSION;
 const GH_ORIGINS = process.env.GH_ORIGINS
   ? process.env.GH_ORIGINS.split(" ")
   : [
