@@ -1,10 +1,13 @@
-import { getSearchFields, getSearchIndex } from "../reducers/search";
 import {
+  getHub,
+  getRelease,
+  getSource,
   getTypes,
   getTypesFetching,
   receiveTypes,
   requestTypes,
 } from "../reducers/types";
+import { getSearchFields, getSearchIndex } from "../reducers/search";
 
 import { apiUrl } from "../reducers/api";
 import { createSelector } from "reselect";
@@ -17,6 +20,16 @@ export const getTypesMap = createSelector(
   (types, index) => {
     if (!types[index]) return {};
     return types[index];
+  }
+);
+
+export const getVersion = createSelector(
+  getHub,
+  getRelease,
+  getSource,
+  (hub, release, source) => {
+    if (!hub) return {};
+    return { hub, release, source };
   }
 );
 

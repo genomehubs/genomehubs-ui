@@ -1,23 +1,49 @@
 import React, { useEffect } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import withTypes from "../hocs/withTypes";
-import styles from "./Styles.scss";
-import CopyrightIcon from "@material-ui/icons/Copyright";
 
-const Footer = ({ types, fetchTypes }) => {
+import CopyrightIcon from "@material-ui/icons/Copyright";
+import classnames from "classnames";
+import { compose } from "recompose";
+import styles from "./Styles.scss";
+import withTypes from "../hocs/withTypes";
+import withVersion from "../hocs/withVersion";
+
+const Footer = ({ version, fetchTypes }) => {
   useEffect(() => {
     fetchTypes("multi");
   }, []);
+
+  let dataRelease;
+  if (version.hub) {
+    let releaseLink = `release ${version.release}`;
+    if (version.source) {
+      releaseLink = (
+        <a className={styles.link} href={version.source} target="_blank">
+          {releaseLink}
+        </a>
+      );
+    }
+    dataRelease = (
+      <span style={{ float: "left", marginLeft: "1em" }}>
+        {version.hub} data {releaseLink}
+      </span>
+    );
+  }
   return (
     <footer>
-      Powered by{" "}
-      <a className={styles.link} href="https://genomehubs.org/" target="_blank">
-        GenomeHubs
-      </a>{" "}
-      <CopyrightIcon fontSize="inherit" /> 2020
+      {dataRelease}
+      <span style={{ float: "right", marginRight: "1em" }}>
+        Powered by{" "}
+        <a
+          className={styles.link}
+          href="https://genomehubs.org/"
+          target="_blank"
+        >
+          GenomeHubs
+        </a>{" "}
+        <CopyrightIcon fontSize="inherit" /> 2021
+      </span>
     </footer>
   );
 };
 
-export default compose(withTypes)(Footer);
+export default compose(withVersion, withTypes)(Footer);

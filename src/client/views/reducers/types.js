@@ -1,4 +1,5 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
+
 import immutableUpdate from "immutable-update";
 
 export const requestTypes = createAction("REQUEST_TYPES");
@@ -17,7 +18,7 @@ const defaultState = () => ({
 
 function onReceiveTypes(state, action) {
   const { payload, meta } = action;
-  const { status, fields, index } = payload;
+  const { status, fields, index, hub, release, source } = payload;
   let byId = {};
   if (index == "multi") {
     byId = fields;
@@ -36,6 +37,9 @@ function onReceiveTypes(state, action) {
   const updatedWithMeta = immutableUpdate(updatedWithTypesState, {
     isFetching: false,
     status,
+    hub,
+    release,
+    source,
     lastUpdated: meta.receivedAt,
   });
   return updatedWithMeta;
@@ -54,6 +58,12 @@ const types = handleActions(
 );
 
 export const getTypes = (state) => state.types.byId;
+
+export const getHub = (state) => state.types.hub;
+
+export const getRelease = (state) => state.types.release;
+
+export const getSource = (state) => state.types.source;
 
 export const getTypesFetching = (state) => state.types.isFetching;
 
