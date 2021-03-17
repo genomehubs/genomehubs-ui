@@ -154,6 +154,14 @@ export const getSearchFields = createSelector(getSearchTerm, (searchTerm) => {
   return fields;
 });
 
+export const getSearchRanks = createSelector(getSearchTerm, (searchTerm) => {
+  let ranks = [];
+  if (searchTerm.ranks) {
+    ranks = searchTerm.ranks.split(/\s*,\s*/);
+  }
+  return ranks;
+});
+
 export const searchReducers = {
   searchTerm,
   searchIndex,

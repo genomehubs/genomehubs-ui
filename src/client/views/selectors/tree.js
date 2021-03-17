@@ -30,7 +30,11 @@ export function fetchNodes(options) {
     }
     const state = store.getState();
     dispatch(requestNodes());
-    const queryString = qs.stringify({ ...options, offset: 0, size: 10000 });
+    let treeOptions = { ...options };
+    delete treeOptions.ranks;
+    treeOptions.offset = 0;
+    treeOptions.size = 10000;
+    const queryString = qs.stringify(treeOptions);
     let url = `${apiUrl}/search?${queryString}`;
     try {
       let json;

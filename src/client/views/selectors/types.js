@@ -7,7 +7,11 @@ import {
   receiveTypes,
   requestTypes,
 } from "../reducers/types";
-import { getSearchFields, getSearchIndex } from "../reducers/search";
+import {
+  getSearchFields,
+  getSearchIndex,
+  getSearchRanks,
+} from "../reducers/search";
 
 import { apiUrl } from "../reducers/api";
 import { createSelector } from "reselect";
@@ -56,6 +60,66 @@ export const getActiveTypes = createSelector(
   }
 );
 
+export const taxonomyRanks = {
+  subspecies: {
+    name: "subspecies",
+    display_name: "Subspecies",
+    display_group: "ranks",
+  },
+  species: {
+    name: "species",
+    display_name: "Species",
+    display_group: "ranks",
+  },
+  genus: { name: "genus", display_name: "Genus", display_group: "ranks" },
+  family: {
+    name: "family",
+    display_name: "Family",
+    display_group: "ranks",
+    display_level: 1,
+  },
+  order: {
+    name: "order",
+    display_name: "Order",
+    display_group: "ranks",
+    display_level: 1,
+  },
+  class: { name: "class", display_name: "Class", display_group: "ranks" },
+  phylum: {
+    name: "phylum",
+    display_name: "Phylum",
+    display_group: "ranks",
+    display_level: 1,
+  },
+  kingdom: {
+    name: "kingdom",
+    display_name: "Kingdom",
+    display_group: "ranks",
+  },
+  superkingdom: {
+    name: "superkingdom",
+    display_name: "Superkingdom",
+    display_group: "ranks",
+  },
+};
+
+export const getActiveRanks = createSelector(getSearchRanks, (searchRanks) => {
+  let activeRanks = {};
+  if (searchRanks.length > 0) {
+    searchRanks.forEach((key) => {
+      activeRanks[key] = true;
+    });
+    // } else {
+    //   Object.keys(taxonomyRanks).forEach((key) => {
+    //     let rank = taxonomyRanks[key];
+    //     if (rank.display_level == 1) {
+    //       activeRanks[key] = true;
+    //     }
+    //   });
+  }
+  return activeRanks;
+});
+
 export const getDisplayTypes = createSelector(
   getTypesMap,
   getActiveTypes,
@@ -73,7 +137,8 @@ export const getDisplayTypes = createSelector(
 export const getGroupedTypes = createSelector(
   getTypesMap,
   getActiveTypes,
-  (types, activeTypes) => {
+  getActiveRanks,
+  (types, activeTypes, activeRanks) => {
     let groupedTypes = {};
     Object.keys(types).forEach((key) => {
       let type = types[key];
@@ -84,6 +149,13 @@ export const getGroupedTypes = createSelector(
       groupedTypes[group][key] = { ...type };
       if (activeTypes[key]) {
         groupedTypes[group][key].active = true;
+      }
+    });
+    groupedTypes.ranks = {};
+    Object.keys(taxonomyRanks).forEach((rank) => {
+      groupedTypes.ranks[rank] = { ...taxonomyRanks[rank] };
+      if (activeRanks[rank]) {
+        groupedTypes.ranks[rank].active = true;
       }
     });
     return groupedTypes;

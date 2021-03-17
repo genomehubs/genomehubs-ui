@@ -27,6 +27,7 @@ import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
 import { setPreferSearchTerm } from "../reducers/search";
 import styles from "./Styles.scss";
+import withRanks from "../hocs/withRanks";
 import withSearch from "../hocs/withSearch";
 import withTypes from "../hocs/withTypes";
 
@@ -202,6 +203,7 @@ const ResultTable = ({
   searchResults,
   searchTerm,
   setSearchTerm,
+  activeRanks,
   searchIndex,
   setPreferSearchTerm,
 }) => {
@@ -301,6 +303,7 @@ const ResultTable = ({
     setPreferSearchTerm(true);
     setSearchTerm(options);
   };
+  let taxRanks = { family: true, class: true, order: true, phylum: true };
   let rows = searchResults.results.map((result) => {
     let name = result.result.scientific_name;
     if (
@@ -329,6 +332,22 @@ const ResultTable = ({
         </TableCell>
       </Tooltip>,
     ];
+    Object.keys(activeRanks).forEach((rank) => {
+      if (
+        result.result.ranks &&
+        result.result.ranks[rank] &&
+        result.result.ranks[rank].scientific_name
+      ) {
+        cells.push(
+          <TableCell key={rank}>
+            {result.result.ranks[rank].scientific_name}
+          </TableCell>
+        );
+      } else {
+        cells.push(<TableCell key={rank}>-</TableCell>);
+      }
+    });
+    // addTaxonRanks({ cells, result: result.result, taxRanks });
     if (searchIndex == "assembly") {
       cells.push(
         <Tooltip title={"Click to view record"} arrow>
@@ -409,6 +428,18 @@ const ResultTable = ({
       handleTableSort={handleTableSort}
     />,
   ];
+  Object.keys(activeRanks).forEach((rank) => {
+    heads.push(
+      <SortableCell
+        name={rank}
+        classes={classes}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        sortDirection={sortBy === rank ? sortOrder : false}
+        handleTableSort={handleTableSort}
+      />
+    );
+  });
   if (searchIndex == "assembly") {
     heads.push(
       <SortableCell
@@ -498,4 +529,4 @@ const ResultTable = ({
   );
 };
 
-export default compose(withTypes, withSearch)(ResultTable);
+export default compose(withTypes, withSearch, withRanks)(ResultTable);

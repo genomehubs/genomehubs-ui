@@ -26,6 +26,7 @@ import { compose } from "recompose";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "qs";
 import styles from "./Styles.scss";
+import withRanks from "../hocs/withRanks";
 import withSearch from "../hocs/withSearch";
 import withTypes from "../hocs/withTypes";
 
@@ -57,6 +58,8 @@ const SearchSettings = ({
   searchIndex,
   setSearchIndex,
   types,
+  displayRanks,
+  taxonomyRanks,
   groupedTypes,
 }) => {
   const [state, setState] = React.useState(() => {
@@ -113,9 +116,14 @@ const SearchSettings = ({
 
   const handleClick = () => {
     let fields = [];
+    let ranks = [];
     Object.keys(state).forEach((key) => {
       if (state[key] === true) {
-        fields.push(key);
+        if (taxonomyRanks[key]) {
+          ranks.push(key);
+        } else {
+          fields.push(key);
+        }
       }
     });
     let options = {
@@ -123,6 +131,7 @@ const SearchSettings = ({
       result: index,
       offset: 0,
       ...(fields.length > 0 && { fields: fields.join(",") }),
+      ...(ranks.length > 0 && { ranks: ranks.join(",") }),
     };
     delete options.excludeAncestral;
     delete options.excludeDescendant;
@@ -235,4 +244,4 @@ const SearchSettings = ({
   );
 };
 
-export default compose(memo, withTypes, withSearch)(SearchSettings);
+export default compose(memo, withTypes, withSearch, withRanks)(SearchSettings);
