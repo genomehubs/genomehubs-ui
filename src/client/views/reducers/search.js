@@ -162,6 +162,17 @@ export const getSearchRanks = createSelector(getSearchTerm, (searchTerm) => {
   return ranks;
 });
 
+export const getSearchNameClasses = createSelector(
+  getSearchTerm,
+  (searchTerm) => {
+    let names = [];
+    if (searchTerm.names) {
+      names = searchTerm.names.split(/\s*,\s*/);
+    }
+    return names;
+  }
+);
+
 export const searchReducers = {
   searchTerm,
   searchIndex,

@@ -14,16 +14,20 @@ const defaultState = () => ({
   isFetching: false,
   requestedById: {},
   byId: {},
+  namesById: {},
 });
 
 function onReceiveTypes(state, action) {
   const { payload, meta } = action;
-  const { status, fields, index, hub, release, source } = payload;
+  const { status, fields, identifiers, index, hub, release, source } = payload;
   let byId = {};
+  let namesById = {};
   if (index == "multi") {
     byId = fields;
+    namesById = identifiers;
   } else {
     byId = { [index]: fields };
+    namesById = { [index]: identifiers };
   }
   Object.values(fields).forEach((field) => {
     if (!byId[field.group]) {
@@ -31,8 +35,16 @@ function onReceiveTypes(state, action) {
     }
     byId[field.group][field.name] = field;
   });
+  Object.values(identifiers).forEach((identifier) => {
+    if (!namesById[identifier.group]) {
+      namesById[identifier.group] = {};
+    }
+    namesById[identifier.group][identifier.name] = identifier;
+  });
+
   const updatedWithTypesState = immutableUpdate(state, {
     byId,
+    namesById,
   });
   const updatedWithMeta = immutableUpdate(updatedWithTypesState, {
     isFetching: false,
@@ -58,6 +70,8 @@ const types = handleActions(
 );
 
 export const getTypes = (state) => state.types.byId;
+
+export const getNames = (state) => state.types.namesById;
 
 export const getHub = (state) => state.types.hub;
 

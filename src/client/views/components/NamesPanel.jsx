@@ -1,11 +1,12 @@
+import LaunchIcon from "@material-ui/icons/Launch";
 import React from "react";
-import { compose } from "recompose";
 import classnames from "classnames";
-import styles from "./Styles.scss";
+import { compose } from "recompose";
 import { format } from "d3-format";
+import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 
-const LineagePanel = ({ taxon_id, names }) => {
+const NamesPanel = ({ taxon_id, names }) => {
   let css = classnames(
     styles.infoPanel,
     styles[`infoPanel1Column`],
@@ -13,9 +14,17 @@ const LineagePanel = ({ taxon_id, names }) => {
   );
   let nameDivs = [];
   names.forEach((name, i) => {
+    let source = name.class;
+    if (name.source_stub) {
+      source = (
+        <a href={`${name.source_stub}${name.name}`} target="_blank">
+          {source} <LaunchIcon fontSize="inherit" />
+        </a>
+      );
+    }
     nameDivs.push(
       <span key={i} className={styles.name}>
-        {name.name} — {name.class}
+        {name.name} — {source}
       </span>
     );
   });
@@ -30,4 +39,4 @@ const LineagePanel = ({ taxon_id, names }) => {
   );
 };
 
-export default compose(withRecord)(LineagePanel);
+export default compose(withRecord)(NamesPanel);

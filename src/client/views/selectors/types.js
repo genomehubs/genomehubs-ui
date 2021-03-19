@@ -1,5 +1,6 @@
 import {
   getHub,
+  getNames,
   getRelease,
   getSource,
   getTypes,
@@ -10,6 +11,7 @@ import {
 import {
   getSearchFields,
   getSearchIndex,
+  getSearchNameClasses,
   getSearchRanks,
 } from "../reducers/search";
 
@@ -120,6 +122,51 @@ export const getActiveRanks = createSelector(getSearchRanks, (searchRanks) => {
   return activeRanks;
 });
 
+// export const nameClasses = {
+//   "tol id": {
+//     name: "tol id",
+//     display_name: "Tol ID",
+//     display_group: "names",
+//   },
+//   "wikidata entity": {
+//     name: "wikidata entity",
+//     display_name: "Wikidata Entity",
+//     display_group: "names",
+//   },
+// };
+
+export const getNamesMap = createSelector(
+  getNames,
+  getSearchIndex,
+  (types, index) => {
+    if (!types[index]) return {};
+    return types[index];
+  }
+);
+
+export const getActiveNameClasses = createSelector(
+  getNamesMap,
+  getSearchNameClasses,
+  (nameClasses, searchNames) => {
+    let activeNameClasses = {};
+    if (searchNames.length > 0) {
+      searchNames.forEach((key) => {
+        if (nameClasses[key]) {
+          activeNameClasses[key] = true;
+        }
+      });
+    } else {
+      Object.keys(nameClasses).forEach((key) => {
+        let nameClass = nameClasses[key];
+        if (nameClass.display_level == 1) {
+          activeNameClasses[key] = true;
+        }
+      });
+    }
+    return activeNameClasses;
+  }
+);
+
 export const getDisplayTypes = createSelector(
   getTypesMap,
   getActiveTypes,
@@ -136,9 +183,11 @@ export const getDisplayTypes = createSelector(
 
 export const getGroupedTypes = createSelector(
   getTypesMap,
+  getNamesMap,
   getActiveTypes,
   getActiveRanks,
-  (types, activeTypes, activeRanks) => {
+  getActiveNameClasses,
+  (types, nameClasses, activeTypes, activeRanks, activeNameClasses) => {
     let groupedTypes = {};
     Object.keys(types).forEach((key) => {
       let type = types[key];
@@ -156,6 +205,13 @@ export const getGroupedTypes = createSelector(
       groupedTypes.ranks[rank] = { ...taxonomyRanks[rank] };
       if (activeRanks[rank]) {
         groupedTypes.ranks[rank].active = true;
+      }
+    });
+    groupedTypes.names = {};
+    Object.keys(nameClasses).forEach((nameClass) => {
+      groupedTypes.names[nameClass] = { ...nameClasses[nameClass] };
+      if (activeNameClasses[nameClass]) {
+        groupedTypes.names[nameClass].active = true;
       }
     });
     return groupedTypes;
