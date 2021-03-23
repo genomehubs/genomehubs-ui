@@ -139,11 +139,21 @@ const AttributeTableRow = ({
 
   const [open, setOpen] = useState(false);
 
-  const handleAncestorClick = (fieldId) => {
-    setSummaryField(fieldId);
-    setPreferSearchTerm(false);
+  const handleAncestorClick = (fieldId, ancTaxonId) => {
+    // setSummaryField(fieldId);
+    // setPreferSearchTerm(false);
+    // navigate(
+    //   `explore?taxon_id=${taxonId}&result=${currentResult}&field_id=${fieldId}${location.hash}`
+    // );
+    let options = {
+      query: `tax_tree(${ancTaxonId})`,
+      result: currentResult,
+      includeEstimates: false,
+      fields: fieldId,
+      summaryValues: "count",
+    };
     navigate(
-      `explore?taxon_id=${taxonId}&result=${currentResult}&field_id=${fieldId}${location.hash}`
+      `search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
     );
   };
 
@@ -190,6 +200,7 @@ const AttributeTableRow = ({
       ancestor: "Low",
     };
     let source;
+    let aggSource;
     let colSpan = 0;
     fieldValues.push(<TableCell key={"attribute"}>{attributeId}</TableCell>);
 
@@ -203,6 +214,7 @@ const AttributeTableRow = ({
             styles[`underscore${confidence[meta[key.key]]}`]
           );
           source = meta[key.key];
+          aggSource = formatter(source);
           if (meta[key.key] == "direct") {
             icon = (
               <span className={styles.disableTheme}>
@@ -233,17 +245,30 @@ const AttributeTableRow = ({
                 <IconButton
                   aria-label="show ancestral values"
                   size="small"
-                  onClick={() => handleAncestorClick(attributeId)}
+                  onClick={() =>
+                    handleAncestorClick(attributeId, meta.aggregation_taxon_id)
+                  }
                 >
                   <KeyboardArrowRightIcon />
                 </IconButton>
               </span>
             );
+            if (meta.aggregation_rank) {
+              aggSource = (
+                <Tooltip
+                  title={`source rank: ${meta.aggregation_rank}`}
+                  arrow
+                  placement={"top"}
+                >
+                  <span>{aggSource}</span>
+                </Tooltip>
+              );
+            }
           }
         }
         fieldValues.push(
           <TableCell key={key.key}>
-            <span className={css}>{formatter(meta[key.key])}</span>
+            <span className={css}>{aggSource}</span>
             {icon}
           </TableCell>
         );
