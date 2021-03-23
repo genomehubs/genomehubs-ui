@@ -203,80 +203,86 @@ const AttributeTableRow = ({
     let aggSource;
     let colSpan = 0;
     fieldValues.push(<TableCell key={"attribute"}>{attributeId}</TableCell>);
+    fieldValues.push(
+      <TableCell key={"value"}>{formatter(meta.value)}</TableCell>
+    );
+    fieldValues.push(<TableCell key={"count"}>{meta.count}</TableCell>);
+    fieldValues.push(
+      <TableCell key={"method"}>{meta.aggregation_method}</TableCell>
+    );
 
-    keys.forEach((key) => {
-      if (meta.hasOwnProperty(key.key)) {
-        let css;
-        let icon;
-        if (key.key == "aggregation_source") {
-          css = classnames(
-            styles.underscore,
-            styles[`underscore${confidence[meta[key.key]]}`]
-          );
-          source = meta[key.key];
-          aggSource = formatter(source);
-          if (meta[key.key] == "direct") {
-            icon = (
-              <span className={styles.disableTheme}>
-                <IconButton
-                  aria-label="expand row"
-                  size="small"
-                  onClick={() => setOpen(!open)}
-                >
-                  {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                </IconButton>
-              </span>
-            );
-          } else if (meta[key.key] == "descendant") {
-            icon = (
-              <span className={styles.disableTheme}>
-                <IconButton
-                  aria-label="show descendant values"
-                  size="small"
-                  onClick={() => handleDescendantClick(attributeId)}
-                >
-                  <KeyboardArrowRightIcon />
-                </IconButton>
-              </span>
-            );
-          } else if (meta[key.key] == "ancestor") {
-            icon = (
-              <span className={styles.disableTheme}>
-                <IconButton
-                  aria-label="show ancestral values"
-                  size="small"
-                  onClick={() =>
-                    handleAncestorClick(attributeId, meta.aggregation_taxon_id)
-                  }
-                >
-                  <KeyboardArrowRightIcon />
-                </IconButton>
-              </span>
-            );
-            if (meta.aggregation_rank) {
-              aggSource = (
-                <Tooltip
-                  title={`source rank: ${meta.aggregation_rank}`}
-                  arrow
-                  placement={"top"}
-                >
-                  <span>{aggSource}</span>
-                </Tooltip>
-              );
-            }
-          }
-        }
-        fieldValues.push(
-          <TableCell key={key.key}>
-            <span className={css}>{aggSource}</span>
-            {icon}
-          </TableCell>
+    if (meta.aggregation_source) {
+      let css;
+      let icon;
+
+      source = meta["aggregation_source"];
+      css = classnames(
+        styles.underscore,
+        styles[`underscore${confidence[source]}`]
+      );
+      aggSource = formatter(source);
+      if (source == "direct") {
+        icon = (
+          <span className={styles.disableTheme}>
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </span>
         );
-        colSpan++;
+      } else if (source == "descendant") {
+        icon = (
+          <span className={styles.disableTheme}>
+            <IconButton
+              aria-label="show descendant values"
+              size="small"
+              onClick={() => handleDescendantClick(attributeId)}
+            >
+              <KeyboardArrowRightIcon />
+            </IconButton>
+          </span>
+        );
+      } else if (source == "ancestor") {
+        icon = (
+          <span className={styles.disableTheme}>
+            <IconButton
+              aria-label="show ancestral values"
+              size="small"
+              onClick={() =>
+                handleAncestorClick(attributeId, meta.aggregation_taxon_id)
+              }
+            >
+              <KeyboardArrowRightIcon />
+            </IconButton>
+          </span>
+        );
+        if (meta.aggregation_rank) {
+          aggSource = (
+            <Tooltip
+              title={`source rank: ${meta.aggregation_rank}`}
+              arrow
+              placement={"top"}
+            >
+              <span>{aggSource}</span>
+            </Tooltip>
+          );
+        }
       }
-    });
+
+      fieldValues.push(
+        <TableCell key={"aggregation_source"}>
+          <span className={css}>{aggSource}</span>
+          {icon}
+        </TableCell>
+      );
+      colSpan++;
+    }
 
     if (source == "direct" && meta.values) {
+      console.log(meta);
       raw = (
         <TableRow>
           <TableCell></TableCell>
