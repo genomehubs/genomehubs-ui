@@ -203,8 +203,15 @@ const AttributeTableRow = ({
     let aggSource;
     let colSpan = 0;
     fieldValues.push(<TableCell key={"attribute"}>{attributeId}</TableCell>);
+    let range;
+    if (meta.max > meta.min) {
+      range = ` (${formatter(meta.min)}–${formatter(meta.max)})`;
+    }
     fieldValues.push(
-      <TableCell key={"value"}>{formatter(meta.value)}</TableCell>
+      <TableCell key={"value"}>
+        <Fragment>{formatter(meta.value)}</Fragment>
+        {range}
+      </TableCell>
     );
     fieldValues.push(<TableCell key={"count"}>{meta.count}</TableCell>);
     fieldValues.push(
@@ -282,7 +289,6 @@ const AttributeTableRow = ({
     }
 
     if (source == "direct" && meta.values) {
-      console.log(meta);
       raw = (
         <TableRow>
           <TableCell></TableCell>
