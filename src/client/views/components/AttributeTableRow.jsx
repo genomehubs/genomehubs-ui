@@ -64,7 +64,7 @@ const NestedTable = ({ values, types }) => {
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row, i) => {
               let link, link_url;
-              link = row.source;
+              link = row.source || types.source;
               let url_stub = row.source_url_stub || types.source_url_stub;
               let url = row.source_url || types.source_url || types.url;
               if (url_stub) {
