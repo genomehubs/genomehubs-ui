@@ -7,6 +7,7 @@ import { fileReducers } from "./file";
 import { lookupReducers } from "./lookup";
 import { paneReducers } from "./panes";
 import { recordReducers } from "./record";
+import { reportReducers } from "./report";
 import { searchReducers } from "./search";
 import { trackingReducers } from "./tracking";
 import { treeReducers } from "./tree";
@@ -22,6 +23,7 @@ const allReducers = Object.assign(
   lookupReducers,
   paneReducers,
   recordReducers,
+  reportReducers,
   searchReducers,
   trackingReducers,
   treeReducers,

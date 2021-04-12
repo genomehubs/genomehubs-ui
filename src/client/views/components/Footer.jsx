@@ -7,7 +7,7 @@ import styles from "./Styles.scss";
 import withTypes from "../hocs/withTypes";
 import withVersion from "../hocs/withVersion";
 
-const Footer = ({ version, fetchTypes }) => {
+const Footer = ({ version, fetchTypes, types }) => {
   useEffect(() => {
     fetchTypes("multi");
   }, []);

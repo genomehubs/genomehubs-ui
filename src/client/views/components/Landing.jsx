@@ -1,4 +1,4 @@
-import React, { memo, useRef } from "react";
+import React, { Fragment, memo, useRef } from "react";
 
 import Page from "./Page";
 // import classnames from "classnames";
@@ -9,6 +9,8 @@ import useResize from "../hooks/useResize";
 import withPanes from "../hocs/withPanes";
 
 const InfoPanel = loadable(() => import("./InfoPanel"));
+const ReportPanel = loadable(() => import("./ReportPanel"));
+const ReportItem = loadable(() => import("./ReportItem"));
 const TextPanel = loadable(() => import("./TextPanel"));
 
 const Landing = (props) => {
@@ -44,6 +46,18 @@ const Landing = (props) => {
     }
   }
 
+  let report = (
+    <ReportPanel title="Data sources">
+      <Fragment reportId="taxonSources">
+        <ReportItem
+          reportId="taxonSources"
+          reportType="sources"
+          result="taxon"
+        ></ReportItem>
+      </Fragment>
+    </ReportPanel>
+  );
+  panels.push({ panel: report, minWidth: "80%" });
   let text = <TextPanel view={"about"}></TextPanel>;
   return <Page searchBox panels={panels} text={text} pageRef={componentRef} />;
 };
