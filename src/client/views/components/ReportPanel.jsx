@@ -7,7 +7,7 @@ import { formatter } from "../functions/formatter";
 import styles from "./Styles.scss";
 import withPanes from "../hocs/withPanes";
 
-const ReportPanel = ({ title, children }) => {
+const ReportPanel = ({ title, text, children }) => {
   let css = classnames(
     styles.infoPanel,
     styles[`infoPanel1Column`],
@@ -19,6 +19,8 @@ const ReportPanel = ({ title, children }) => {
       <div className={styles.header}>
         <span className={styles.title}>{title}</span>
       </div>
+
+      {text && <div>{text}</div>}
 
       <Grid container spacing={1} direction="row">
         {children}

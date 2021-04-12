@@ -47,7 +47,10 @@ const Landing = (props) => {
   }
 
   let report = (
-    <ReportPanel title="Data sources">
+    <ReportPanel
+      title="Data sources"
+      text="The data in GoaT have been collated from the following sources:"
+    >
       <Fragment reportId="taxonSources">
         <ReportItem
           reportId="taxonSources"
@@ -57,9 +60,10 @@ const Landing = (props) => {
       </Fragment>
     </ReportPanel>
   );
-  panels.push({ panel: report, minWidth: "80%" });
   let text = <TextPanel view={"about"}></TextPanel>;
-  return <Page searchBox panels={panels} text={text} pageRef={componentRef} />;
+  panels.push({ panel: text, minWidth: "80%" });
+  panels.push({ panel: report, minWidth: "80%" });
+  return <Page searchBox panels={panels} pageRef={componentRef} />;
 };
 
 export default compose(memo, withPanes)(Landing);
