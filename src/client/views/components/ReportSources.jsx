@@ -13,8 +13,10 @@ import styles from "./Styles.scss";
 
 const ReportSources = ({ sources }) => {
   let rows = [];
-  Object.keys(sources).forEach((key, index) => {
-    let source = sources[key];
+  let sorted = Object.entries(sources).sort(
+    (a, b) => parseInt(b[1].count || 0) - parseInt(a[1].count || 0)
+  );
+  sorted.forEach(([key, source], index) => {
     rows.push(
       <TableRow key={index}>
         <TableCell>
