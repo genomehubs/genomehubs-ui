@@ -10,7 +10,7 @@ import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
 import store from "../store";
 
-export function fetchReport({ terms, reportId, reportType, result }) {
+export function fetchReport({ queryString, reportId }) {
   return async function (dispatch) {
     const state = store.getState();
     const fetching = getReportsFetching(state);
@@ -20,7 +20,7 @@ export function fetchReport({ terms, reportId, reportType, result }) {
     }
     dispatch(requestReport(reportId));
     // TODO: use terms
-    let url = `${apiUrl}/report?report=${reportType}&result=${result}`;
+    let url = `${apiUrl}/report?${queryString}`;
     try {
       let json;
       try {

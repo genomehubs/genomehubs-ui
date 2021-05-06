@@ -1,20 +1,18 @@
 # About
 
-This is a temporary file to test markdown file processing
+GoaT (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers for all taxa across the tree of life.
 
-- [external links](https://genomehubs.org)
-- use directives for :span[direct]{.direct}, :span[descendant]{.descendant} and :span[ancestor]{.ancestor}
+## Data summary
 
-## Tooltips
-
-:tooltip[:span[Even use tooltips]{.direct}]{title="directly measured value!" arrow placement="right"}
-alongside ordinary text
-
-## Grid layout
-
-:::grid{container direction="row" spacing="1" style="margin-top:1em;padding:0.2em;border:solid pink 1em"}
-::grid[:span[levels:]]{item xs=2}
-::grid[:span[direct]{.direct}]{item xs=1 style="background-color:yellow"}
-::grid[:span[descendant]{.descendant}]{item xs=3}
-::grid[:span[ancestor]{.ancestor}]{item xs=6}
+:::grid{container direction="row" spacing="1"}
+::report{report="xPerRank" item xs=4 heading="This GenomeHub contains data for:"}
+::report{report="xPerRank" x="genome_size>1000000000" heading="Filtered by genome size" caption="have genome size > 1 Gb" item xs=8}
 :::
+
+The values in this GenomeHub are shown alongside a color-coding system to indicate which are based on :span[direct]{.direct} measurements, which are inferred from :span[descendant]{.descendant} taxa and which are inferred from sibling taxa via a shared :span[ancestor]{.ancestor}. For this last category, tooltips provide details of the common ancestral rank to provide an indication of how reliable the estimate may be, e.g. :tooltip[:span[ancestor]{.ancestor}]{title="family" arrow placement="top"}.
+
+## Data sources
+
+The data in this GenomeHub have been collated from the following sources:
+
+::report{report="sources"}

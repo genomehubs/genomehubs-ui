@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Fragment } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -9,28 +9,50 @@ import withFetchReport from "../hocs/withFetchReport";
 import withReportById from "../hocs/withReportById";
 
 const ReportSources = loadable(() => import("./ReportSources"));
+const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
 
 const ReportItem = ({
   reportId,
-  reportType,
-  result,
+  report,
+  queryString,
   fetchReport,
   reportById,
+  heading,
+  caption,
+  ...gridProps
 }) => {
   useEffect(() => {
     if (!reportById || Object.keys(reportById).length == 0) {
-      fetchReport({ reportId, reportType, result });
+      fetchReport({ reportId, queryString });
     }
   }, [reportId]);
-  let report;
-  switch (reportType) {
+  let component;
+  switch (report) {
     case "sources":
-      report = <ReportSources sources={reportById} />;
+      component = <ReportSources sources={reportById} />;
+      break;
+    case "xPerRank":
+      component = <ReportXPerRank perRank={reportById} />;
       break;
     default:
+      console.log(reportById);
       break;
   }
-  return <Grid item>{report}</Grid>;
+  return (
+    <Grid {...gridProps}>
+      <Grid container direction="column" spacing={1}>
+        <Grid item xs>
+          {heading}
+        </Grid>
+        <Grid item xs>
+          {component}
+        </Grid>
+        <Grid item xs>
+          {caption}
+        </Grid>
+      </Grid>
+    </Grid>
+  );
 };
 
 export default compose(withFetchReport, withReportById)(ReportItem);
