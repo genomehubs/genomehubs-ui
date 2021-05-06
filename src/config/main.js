@@ -41,6 +41,8 @@ module.exports = {
   },
   // API URL
   apiUrl: GH_API_URL,
+  // pages URL
+  pagesUrl: process.env.GH_PAGES_URL || "/static",
   // url basename
   basename: process.env.GH_BASENAME || "",
   // path to read flatfiles

@@ -538,13 +538,13 @@ body,
     .underscore {
       border-bottom: solid 0.2em themed("primary");
       &High {
-        border-bottom-color: green;
+        border-bottom-color: #33a02c;
       }
       &Medium {
-        border-bottom-color: orange;
+        border-bottom-color: #ff7f00;
       }
       &Low {
-        border-bottom-color: red;
+        border-bottom-color: #e31a1c;
       }
     }
 
@@ -591,19 +591,19 @@ body,
             position: absolute;
             background-color: rgba(themed("primary"), 0.25);
             &High {
-              background-color: green;
+              background-color: #33a02c;
             }
           }
           .one,
           .two {
             &Medium {
-              background-color: orange;
+              background-color: #ff7f00;
             }
           }
           .one {
             bottom: 0;
             &Low {
-              background-color: red;
+              background-color: #e31a1c;
             }
           }
           .two {
@@ -616,6 +616,23 @@ body,
       }
       // }
       // }
+    }
+    .markdown {
+      a {
+        text-decoration: underline;
+        text-decoration-thickness: 0.2em;
+        color: #1f78b4;
+      }
+
+      .direct {
+        border-bottom: solid 0.2em #33a02c;
+      }
+      .descendant {
+        border-bottom: solid 0.2em #ff7f00;
+      }
+      .ancestor {
+        border-bottom: solid 0.2em #e31a1c;
+      }
     }
   }
 }
