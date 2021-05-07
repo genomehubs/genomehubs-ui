@@ -624,6 +624,27 @@ body,
         color: #1f78b4;
       }
 
+      .boldValue {
+        display: inline-block;
+        min-width: 4em;
+        text-align: right;
+        margin-right: 0.5em;
+        font-weight: 600;
+        font-size: 1.3em;
+      }
+
+      .reportHeading,
+      .reportCaption {
+        display: block;
+        font-weight: 600;
+        color: mix(themed("primary"), themed("secondary"), 75%);
+      }
+
+      .outline {
+        border-color: mix(themed("primary"), themed("secondary"), 5%);
+        border: 0.2em solid;
+      }
+
       .direct {
         border-bottom: solid 0.2em #33a02c;
       }
@@ -632,6 +653,19 @@ body,
       }
       .ancestor {
         border-bottom: solid 0.2em #e31a1c;
+      }
+
+      .square::before {
+        content: "";
+        float: left;
+        width: 1px;
+        margin-left: -1px;
+        padding-top: 50%;
+      }
+      .square::after {
+        content: "";
+        display: table;
+        clear: both;
       }
     }
   }

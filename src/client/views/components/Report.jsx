@@ -37,8 +37,6 @@ const Report = (props) => {
     reportProps.reportId = reportProps.queryString;
   }
 
-  console.log(reportProps);
-
   return <ReportItem {...reportProps} />;
 };
 

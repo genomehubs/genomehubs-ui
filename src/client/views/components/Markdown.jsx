@@ -1,6 +1,7 @@
 import React, { createElement, useEffect } from "react";
 import { compose } from "recompose";
 import Grid from "@material-ui/core/Grid";
+import { withStyles } from "@material-ui/core/styles";
 import gfm from "remark-gfm";
 import styles from "./Styles.scss";
 import Report from "./Report";
@@ -9,6 +10,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import unified from "unified";
 import remarkParse from "remark-parse";
 import remarkReact from "remark-react";
+import classnames from "classnames";
 import remarkDirective from "remark-directive";
 import { visit } from "unist-util-visit";
 import { h } from "hastscript";
@@ -16,6 +18,12 @@ import { h } from "hastscript";
 import remarkRehype from "remark-rehype";
 import rehypeReact from "rehype-react";
 import rehypeRaw from "rehype-raw";
+
+const muiStyles = (theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+});
 
 const processProps = (props, newProps = {}) => {
   for (const [key, value] of Object.entries(props)) {
@@ -84,7 +92,7 @@ function htmlDirectives() {
   }
 }
 
-const Markdown = ({ pageId, pagesById, fetchPages }) => {
+const Markdown = ({ classes, pageId, pagesById, fetchPages }) => {
   useEffect(() => {
     if (pageId && !pagesById) {
       fetchPages(pageId);
@@ -92,7 +100,9 @@ const Markdown = ({ pageId, pagesById, fetchPages }) => {
   }, [pageId]);
 
   const { contents, ast } = compile(pagesById);
-  return <div className={styles.markdown}>{contents}</div>;
+  return (
+    <div className={classnames(styles.markdown, classes.root)}>{contents}</div>
+  );
 };
 
-export default compose(withPages)(Markdown);
+export default compose(withPages, withStyles(styles))(Markdown);

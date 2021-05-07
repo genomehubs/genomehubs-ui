@@ -25,16 +25,7 @@ const ReportXPerRank = ({ perRank }) => {
             : entry.rank;
         values.push(
           <div key={entry.rank}>
-            <span
-              style={{
-                display: "inline-block",
-                minWidth: "3em",
-                textAlign: "right",
-                marginRight: "1em",
-              }}
-            >
-              {entry.x.toLocaleString()}
-            </span>
+            <span className={styles.boldValue}>{entry.x.toLocaleString()}</span>
             <span>{plural}</span>
           </div>
         );
@@ -43,7 +34,7 @@ const ReportXPerRank = ({ perRank }) => {
   } else {
     return null;
   }
-  return <Fragment>{values}</Fragment>;
+  return <div style={{ width: "100%", textAlign: true }}>{values}</div>;
 };
 
 export default ReportXPerRank;

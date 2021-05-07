@@ -10,6 +10,7 @@ import withReportById from "../hocs/withReportById";
 
 const ReportSources = loadable(() => import("./ReportSources"));
 const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
+const ReportXInY = loadable(() => import("./ReportXInY"));
 
 const ReportItem = ({
   reportId,
@@ -34,6 +35,10 @@ const ReportItem = ({
     case "xPerRank":
       component = <ReportXPerRank perRank={reportById} />;
       break;
+    case "xInY":
+      console.log(reportById);
+      component = <ReportXInY xInY={reportById} />;
+      break;
     default:
       console.log(reportById);
       break;
@@ -42,13 +47,13 @@ const ReportItem = ({
     <Grid {...gridProps}>
       <Grid container direction="column" spacing={1}>
         <Grid item xs>
-          {heading}
+          <span className={styles.reportHeading}>{heading}</span>
         </Grid>
         <Grid item xs>
           {component}
         </Grid>
         <Grid item xs>
-          {caption}
+          <span className={styles.reportCaption}>{caption}</span>
         </Grid>
       </Grid>
     </Grid>
