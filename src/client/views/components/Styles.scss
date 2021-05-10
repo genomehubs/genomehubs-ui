@@ -118,7 +118,6 @@ body,
 
       .tab {
         background-color: themed("secondary");
-        border: 1px solid themed("primary");
         border-bottom: 0;
         border-top: 0;
         box-sizing: border-box;
@@ -618,10 +617,12 @@ body,
       // }
     }
     .markdown {
-      a {
+      a,
+      .link {
         text-decoration: underline;
         text-decoration-thickness: 0.2em;
         color: #1f78b4;
+        cursor: pointer;
       }
 
       .boldValue {

@@ -15,7 +15,6 @@ export function fetchPages(pageId) {
   return async function (dispatch) {
     dispatch(requestPages());
     let url = `${pagesUrl}/${pageId}`;
-    console.log(url);
     try {
       let markdown;
       try {

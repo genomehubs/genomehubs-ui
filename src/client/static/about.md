@@ -13,7 +13,7 @@ GoaT (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata incl
 :::grid{container direction="row" spacing="1"}
 ::grid{item xs="3"}
 ::report{report="xInY" x="assembly_level=chromosome" y="assembly_span" rank="species" heading="Assembled to chromosomes" item xs=6}
-::grid{item xs="3"}
+::report{report="xInY" x="contig_n50>1000000" y="assembly_span" heading="Assembled to chromosomes" rank="species,genus,family" item xs=3}
 
 :::
 

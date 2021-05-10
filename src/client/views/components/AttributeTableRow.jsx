@@ -153,7 +153,7 @@ const AttributeTableRow = ({
       summaryValues: "count",
     };
     navigate(
-      `search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
+      `/search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
     );
   };
 
@@ -166,7 +166,7 @@ const AttributeTableRow = ({
       summaryValues: "count",
     };
     navigate(
-      `search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
+      `/search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
     );
   };
 

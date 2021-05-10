@@ -333,7 +333,7 @@ const SearchOptions = ({
     };
     setPreferSearchTerm(false);
     navigate(
-      `search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
+      `/search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
     );
   };
   return (

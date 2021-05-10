@@ -51,7 +51,7 @@ const SearchPage = ({
           if (Object.keys(previousSearchTerm).length > 0) {
             let hashedNav = (path) => {
               let to = path;
-              let from = `search?${qs.stringify(previousSearchTerm)}`;
+              let from = `/search?${qs.stringify(previousSearchTerm)}`;
               if (to != from) {
                 // navigate(`${path}#${encodeURIComponent(hashTerm)}`);
               }
@@ -92,7 +92,7 @@ const SearchPage = ({
   results = <ResultTable />;
 
   let tree = <TreePanel></TreePanel>;
-  let text = <TextPanel view={"search"}></TextPanel>;
+  let text = <TextPanel pageId={"search.md"}></TextPanel>;
 
   return (
     <Page
@@ -101,8 +101,8 @@ const SearchPage = ({
         // { panel: summary },
         { panel: results, maxWidth: "100%" },
         { panel: tree },
+        { panel: text },
       ]}
-      test={text}
       resultCount={resultCount}
     />
   );

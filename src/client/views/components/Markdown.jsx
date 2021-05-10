@@ -3,6 +3,7 @@ import { compose } from "recompose";
 import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
 import gfm from "remark-gfm";
+import { Link, useLocation } from "@reach/router";
 import styles from "./Styles.scss";
 import Report from "./Report";
 import withPages from "../hocs/withPages";
@@ -11,6 +12,7 @@ import unified from "unified";
 import remarkParse from "remark-parse";
 import remarkReact from "remark-react";
 import classnames from "classnames";
+import NavLink from "./NavLink";
 import remarkDirective from "remark-directive";
 import { visit } from "unist-util-visit";
 import { h } from "hastscript";
@@ -42,6 +44,7 @@ const RehypeComponentsList = {
   grid: (props) => <Grid {...processProps(props)} />,
   report: (props) => <Report {...processProps(props)} />,
   span: (props) => <span {...processProps(props)} />,
+  a: (props) => <NavLink {...processProps(props)} />,
   tooltip: (props) => {
     return (
       <Tooltip {...processProps(props, { placement: "top" })}>
@@ -51,7 +54,7 @@ const RehypeComponentsList = {
   },
 };
 
-function compile(val) {
+function compile(val, components = RehypeComponentsList) {
   const processor = unified()
     .use(remarkParse)
     .use(remarkReact)
@@ -62,7 +65,7 @@ function compile(val) {
     .use(rehypeRaw)
     .use(rehypeReact, {
       createElement,
-      components: RehypeComponentsList,
+      components,
     });
 
   const ast = processor.runSync(processor.parse(val));
@@ -92,17 +95,33 @@ function htmlDirectives() {
   }
 }
 
-const Markdown = ({ classes, pageId, pagesById, fetchPages }) => {
+const Markdown = ({
+  classes,
+  pageId,
+  pagesById,
+  fetchPages,
+  siteStyles,
+  components = {},
+}) => {
   useEffect(() => {
     if (pageId && !pagesById) {
       fetchPages(pageId);
     }
   }, [pageId]);
 
-  const { contents, ast } = compile(pagesById);
-  return (
-    <div className={classnames(styles.markdown, classes.root)}>{contents}</div>
-  );
+  RehypeComponentsList;
+
+  const { contents, ast } = compile(pagesById, {
+    ...RehypeComponentsList,
+    ...components,
+  });
+  let css;
+  if (siteStyles) {
+    css = classes.root;
+  } else {
+    css = classnames(styles.markdown, classes.root);
+  }
+  return <div className={css}>{contents}</div>;
 };
 
 export default compose(withPages, withStyles(styles))(Markdown);

@@ -1,41 +1,21 @@
-import { Link, useLocation } from "@reach/router";
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 
-import classnames from "classnames";
 import { compose } from "recompose";
-import styles from "./Styles.scss";
+import withRoutes from "../hocs/withRoutes";
+import NavLink from "./NavLink";
 
-const NavLink = (props) => {
-  let parts = props.pathname.split("/");
-  parts[2] = props.destination;
-  let to = "/" + parts.join("/") + props.search + props.hash;
-  to = "/" + props.destination + props.search + props.hash;
-  return (
-    <Link
-      {...props}
-      to={to}
-      getProps={({ isCurrent }) => {
-        let css = classnames(styles.tab, { [styles.tabHighlight]: isCurrent });
-        return {
-          className: css,
-        };
-      }}
-    />
-  );
-};
+const Tab = ({ routeName, pageId, setRoute, routesById }) => {
+  useEffect(() => {
+    if (routeName && !routesById) {
+      setRoute(routeName, pageId);
+    }
+  }, [routeName]);
 
-const Tab = (props) => {
-  const location = useLocation();
   return (
-    <NavLink
-      pathname={location.pathname}
-      search={location.search}
-      hash={location.hash}
-      destination={props.view}
-    >
-      {props.short}
+    <NavLink to={routeName} tab>
+      {routeName}
     </NavLink>
   );
 };
 
-export default compose()(Tab);
+export default compose(withRoutes)(Tab);

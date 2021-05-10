@@ -137,7 +137,7 @@ const SearchBox = ({
     }
     fetchSearchResults(options);
     setPreferSearchTerm(false);
-    navigate(`search?${qs.stringify(options)}#${encodeURIComponent(term)}`);
+    navigate(`/search?${qs.stringify(options)}#${encodeURIComponent(term)}`);
   };
 
   const doSearch = (query, result, term) => {

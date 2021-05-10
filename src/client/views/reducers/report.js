@@ -56,14 +56,6 @@ const reports = handleActions(
 export const getReports = (state) => state.reports.byId;
 export const getReportsFetching = (state) => state.reports.requestedById;
 
-// export const setReportField = createAction("SET_REPORT_FIELD");
-// export const reportField = handleAction(
-//   "SET_REPORT_FIELD",
-//   (state, action) => action.payload,
-//   ""
-// );
-// export const getReportField = (state) => state.reportField;
-
 export const reportReducers = {
   reports,
 };
