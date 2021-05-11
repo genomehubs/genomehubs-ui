@@ -5,9 +5,11 @@ import { combineReducers } from "redux";
 import { exploreReducers } from "./explore";
 import { fileReducers } from "./file";
 import { lookupReducers } from "./lookup";
+import { pageReducers } from "./pages";
 import { paneReducers } from "./panes";
 import { recordReducers } from "./record";
 import { reportReducers } from "./report";
+import { routeReducers } from "./routes";
 import { searchReducers } from "./search";
 import { trackingReducers } from "./tracking";
 import { treeReducers } from "./tree";
@@ -22,8 +24,10 @@ const allReducers = Object.assign(
   fileReducers,
   lookupReducers,
   paneReducers,
+  pageReducers,
   recordReducers,
   reportReducers,
+  routeReducers,
   searchReducers,
   trackingReducers,
   treeReducers,

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Fragment } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -7,30 +7,83 @@ import loadable from "@loadable/component";
 import styles from "./Styles.scss";
 import withFetchReport from "../hocs/withFetchReport";
 import withReportById from "../hocs/withReportById";
+import ReportModal from "./ReportModal";
 
 const ReportSources = loadable(() => import("./ReportSources"));
+const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
+const ReportXInY = loadable(() => import("./ReportXInY"));
 
 const ReportItem = ({
   reportId,
-  reportType,
-  result,
+  report,
+  queryString,
   fetchReport,
   reportById,
+  heading,
+  caption,
+  inModal,
+  chartRef,
+  ...gridProps
 }) => {
   useEffect(() => {
     if (!reportById || Object.keys(reportById).length == 0) {
-      fetchReport({ reportId, reportType, result });
+      fetchReport({ reportId, queryString });
     }
   }, [reportId]);
-  let report;
-  switch (reportType) {
+  let component;
+  switch (report) {
     case "sources":
-      report = <ReportSources sources={reportById} />;
+      component = <ReportSources sources={reportById} chartRef={chartRef} />;
+      break;
+    case "xPerRank":
+      component = <ReportXPerRank perRank={reportById} chartRef={chartRef} />;
+      break;
+    case "xInY":
+      component = <ReportXInY xInY={reportById} chartRef={chartRef} />;
       break;
     default:
       break;
   }
-  return <Grid item>{report}</Grid>;
+  let content = (
+    <Grid
+      container
+      direction="column"
+      spacing={1}
+      style={{ height: "100%", flexGrow: "1", width: "100%" }}
+    >
+      {heading && (
+        <Grid item xs>
+          <span className={styles.reportHeading}>{heading}</span>
+        </Grid>
+      )}
+      <Grid item xs style={{ height: "100%", width: "100%" }}>
+        {component}
+      </Grid>
+      {caption && (
+        <Grid item xs>
+          <span className={styles.reportCaption}>{caption}</span>
+        </Grid>
+      )}
+    </Grid>
+  );
+  if (!inModal) {
+    content = (
+      <ReportModal
+        reportId={reportId}
+        report={report}
+        queryString={queryString}
+        heading={heading}
+        caption={caption}
+      >
+        {content}
+      </ReportModal>
+    );
+  }
+  return (
+    <Grid {...gridProps} style={{ height: "100%" }}>
+      {content}
+    </Grid>
+  );
 };
 
 export default compose(withFetchReport, withReportById)(ReportItem);

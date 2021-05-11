@@ -95,7 +95,7 @@ const ExplorePage = ({
     });
   }
 
-  let text = <TextPanel view={"explore"}></TextPanel>;
+  let text = <TextPanel pageId={"explore.md"}></TextPanel>;
 
   return (
     <Page

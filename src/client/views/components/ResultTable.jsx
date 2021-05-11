@@ -227,7 +227,7 @@ const ResultTable = ({
       searchText = record.scientific_name;
     }
     navigate(
-      `records?record_id=${recordId}&result=${searchIndex}#${encodeURIComponent(
+      `/records?record_id=${recordId}&result=${searchIndex}#${encodeURIComponent(
         searchText
       )}`
     );

@@ -81,7 +81,7 @@ export function fetchSearchResults(options, navigate) {
         }
       } else {
         if (navigate) {
-          navigate(`search?${qs.stringify(options)}`, { replace: true });
+          navigate(`/search?${qs.stringify(options)}`, { replace: true });
         }
         dispatch(receiveSearch(json));
       }

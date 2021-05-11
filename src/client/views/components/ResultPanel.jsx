@@ -34,7 +34,7 @@ const ResultPanel = ({
   const handleTaxonClick = () => {
     setPreferSearchTerm(false);
     navigate(
-      `records?taxon_id=${taxon_id}&result=${searchIndex}#${encodeURIComponent(
+      `/records?taxon_id=${taxon_id}&result=${searchIndex}#${encodeURIComponent(
         scientific_name
       )}`
     );
@@ -46,7 +46,7 @@ const ResultPanel = ({
     setSummaryField(fieldId);
     setPreferSearchTerm(false);
     navigate(
-      `explore?taxon_id=${taxon_id}&result=${searchIndex}&field_id=${fieldId}${location.hash}`
+      `/explore?taxon_id=${taxon_id}&result=${searchIndex}&field_id=${fieldId}${location.hash}`
     );
   };
   let css = classnames(

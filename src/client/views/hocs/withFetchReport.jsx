@@ -4,8 +4,8 @@ import { fetchReport } from "../selectors/report";
 
 const withFetchReport = (WrappedComponent) => (props) => {
   const mapDispatchToProps = (dispatch) => ({
-    fetchReport: ({ reportId, terms, reportType, result }) => {
-      dispatch(fetchReport({ reportId, terms, reportType, result }));
+    fetchReport: (props) => {
+      dispatch(fetchReport(props));
     },
   });
 

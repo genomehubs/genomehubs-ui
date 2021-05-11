@@ -118,7 +118,6 @@ body,
 
       .tab {
         background-color: themed("secondary");
-        border: 1px solid themed("primary");
         border-bottom: 0;
         border-top: 0;
         box-sizing: border-box;
@@ -538,13 +537,13 @@ body,
     .underscore {
       border-bottom: solid 0.2em themed("primary");
       &High {
-        border-bottom-color: green;
+        border-bottom-color: #33a02c;
       }
       &Medium {
-        border-bottom-color: orange;
+        border-bottom-color: #ff7f00;
       }
       &Low {
-        border-bottom-color: red;
+        border-bottom-color: #e31a1c;
       }
     }
 
@@ -591,19 +590,19 @@ body,
             position: absolute;
             background-color: rgba(themed("primary"), 0.25);
             &High {
-              background-color: green;
+              background-color: #33a02c;
             }
           }
           .one,
           .two {
             &Medium {
-              background-color: orange;
+              background-color: #ff7f00;
             }
           }
           .one {
             bottom: 0;
             &Low {
-              background-color: red;
+              background-color: #e31a1c;
             }
           }
           .two {
@@ -616,6 +615,72 @@ body,
       }
       // }
       // }
+    }
+    .markdown {
+      font-family: themed("bodyFont");
+      font-size: themed("bodyFontSize");
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: themed("titleFont");
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      a,
+      .link {
+        text-decoration: underline;
+        color: #1f78b4;
+        cursor: pointer;
+      }
+
+      .boldValue {
+        display: inline-block;
+        min-width: 4em;
+        text-align: right;
+        margin-right: 0.5em;
+        font-weight: 600;
+        font-size: 1.3em;
+      }
+
+      .reportHeading,
+      .reportCaption {
+        display: block;
+        font-weight: 600;
+        color: mix(themed("primary"), themed("secondary"), 75%);
+      }
+
+      .outline {
+        border-color: mix(themed("primary"), themed("secondary"), 5%);
+        border: 0.2em solid;
+      }
+
+      .direct {
+        border-bottom: solid 0.2em #33a02c;
+      }
+      .descendant {
+        border-bottom: solid 0.2em #ff7f00;
+      }
+      .ancestor {
+        border-bottom: solid 0.2em #e31a1c;
+      }
+
+      .square::before {
+        content: "";
+        float: left;
+        width: 1px;
+        margin-left: -1px;
+        padding-top: 50%;
+      }
+      .square::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
     }
   }
 }

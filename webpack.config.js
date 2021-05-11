@@ -71,17 +71,18 @@ const config = {
       chunkFilename: "css/[id].css",
     }),
     new webpack.DefinePlugin({
-      SITENAME: JSON.stringify(main.siteName),
       API_URL: JSON.stringify(main.apiUrl),
-      VERSION: JSON.stringify(main.version),
       BASENAME: JSON.stringify(main.basename),
-      HOME: JSON.stringify(protocol + "://" + main.hostname),
-      GIT_VERSION: JSON.stringify(gitRevisionPlugin.version()),
-      COMMIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
       BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+      COMMIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
+      PAGES_URL: JSON.stringify(main.pagesUrl),
       GA_ID: JSON.stringify(main.ga_id),
       GDPR_URL: JSON.stringify(main.gdpr_url),
+      GIT_VERSION: JSON.stringify(gitRevisionPlugin.version()),
+      HOME: JSON.stringify(protocol + "://" + main.hostname),
       MESSAGE: JSON.stringify(main.message),
+      SITENAME: JSON.stringify(main.siteName),
+      VERSION: JSON.stringify(main.version),
     }),
     new HtmlWebpackPlugin({
       hash: true,
@@ -99,6 +100,10 @@ const config = {
       patterns: [
         {
           from: "./src/client/favicon",
+        },
+        {
+          from: "./src/client/static",
+          to: "/static",
         },
       ],
     }),

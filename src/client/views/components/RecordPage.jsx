@@ -119,7 +119,7 @@ const RecordPage = ({
     }
   }
 
-  let text = <TextPanel view={"records"}></TextPanel>;
+  let text = <TextPanel pageId={"record.md"}></TextPanel>;
 
   return (
     <Page

@@ -46,23 +46,23 @@ const Landing = (props) => {
     }
   }
 
-  let report = (
-    <ReportPanel
-      title="Data sources"
-      text="The data in GoaT have been collated from the following sources:"
-    >
-      <Fragment reportId="taxonSources">
-        <ReportItem
-          reportId="taxonSources"
-          reportType="sources"
-          result="taxon"
-        ></ReportItem>
-      </Fragment>
-    </ReportPanel>
-  );
-  let text = <TextPanel view={"about"}></TextPanel>;
+  // let report = (
+  //   <ReportPanel
+  //     title="Data sources"
+  //     text="The data in GoaT have been collated from the following sources:"
+  //   >
+  //     <Fragment reportId="taxonSources">
+  //       <ReportItem
+  //         reportId="taxonSources"
+  //         reportType="sources"
+  //         result="taxon"
+  //       ></ReportItem>
+  //     </Fragment>
+  //   </ReportPanel>
+  // );
+  let text = <TextPanel view={"about"} pageId={"about.md"}></TextPanel>;
   panels.push({ panel: text, minWidth: "80%" });
-  panels.push({ panel: report, minWidth: "80%" });
+  // panels.push({ panel: report, minWidth: "80%" });
   return <Page searchBox panels={panels} pageRef={componentRef} />;
 };
 

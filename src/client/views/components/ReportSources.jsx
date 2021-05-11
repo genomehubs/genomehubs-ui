@@ -13,7 +13,7 @@ import styles from "./Styles.scss";
 
 const ReportSources = ({ sources }) => {
   let rows = [];
-  let sorted = Object.entries(sources).sort(
+  let sorted = Object.entries(sources || []).sort(
     (a, b) => parseInt(b[1].count || 0) - parseInt(a[1].count || 0)
   );
   sorted.forEach(([key, source], index) => {
@@ -28,7 +28,9 @@ const ReportSources = ({ sources }) => {
             key
           )}
         </TableCell>
-        <TableCell>{source.count ? source.count : "-"}</TableCell>
+        <TableCell>
+          {source.count ? source.count.toLocaleString() : "-"}
+        </TableCell>
         <TableCell>
           {source.attributes && source.attributes.join("; ")}
         </TableCell>

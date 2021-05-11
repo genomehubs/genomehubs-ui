@@ -56,7 +56,7 @@ const HistogramSVG = ({
     let hashTerm = encodeURIComponent(options.query);
     setPreferSearchTerm(false);
     setLookupTerm(hashTerm);
-    navigate(`search?${qs.stringify(options)}#${hashTerm}`);
+    navigate(`/search?${qs.stringify(options)}#${hashTerm}`);
   };
   let buckets = [];
   let ticks = [];
