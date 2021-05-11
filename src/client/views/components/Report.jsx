@@ -3,7 +3,7 @@ import React, { useEffect, Fragment } from "react";
 import qs from "qs";
 import ReportItem from "./ReportItem";
 
-const queryPropList = [
+export const queryPropList = [
   "result",
   "report",
   "x",
@@ -36,6 +36,8 @@ const Report = (props) => {
   if (!props.reportId) {
     reportProps.reportId = reportProps.queryString;
   }
+  reportProps.inModal = props.inModal;
+  reportProps.chartRef = props.chartRef;
 
   return <ReportItem {...reportProps} />;
 };

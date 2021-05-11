@@ -617,10 +617,23 @@ body,
       // }
     }
     .markdown {
+      font-family: themed("bodyFont");
+      font-size: themed("bodyFontSize");
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: themed("titleFont");
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
       a,
       .link {
         text-decoration: underline;
-        text-decoration-thickness: 0.2em;
         color: #1f78b4;
         cursor: pointer;
       }

@@ -10,13 +10,15 @@ import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
 import store from "../store";
 
-export function fetchReport({ queryString, reportId }) {
+export function fetchReport({ queryString, reportId, reload }) {
   return async function (dispatch) {
     const state = store.getState();
     const fetching = getReportsFetching(state);
     const reports = getReports(state);
-    if (reports[reportId] || fetching[reportId]) {
-      return;
+    if (!reload) {
+      if (reports[reportId] || fetching[reportId]) {
+        return;
+      }
     }
     dispatch(requestReport(reportId));
     // TODO: use terms

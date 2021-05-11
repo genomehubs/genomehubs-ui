@@ -5,15 +5,15 @@ GoaT (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata incl
 ## Data summary
 
 :::grid{container direction="row" spacing="4"}
-::report{report="xPerRank" item xs=5 heading="This GenomeHub contains data for:"}
-::report{report="xPerRank" x="genome_size>1000000000" heading="Filtered by genome size" caption="have genome size > 1 Gb" item xs=4}
-::report{report="xInY" x="assembly_span" rank="species" heading="Species with assemblies" item xs=3}
+::report{report="xInY" x="c_value" heading="taxa with C value" rank="species,genus,family" item xs=4}
+::report{report="xPerRank" item xs=4 heading="This GenomeHub contains data for:"}
+::report{report="xInY" x="assembly_span" rank="species" heading="Species with assemblies" item xs=4}
 :::
 
 :::grid{container direction="row" spacing="1"}
 ::grid{item xs="3"}
 ::report{report="xInY" x="assembly_level=chromosome" y="assembly_span" rank="species" heading="Assembled to chromosomes" item xs=6}
-::report{report="xInY" x="contig_n50>1000000" y="assembly_span" heading="Assembled to chromosomes" rank="species,genus,family" item xs=3}
+::report{report="xPerRank" x="genome_size>1000000000" heading="Filtered by genome size" caption="have genome size > 1 Gb" item xs=3}
 
 :::
 

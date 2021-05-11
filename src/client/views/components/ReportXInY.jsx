@@ -91,7 +91,7 @@ const PieComponent = ({ data, height, width }) => {
 
   return (
     // <ResponsiveContainer width={width} height={height}>
-    <PieChart width={width} height={height}>
+    <PieChart width={width} height={height} fontFamily={"sans-serif"}>
       <Pie
         data={data}
         cx="50%"
@@ -132,26 +132,32 @@ const PieComponent = ({ data, height, width }) => {
 };
 
 const RadialBarComponent = ({ data, height, width }) => {
-  console.log(data);
   return (
     <RadialBarChart
       width={width}
       height={height}
       cx="50%"
       cy="50%"
-      innerRadius={Math.floor(width / 20)}
+      innerRadius={Math.floor(width / 5)}
       outerRadius={Math.floor(width / 2)}
-      startAngle={90}
-      endAngle={-270}
+      startAngle={180}
+      endAngle={0}
       data={data}
+      fontFamily={"sans-serif"}
     >
       <RadialBar
         minAngle={15}
         label={{ position: "insideStart", fill: "#fff" }}
         background
         clockWise={false}
-        dataKey="uv"
+        dataKey="x"
         isAnimationActive={false}
+      />
+      <Legend
+        iconSize={width / 20}
+        height={height / 3}
+        verticalAlign="bottom"
+        align="right"
       />
       {/* <Legend
         iconSize={10}
@@ -163,28 +169,28 @@ const RadialBarComponent = ({ data, height, width }) => {
   );
 };
 
-const ReportXInY = ({ xInY }) => {
-  const componentRef = useRef();
+const ReportXInY = ({ xInY, chartRef }) => {
+  const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = useResize(componentRef);
+  let minDim = Math.floor(width);
+  if (height) {
+    minDim = Math.floor(Math.min(width, height));
+  }
   if (xInY && xInY.status) {
     let chartData = [];
     let chart;
     if (Array.isArray(xInY.report)) {
       xInY.report.forEach((report, i) => {
-        let { x, y, rank } = report;
-        chartData.push({
-          uv: x / y,
-          pv: 1,
+        let { xiny, y, rank } = report;
+        chartData.unshift({
+          x: xiny,
+          y: y,
           name: rank,
           fill: COLORS[i % COLORS.length],
         });
       });
       chart = (
-        <RadialBarComponent
-          data={chartData}
-          width={Math.floor(width)}
-          height={Math.floor(width)}
-        />
+        <RadialBarComponent data={chartData} width={minDim} height={minDim} />
       );
     } else {
       let { x, y, xTerm, yTerm } = xInY.report;
@@ -192,16 +198,10 @@ const ReportXInY = ({ xInY }) => {
         { value: x, name: xTerm },
         { value: y - x, name: yTerm },
       ];
-      chart = (
-        <PieComponent
-          data={chartData}
-          width={Math.floor(width)}
-          height={Math.floor(width)}
-        />
-      );
+      chart = <PieComponent data={chartData} width={minDim} height={minDim} />;
     }
     return (
-      <Grid item xs ref={componentRef}>
+      <Grid item xs ref={componentRef} style={{ height: "100%" }}>
         {/* <RadialChart
           data={chartData}
           height={300}

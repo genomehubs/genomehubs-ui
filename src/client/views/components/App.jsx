@@ -14,6 +14,7 @@ const App = ({ theme, cookies }) => {
   return (
     <StylesProvider injectFirst>
       <div className={classnames(`theme${theme}`, styles.app)}>
+        <div id="theme-base" className={styles.infoPanel} />
         <Head />
         <CookiesProvider>
           <Layout cookies={cookies} />

@@ -7,6 +7,7 @@ import loadable from "@loadable/component";
 import styles from "./Styles.scss";
 import withFetchReport from "../hocs/withFetchReport";
 import withReportById from "../hocs/withReportById";
+import ReportModal from "./ReportModal";
 
 const ReportSources = loadable(() => import("./ReportSources"));
 const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
@@ -20,6 +21,8 @@ const ReportItem = ({
   reportById,
   heading,
   caption,
+  inModal,
+  chartRef,
   ...gridProps
 }) => {
   useEffect(() => {
@@ -30,32 +33,55 @@ const ReportItem = ({
   let component;
   switch (report) {
     case "sources":
-      component = <ReportSources sources={reportById} />;
+      component = <ReportSources sources={reportById} chartRef={chartRef} />;
       break;
     case "xPerRank":
-      component = <ReportXPerRank perRank={reportById} />;
+      component = <ReportXPerRank perRank={reportById} chartRef={chartRef} />;
       break;
     case "xInY":
-      console.log(reportById);
-      component = <ReportXInY xInY={reportById} />;
+      component = <ReportXInY xInY={reportById} chartRef={chartRef} />;
       break;
     default:
-      console.log(reportById);
       break;
   }
-  return (
-    <Grid {...gridProps}>
-      <Grid container direction="column" spacing={1}>
+  let content = (
+    <Grid
+      container
+      direction="column"
+      spacing={1}
+      style={{ height: "100%", flexGrow: "1", width: "100%" }}
+    >
+      {heading && (
         <Grid item xs>
           <span className={styles.reportHeading}>{heading}</span>
         </Grid>
-        <Grid item xs>
-          {component}
-        </Grid>
+      )}
+      <Grid item xs style={{ height: "100%", width: "100%" }}>
+        {component}
+      </Grid>
+      {caption && (
         <Grid item xs>
           <span className={styles.reportCaption}>{caption}</span>
         </Grid>
-      </Grid>
+      )}
+    </Grid>
+  );
+  if (!inModal) {
+    content = (
+      <ReportModal
+        reportId={reportId}
+        report={report}
+        queryString={queryString}
+        heading={heading}
+        caption={caption}
+      >
+        {content}
+      </ReportModal>
+    );
+  }
+  return (
+    <Grid {...gridProps} style={{ height: "100%" }}>
+      {content}
     </Grid>
   );
 };
