@@ -38,6 +38,7 @@ const Report = (props) => {
   }
   reportProps.inModal = props.inModal;
   reportProps.chartRef = props.chartRef;
+  reportProps.delay = props.delay;
 
   return <ReportItem {...reportProps} />;
 };

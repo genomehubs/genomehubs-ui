@@ -23,11 +23,12 @@ const ReportItem = ({
   caption,
   inModal,
   chartRef,
+  delay = 0,
   ...gridProps
 }) => {
   useEffect(() => {
     if (!reportById || Object.keys(reportById).length == 0) {
-      fetchReport({ reportId, queryString });
+      setTimeout(() => fetchReport({ reportId, queryString }), delay);
     }
   }, [reportId]);
   let component;

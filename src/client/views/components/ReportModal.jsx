@@ -8,13 +8,11 @@ import AutorenewIcon from "@material-ui/icons/Autorenew";
 import ReplayIcon from "@material-ui/icons/Replay";
 
 import EditIcon from "@material-ui/icons/Edit";
+import SearchIcon from "@material-ui/icons/Search";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import Modal from "@material-ui/core/Modal";
-import SettingsButton from "./SettingsButton";
-import qs from "qs";
 import classnames from "classnames";
 import { compose } from "recompose";
 import styles from "./Styles.scss";
@@ -23,7 +21,8 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import withApiUrl from "../hocs/withApiUrl";
 import dispatchReport from "../hocs/dispatchReport";
 import Report from "./Report";
-import { DialerSipSharp } from "@material-ui/icons";
+import ReportEdit from "./ReportEdit";
+import ReportQuery from "./ReportQuery";
 
 function getModalStyle() {
   return {
@@ -48,111 +47,6 @@ const useStyles = makeStyles((theme) => ({
   img: {},
 }));
 
-const queryPropList = [
-  // "result",
-  "report",
-  "x",
-  "y",
-  // "z",
-  // "cat",
-  "rank",
-  // "taxonomy",
-];
-
-const reportTypes = ["xPerRank", "xInY"];
-
-const EditButton = ({ handleClick, handleResetClick }) => {
-  return (
-    <Grid container direction="row">
-      <Grid item>
-        <Button
-          variant="contained"
-          color="default"
-          disableElevation
-          // className={classes.button}
-          startIcon={<AutorenewIcon />}
-          onClick={handleClick}
-        >
-          Update
-        </Button>
-      </Grid>
-      <Grid item>
-        <Button
-          variant="contained"
-          color="default"
-          disableElevation
-          // className={classes.button}
-          startIcon={<ReplayIcon />}
-          onClick={handleResetClick}
-        >
-          Reset
-        </Button>
-      </Grid>
-    </Grid>
-  );
-};
-
-const EditReport = ({ reportId, report, queryString, fetchReport }) => {
-  let fields = [];
-  let query = qs.parse(queryString);
-  const defaultState = () => {
-    let obj = {};
-    queryPropList.forEach((queryProp) => {
-      obj[queryProp] = query.hasOwnProperty(queryProp) ? query[queryProp] : "";
-    });
-    return obj;
-  };
-  let [values, setValues] = useState(defaultState);
-
-  const handleChange = (e, queryProp) => {
-    setValues({ ...values, [queryProp]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let newQueryString = qs.stringify({
-      result: "taxon",
-      ...Object.fromEntries(Object.entries(values).filter(([_, v]) => v != "")),
-    });
-    fetchReport({ reportId, queryString: newQueryString, reload: true });
-  };
-  const handleReset = (e) => {
-    e.preventDefault();
-    setValues(defaultState);
-  };
-
-  queryPropList.forEach((queryProp) => {
-    fields.push(
-      <Grid item style={{ width: "100%" }}>
-        <TextField
-          id={queryProp}
-          label={queryProp}
-          value={values[queryProp]}
-          style={{ width: "100%" }}
-          onChange={(e) => handleChange(e, queryProp)}
-        />
-      </Grid>
-    );
-  });
-  fields.push(
-    <Grid item align="right">
-      <SettingsButton
-        handleClick={handleSubmit}
-        handleResetClick={handleReset}
-      />
-    </Grid>
-  );
-  return (
-    <Grid
-      container
-      direction="column"
-      style={{ height: "100%", width: "100%" }}
-    >
-      {fields}
-    </Grid>
-  );
-};
-
 export const ReportModal = ({
   reportId,
   report,
@@ -167,6 +61,7 @@ export const ReportModal = ({
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [query, setQuery] = useState(false);
   const windowDimensions = useWindowDimensions();
   const chartRef = useRef();
 
@@ -222,14 +117,14 @@ export const ReportModal = ({
       <Grid item xs={1} />
       <Grid
         item
-        xs={edit ? 5 : 10}
+        xs={edit || query ? 5 : 10}
         align="center"
         style={{ height: "100%", width: "100%" }}
       >
         <Report
           reportId={queryString}
           report={report}
-          queryString={queryString}
+          // queryString={queryString}
           inModal
           chartRef={chartRef}
         />
@@ -243,12 +138,24 @@ export const ReportModal = ({
             align="center"
             style={{ height: "100%", width: "100%" }}
           >
-            <EditReport
+            <ReportEdit
               reportId={reportId}
               report={report}
-              queryString={queryString}
               fetchReport={fetchReport}
             />
+          </Grid>
+        </Fragment>
+      )}
+      {query && (
+        <Fragment>
+          <Grid item xs={1} />
+          <Grid
+            item
+            xs={4}
+            align="center"
+            style={{ height: "100%", width: "100%" }}
+          >
+            <ReportQuery reportId={reportId} report={report} />
           </Grid>
         </Fragment>
       )}
@@ -260,6 +167,12 @@ export const ReportModal = ({
           <Grid item align="right">
             <EditIcon
               onClick={() => setEdit(!edit)}
+              style={{ cursor: "pointer" }}
+            />
+          </Grid>
+          <Grid item align="right">
+            <SearchIcon
+              onClick={() => setQuery(!query)}
               style={{ cursor: "pointer" }}
             />
           </Grid>

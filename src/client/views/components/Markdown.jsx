@@ -43,11 +43,11 @@ const processProps = (props, newProps = {}) => {
 };
 
 const RehypeComponentsList = {
+  a: (props) => <NavLink {...processProps(props)} />,
   grid: (props) => <Grid {...processProps(props)} />,
   hub: (props) => <span {...processProps(props)}>{siteName}</span>,
   report: (props) => <Report {...processProps(props)} />,
   span: (props) => <span {...processProps(props)} />,
-  a: (props) => <NavLink {...processProps(props)} />,
   tooltip: (props) => {
     return (
       <Tooltip {...processProps(props, { placement: "top" })}>

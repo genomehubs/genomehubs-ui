@@ -179,8 +179,8 @@ const ReportXInY = ({ xInY, chartRef }) => {
   if (xInY && xInY.status) {
     let chartData = [];
     let chart;
-    if (Array.isArray(xInY.report)) {
-      xInY.report.forEach((report, i) => {
+    if (Array.isArray(xInY.report.xInY)) {
+      xInY.report.xInY.forEach((report, i) => {
         let { xiny, y, rank } = report;
         chartData.unshift({
           x: xiny,
@@ -193,7 +193,7 @@ const ReportXInY = ({ xInY, chartRef }) => {
         <RadialBarComponent data={chartData} width={minDim} height={minDim} />
       );
     } else {
-      let { x, y, xTerm, yTerm } = xInY.report;
+      let { x, y, xTerm, yTerm } = xInY.report.xInY;
       chartData = [
         { value: x, name: xTerm },
         { value: y - x, name: yTerm },
