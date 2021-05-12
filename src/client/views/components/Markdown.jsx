@@ -1,4 +1,4 @@
-import React, { createElement, useEffect, useState } from "react";
+import React, { createElement, useEffect, useState, Fragment } from "react";
 import { compose } from "recompose";
 import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
@@ -21,6 +21,8 @@ import remarkRehype from "remark-rehype";
 import rehypeReact from "rehype-react";
 import rehypeRaw from "rehype-raw";
 
+const siteName = SITENAME || "/";
+
 const muiStyles = (theme) => ({
   root: {
     flexGrow: 1,
@@ -42,6 +44,7 @@ const processProps = (props, newProps = {}) => {
 
 const RehypeComponentsList = {
   grid: (props) => <Grid {...processProps(props)} />,
+  hub: (props) => <span {...processProps(props)}>{siteName}</span>,
   report: (props) => <Report {...processProps(props)} />,
   span: (props) => <span {...processProps(props)} />,
   a: (props) => <NavLink {...processProps(props)} />,
