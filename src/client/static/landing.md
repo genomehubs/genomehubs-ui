@@ -1,23 +1,26 @@
 # About :hub
 
-:hub{.direct} (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers for all taxa across the tree of life.
+:hub (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers for all taxa across the tree of life.
 
 ## Data summary
 
 :::grid{container direction="row" spacing="4"}
 
-::report{report="xInY" x="c_value" heading="taxa with C value" rank="species,genus,family" item xs=4}
+::report{report="xInY" x="c_value" rank="species,genus,family" item xs=4}
 
-::report{report="xPerRank" item xs=4 heading="This GenomeHub contains data for:"}
+::report{report="xPerRank" item xs=4 }
 
-::report{delay=500 report="xInY" x="assembly_span" rank="species" heading="Species with assemblies" item xs=4}
+::report{delay=500 report="xInY" x="assembly_span" rank="species" item xs=4}
 
 :::
 
 :::grid{container direction="row" spacing="1"}
+
 ::grid{item xs="3"}
-::report{report="xInY" x="assembly_level=chromosome" y="assembly_span" rank="species" heading="Assembled to chromosomes" item xs=6}
-::report{report="xPerRank" x="genome_size>1000000000" heading="Filtered by genome size" caption="have genome size > 1 Gb" item xs=3}
+
+::report{report="xInY" x="assembly_level=chromosome" y="assembly_span" rank="species" item xs=6}
+
+::report{report="xPerRank" x="genome_size>1000000000"item xs=3}
 
 :::
 

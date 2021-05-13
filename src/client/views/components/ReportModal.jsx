@@ -78,7 +78,9 @@ export const ReportModal = ({ reportId, report, queryString, children }) => {
         aria-labelledby="file-modal-title"
         aria-describedby="file-modal-description"
       >
-        <DialogContent>{body}</DialogContent>
+        <DialogContent onClick={handleClose} style={{ outline: "none" }}>
+          {body}
+        </DialogContent>
       </Modal>
     </div>
   );
