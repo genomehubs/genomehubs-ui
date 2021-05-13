@@ -5,29 +5,27 @@ import ReportFull from "./ReportFull";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 
-const ReportPage = ({ location, ...props }) => {
+const ReportPage = ({ location, topLevel, ...props }) => {
   let queryString = location.search.replace(/^\?/, "");
   let query = qs.parse(queryString);
 
   let css = classnames(
-    styles.infoPanel,
-    styles[`infoPanel1Column`],
-    styles.textPanel,
+    { [styles.infoPanel]: !topLevel },
+    { [styles[`infoPanel1Column`]]: !topLevel },
+    { [styles.textPanel]: !topLevel },
     styles.fillParent
   );
   let content = (
-    <div
-      className={css}
-      // style={{ height: "fit-content", backgroundColor: "red" }}
-    >
+    <div className={css}>
       <ReportFull
         reportId={queryString}
         report={query.report}
         queryString={queryString}
+        topLevel={topLevel}
       />
     </div>
   );
-  return <Page searchBox text={content} />;
+  return <Page searchBox={!topLevel} text={content} />;
 };
 
 export default ReportPage;

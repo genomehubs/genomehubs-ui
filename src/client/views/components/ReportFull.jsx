@@ -22,6 +22,7 @@ export const ReportFull = ({
   report,
   queryString,
   fetchReport,
+  topLevel,
   modalStyle = {},
   handleClose,
 }) => {
@@ -77,8 +78,9 @@ export const ReportFull = ({
     }
   };
 
-  const permaLink = (queryString) => {
-    navigate(`/report?${queryString}`);
+  const permaLink = (queryString, toggle) => {
+    let path = modal || topLevel ? "report" : toggle ? "reporturl" : "report";
+    navigate(`/${path}?${queryString}`);
   };
 
   let content = (
@@ -144,28 +146,32 @@ export const ReportFull = ({
               <CloseIcon onClick={handleClose} style={{ cursor: "pointer" }} />
             )}
           </Grid>
-          <Grid item align="right">
-            <EditIcon
-              onClick={() => {
-                setQuery(false);
-                setEdit(!edit);
-              }}
-              style={{ cursor: "pointer" }}
-            />
-          </Grid>
-          <Grid item align="right">
-            <SearchIcon
-              onClick={() => {
-                setEdit(false);
-                setQuery(!query);
-              }}
-              style={{ cursor: "pointer" }}
-            />
-          </Grid>
+          {!topLevel && (
+            <Grid item align="right">
+              <EditIcon
+                onClick={() => {
+                  setQuery(false);
+                  setEdit(!edit);
+                }}
+                style={{ cursor: "pointer" }}
+              />
+            </Grid>
+          )}
+          {!topLevel && (
+            <Grid item align="right">
+              <SearchIcon
+                onClick={() => {
+                  setEdit(false);
+                  setQuery(!query);
+                }}
+                style={{ cursor: "pointer" }}
+              />
+            </Grid>
+          )}
           <Grid item align="right">
             <LinkIcon
               onClick={() => {
-                permaLink(queryString);
+                permaLink(queryString, true);
               }}
               style={{ cursor: "pointer" }}
             />
