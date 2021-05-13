@@ -95,7 +95,7 @@ export const ReportEdit = ({
     } else {
       input = (
         <TextField
-          id={queryProp}
+          id={queryProp + Math.random()}
           label={queryProp}
           value={values[queryProp]}
           style={{ width: "100%" }}
