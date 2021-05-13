@@ -65,6 +65,7 @@
     "d3-scale": "^3.2.2",
     "d3-scale-chromatic": "^2.0.0",
     "d3-shape": "^2.0.0",
+    "deep-equal": "^2.0.5",
     "deep-get-set": "^1.1.0",
     "file-loader": "^6.0.0",
     "hastscript": "^7.0.0",

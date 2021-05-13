@@ -8,7 +8,7 @@ import TreePanel from "./TreePanel";
 import classnames from "classnames";
 import { compose } from "recompose";
 import qs from "qs";
-import shallow from "shallowequal";
+import equal from "deep-equal";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
@@ -39,9 +39,9 @@ const SearchPage = ({
   let values = Object.values(options);
   useEffect(() => {
     if (!isFetching) {
-      if (options.query && !shallow(options, searchTerm)) {
+      if (options.query && !equal(options, searchTerm)) {
         if (preferSearchTerm) {
-          if (!shallow(searchTerm, previousSearchTerm)) {
+          if (!equal(searchTerm, previousSearchTerm)) {
             setPreviousSearchTerm(searchTerm);
             setSearchIndex(options.result);
             setLookupTerm(hashTerm);
@@ -56,7 +56,7 @@ const SearchPage = ({
                 // navigate(`${path}#${encodeURIComponent(hashTerm)}`);
               }
             };
-            if (!shallow(options, previousSearchTerm)) {
+            if (!equal(options, previousSearchTerm)) {
               setPreviousSearchTerm(options);
               setSearchIndex(options.result);
               setLookupTerm(hashTerm);

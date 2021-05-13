@@ -169,9 +169,11 @@ const RadialBarComponent = ({ data, height, width }) => {
   );
 };
 
-const ReportXInY = ({ xInY, chartRef }) => {
+const ReportXInY = ({ xInY, chartRef, containerRef }) => {
   const componentRef = chartRef ? chartRef : useRef();
-  const { width, height } = useResize(componentRef);
+  const { width, height } = containerRef
+    ? useResize(containerRef)
+    : useResize(componentRef);
   let minDim = Math.floor(width);
   if (height) {
     minDim = Math.floor(Math.min(width, height));

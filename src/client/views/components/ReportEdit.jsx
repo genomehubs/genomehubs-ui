@@ -23,9 +23,15 @@ export const queryPropList = [
 
 const reportTypes = ["xPerRank", "xInY"];
 
-export const ReportEdit = ({ reportId, reportById, report, fetchReport }) => {
+export const ReportEdit = ({
+  reportId,
+  reportById,
+  report,
+  fetchReport,
+  modal,
+  permaLink,
+}) => {
   let fields = [];
-  console.log(reportById);
   if (!reportById.report || !reportById.report.queryString) {
     return null;
   }
@@ -51,7 +57,11 @@ export const ReportEdit = ({ reportId, reportById, report, fetchReport }) => {
       result: "taxon",
       ...Object.fromEntries(Object.entries(values).filter(([_, v]) => v != "")),
     });
-    fetchReport({ reportId, queryString: newQueryString, reload: true });
+    if (modal) {
+      fetchReport({ reportId, queryString: newQueryString, reload: true });
+    } else {
+      permaLink(newQueryString);
+    }
   };
   const handleReset = (e) => {
     e.preventDefault();

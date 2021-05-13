@@ -10,6 +10,7 @@ import withRoutes from "../hocs/withRoutes";
 const Landing = loadable(() => import("./Landing"));
 const ExplorePage = loadable(() => import("./ExplorePage"));
 const RecordPage = loadable(() => import("./RecordPage"));
+const ReportPage = loadable(() => import("./ReportPage"));
 const SearchPage = loadable(() => import("./SearchPage"));
 const GenericPage = loadable(() => import("./GenericPage"));
 // const AboutPage = loadable(() => import("./AboutPage"));
@@ -30,6 +31,7 @@ const Main = ({ routes }) => {
     <SearchPage path="/search" />,
     <ExplorePage path="/explore" />,
     <RecordPage path="/records" />,
+    <ReportPage path="/report" />,
   ];
   routes.allIds.forEach((routeName) => {
     if (!fixedRoutes[routeName]) {

@@ -18,41 +18,43 @@ export const ReportQuery = ({ reportById, report, setPreferSearchTerm }) => {
   const handleSearch = (searchTerm) => {
     let options = {
       ...searchTerm,
+      summaryValues: "count",
       offset: 0,
     };
     // delete options.fields;
-    delete options.excludeAncestral;
-    delete options.excludeDescendant;
-    delete options.excludeDirect;
-    delete options.excludeMissing;
-    setPreferSearchTerm(true);
-    setSearchTerm(searchTerm);
+    // delete options.excludeAncestral;
+    // delete options.excludeDescendant;
+    // delete options.excludeDirect;
+    // delete options.excludeMissing;
+    // setPreferSearchTerm(true);
+    // setSearchTerm(options);
     navigate(`/search?${qs.stringify(options)}${location.hash}`);
   };
 
-  let keys = ["xQuery", "yQuery"];
+  let params = ["x", "y"];
   let reports = reportById.report[report];
   if (!Array.isArray(reports)) reports = [reports];
   reports.forEach((rep) => {
-    console.log(rep);
-    keys.forEach((key) => {
-      terms.push(
-        <Grid item style={{ width: "100%" }}>
-          <Grid container direction="row" style={{ width: "100%" }}>
-            <Grid item xs={11}>
-              {rep[key].query}
-            </Grid>
-            <Grid item xs={1}>
-              <SearchIcon
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  handleSearch(rep[key]);
-                }}
-              />
+    params.forEach((param) => {
+      if (rep[param] > 0 && rep[`${param}Query`]) {
+        terms.push(
+          <Grid item style={{ width: "100%" }}>
+            <Grid container direction="row" style={{ width: "100%" }}>
+              <Grid item xs={11}>
+                {rep[`${param}Query`].query}
+              </Grid>
+              <Grid item xs={1}>
+                <SearchIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    handleSearch(rep[`${param}Query`]);
+                  }}
+                />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      );
+        );
+      }
     });
   });
   return (

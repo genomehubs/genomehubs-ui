@@ -23,6 +23,7 @@ const ReportItem = ({
   caption,
   inModal,
   chartRef,
+  containerRef,
   delay = 0,
   ...gridProps
 }) => {
@@ -34,13 +35,31 @@ const ReportItem = ({
   let component;
   switch (report) {
     case "sources":
-      component = <ReportSources sources={reportById} chartRef={chartRef} />;
+      component = (
+        <ReportSources
+          sources={reportById}
+          chartRef={chartRef}
+          containerRef={containerRef}
+        />
+      );
       break;
     case "xPerRank":
-      component = <ReportXPerRank perRank={reportById} chartRef={chartRef} />;
+      component = (
+        <ReportXPerRank
+          perRank={reportById}
+          chartRef={chartRef}
+          containerRef={containerRef}
+        />
+      );
       break;
     case "xInY":
-      component = <ReportXInY xInY={reportById} chartRef={chartRef} />;
+      component = (
+        <ReportXInY
+          xInY={reportById}
+          chartRef={chartRef}
+          containerRef={containerRef}
+        />
+      );
       break;
     default:
       break;
