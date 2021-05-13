@@ -4,6 +4,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import LinkIcon from "@material-ui/icons/Link";
 import EditIcon from "@material-ui/icons/Edit";
+import InfoIcon from "@material-ui/icons/Info";
 import SearchIcon from "@material-ui/icons/Search";
 import Grid from "@material-ui/core/Grid";
 import { compose } from "recompose";
@@ -13,6 +14,7 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import Report from "./Report";
 import ReportEdit from "./ReportEdit";
 import ReportQuery from "./ReportQuery";
+import ReportInfo from "./ReportInfo";
 import dispatchReport from "../hocs/dispatchReport";
 import { useStyles } from "./ReportModal";
 import { useNavigate } from "@reach/router";
@@ -30,6 +32,7 @@ export const ReportFull = ({
   const classes = useStyles();
   const [edit, setEdit] = useState(false);
   const [query, setQuery] = useState(false);
+  const [info, setInfo] = useState(false);
   const chartRef = useRef();
   const containerRef = useRef();
 
@@ -93,7 +96,7 @@ export const ReportFull = ({
       <Grid item xs={1} />
       <Grid
         item
-        xs={edit || query ? 5 : 10}
+        xs={edit || query || info ? 5 : 10}
         align="center"
         ref={containerRef}
         style={{ height: "100%", width: "100%" }}
@@ -105,6 +108,7 @@ export const ReportFull = ({
           inModal
           chartRef={chartRef}
           containerRef={containerRef}
+          topLevel={topLevel}
         />
       </Grid>
       {edit && (
@@ -139,6 +143,19 @@ export const ReportFull = ({
           </Grid>
         </Fragment>
       )}
+      {info && (
+        <Fragment>
+          <Grid item xs={1} />
+          <Grid
+            item
+            xs={4}
+            align="center"
+            style={{ height: "100%", width: "100%" }}
+          >
+            <ReportInfo reportId={reportId} report={report} />
+          </Grid>
+        </Fragment>
+      )}
       <Grid item xs={1}>
         <Grid container direction="column">
           <Grid item align="right">
@@ -150,6 +167,7 @@ export const ReportFull = ({
             <Grid item align="right">
               <EditIcon
                 onClick={() => {
+                  setInfo(false);
                   setQuery(false);
                   setEdit(!edit);
                 }}
@@ -161,6 +179,7 @@ export const ReportFull = ({
             <Grid item align="right">
               <SearchIcon
                 onClick={() => {
+                  setInfo(false);
                   setEdit(false);
                   setQuery(!query);
                 }}
@@ -168,6 +187,17 @@ export const ReportFull = ({
               />
             </Grid>
           )}
+          <Grid item align="right">
+            <InfoIcon
+              onClick={() => {
+                setInfo(!info);
+                setEdit(false);
+                setQuery(false);
+              }}
+              style={{ cursor: "pointer" }}
+            />
+          </Grid>
+
           <Grid item align="right">
             <LinkIcon
               onClick={() => {

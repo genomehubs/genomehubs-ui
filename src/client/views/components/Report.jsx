@@ -41,6 +41,7 @@ const Report = (props) => {
   reportProps.chartRef = props.chartRef;
   reportProps.delay = props.delay;
   reportProps.containerRef = props.containerRef;
+  reportProps.topLevel = props.topLevel;
 
   return <ReportItem {...reportProps} />;
 };

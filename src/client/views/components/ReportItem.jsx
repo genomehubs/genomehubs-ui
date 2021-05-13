@@ -22,6 +22,7 @@ const ReportItem = ({
   heading,
   caption,
   inModal,
+  topLevel,
   chartRef,
   containerRef,
   delay = 0,
@@ -64,6 +65,7 @@ const ReportItem = ({
     default:
       break;
   }
+  caption = reportById.report?.caption;
   let content = (
     <Grid
       container
@@ -79,7 +81,7 @@ const ReportItem = ({
       <Grid item xs style={{ height: "100%", width: "100%" }}>
         {component}
       </Grid>
-      {caption && (
+      {caption && !inModal && !topLevel && (
         <Grid item xs>
           <span className={styles.reportCaption}>{caption}</span>
         </Grid>

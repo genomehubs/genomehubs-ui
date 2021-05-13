@@ -16,6 +16,7 @@ const ranks = {
 
 const ReportXPerRank = ({ perRank }) => {
   let values = [];
+  let ranks = [];
   if (perRank && perRank.status) {
     perRank.report.xPerRank.forEach((entry) => {
       if (entry.x) {
