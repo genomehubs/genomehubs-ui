@@ -8,9 +8,11 @@ import {
   Pie,
   Sector,
   Cell,
+  PolarAngleAxis,
   RadialBarChart,
   RadialBar,
   Legend,
+  LabelList,
   ResponsiveContainer,
 } from "recharts";
 import { format } from "d3-format";
@@ -132,25 +134,50 @@ const PieComponent = ({ data, height, width }) => {
 };
 
 const RadialBarComponent = ({ data, height, width }) => {
+  const renderRadialBarLabel = (props) => {
+    const { cx, cy, viewBox, fill, value } = props;
+    const barWidth = viewBox.outerRadius - viewBox.innerRadius;
+    return (
+      <text
+        x={cx}
+        y={cy - viewBox.innerRadius - barWidth / 2 + 2}
+        fill={fill}
+        style={{ fontSize: barWidth / 2, fontFamily: "sans-serif" }}
+        textAnchor="middle"
+        dominantBaseLine="middle"
+        alignmentBaseLine="middle"
+      >
+        {pct1(value)}
+      </text>
+    );
+  };
+  let innerRadius = Math.floor(width * 0.1);
+  let outerRadius = Math.floor(width * 0.5);
   return (
     <RadialBarChart
       width={width}
       height={height}
       cx="50%"
       cy="50%"
-      innerRadius={Math.floor(width / 5)}
-      outerRadius={Math.floor(width / 2)}
+      innerRadius={innerRadius}
+      outerRadius={outerRadius}
       startAngle={180}
       endAngle={0}
       data={data}
       fontFamily={"sans-serif"}
     >
+      <PolarAngleAxis type="number" domain={[0, 1]} tick={false} />
       <RadialBar
         minAngle={15}
-        label={{ position: "insideStart", fill: "#fff" }}
-        background
+        label={{
+          position: "inside",
+          fill: "white",
+          content: renderRadialBarLabel,
+        }}
+        background={{ fill: "#cccccc" }}
         clockWise={false}
-        dataKey="x"
+        dataKey="xValue"
+        domainKey="xDomain"
         isAnimationActive={false}
       />
       <Legend
@@ -159,12 +186,6 @@ const RadialBarComponent = ({ data, height, width }) => {
         verticalAlign="bottom"
         align="right"
       />
-      {/* <Legend
-        iconSize={10}
-        layout="vertical"
-        verticalAlign="middle"
-        wrapperStyle={style}
-      /> */}
     </RadialBarChart>
   );
 };
@@ -185,8 +206,9 @@ const ReportXInY = ({ xInY, chartRef, containerRef }) => {
       xInY.report.xInY.forEach((report, i) => {
         let { xiny, y, rank } = report;
         chartData.unshift({
-          x: xiny,
-          y: y,
+          xValue: xiny,
+          xDomain: 1,
+          yValue: y,
           name: rank,
           fill: COLORS[i % COLORS.length],
         });
@@ -204,14 +226,6 @@ const ReportXInY = ({ xInY, chartRef, containerRef }) => {
     }
     return (
       <Grid item xs ref={componentRef} style={{ height: "100%" }}>
-        {/* <RadialChart
-          data={chartData}
-          height={300}
-          width={300}
-          radius={100}
-          innerRadius={50}
-          showLabels={true}
-        /> */}
         {chart}
       </Grid>
     );
