@@ -213,7 +213,17 @@ export const ReportFull = ({
       </Grid>
     </Grid>
   );
-  return <div style={{ marginLeft, height, width }}>{content}</div>;
+  return (
+    <div
+      style={{ marginLeft, height, width }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
+      {content}
+    </div>
+  );
 };
 
 export default compose(dispatchReport)(ReportFull);
