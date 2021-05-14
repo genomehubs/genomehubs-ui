@@ -135,30 +135,52 @@ const PieComponent = ({ data, height, width }) => {
 
 const RadialBarComponent = ({ data, height, width }) => {
   const renderRadialBarLabel = (props) => {
-    const { cx, cy, viewBox, fill, value } = props;
-    const barWidth = viewBox.outerRadius - viewBox.innerRadius;
+    const { cx, cy, index, viewBox, fill, value, data, background } = props;
+    const fontSize = (viewBox.outerRadius - viewBox.innerRadius) / 2;
     return (
-      <text
-        x={cx}
-        y={cy - viewBox.innerRadius - barWidth / 2 + 2}
+      <g
         fill={fill}
-        style={{ fontSize: barWidth / 2, fontFamily: "sans-serif" }}
-        textAnchor="middle"
-        dominantBaseLine="middle"
-        alignmentBaseLine="middle"
+        style={{ fontSize, fontFamily: "sans-serif" }}
+        transform="translate(0,2)"
       >
-        {pct1(value)}
-      </text>
+        <text
+          x={cx}
+          y={cy - viewBox.innerRadius - fontSize + 2}
+          textAnchor="middle"
+          dominantBaseLine="middle"
+          alignmentBaseLine="middle"
+        >
+          {pct1(value)}
+        </text>
+        <g
+          transform={`translate(0,${cy + (data.index + 1) * fontSize * 0.7})`}
+          fill={background}
+          style={{ fontSize: fontSize * 0.7, fontFamily: "sans-serif" }}
+          dominantBaseLine="hanging"
+          alignmentBaseLine="hanging"
+        >
+          <text x={cx - viewBox.outerRadius} textAnchor="left" fill={data.fill}>
+            {data.xValue}
+          </text>
+          <text x={cx} textAnchor="middle">
+            {"/"}
+          </text>
+          <text x={cx + viewBox.outerRadius} textAnchor="end">
+            {data.yValue}
+          </text>
+        </g>
+      </g>
     );
   };
   let innerRadius = Math.floor(width * 0.1);
   let outerRadius = Math.floor(width * 0.5);
+  let background = "#cccccc";
   return (
     <RadialBarChart
       width={width}
       height={height}
       cx="50%"
-      cy="50%"
+      cy="60%"
       innerRadius={innerRadius}
       outerRadius={outerRadius}
       startAngle={180}
@@ -172,17 +194,21 @@ const RadialBarComponent = ({ data, height, width }) => {
         label={{
           position: "inside",
           fill: "white",
-          content: renderRadialBarLabel,
+          content: (props) =>
+            renderRadialBarLabel({
+              ...props,
+              data: data[props.index],
+              background,
+            }),
         }}
-        background={{ fill: "#cccccc" }}
+        background={{ fill: background }}
         clockWise={false}
-        dataKey="xValue"
-        domainKey="xDomain"
+        dataKey="xPortion"
         isAnimationActive={false}
       />
       <Legend
         iconSize={width / 20}
-        height={height / 3}
+        height={height / 8}
         verticalAlign="bottom"
         align="right"
       />
@@ -204,15 +230,17 @@ const ReportXInY = ({ xInY, chartRef, containerRef }) => {
     let chart;
     if (Array.isArray(xInY.report.xInY)) {
       xInY.report.xInY.forEach((report, i) => {
-        let { xiny, y, rank } = report;
-        chartData.unshift({
-          xValue: xiny,
-          xDomain: 1,
+        let { xiny, x, y, rank } = report;
+        chartData.push({
+          xValue: x,
+          xPortion: xiny,
           yValue: y,
+          index: i,
           name: rank,
           fill: COLORS[i % COLORS.length],
         });
       });
+      chartData = chartData.reverse();
       chart = (
         <RadialBarComponent data={chartData} width={minDim} height={minDim} />
       );
