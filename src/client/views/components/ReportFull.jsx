@@ -1,6 +1,7 @@
 import React, { Fragment, useRef, useState } from "react";
 import { saveSvgAsPng, svgAsDataUri } from "save-svg-as-png";
 import CloseIcon from "@material-ui/icons/Close";
+import CodeIcon from "@material-ui/icons/Code";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import LinkIcon from "@material-ui/icons/Link";
 import EditIcon from "@material-ui/icons/Edit";
@@ -12,17 +13,23 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import Report from "./Report";
-import ReportEdit from "./ReportEdit";
-import ReportQuery from "./ReportQuery";
 import ReportInfo from "./ReportInfo";
+import withApiUrl from "../hocs/withApiUrl";
 import dispatchReport from "../hocs/dispatchReport";
 import { useStyles } from "./ReportModal";
 import { useNavigate } from "@reach/router";
+
+import loadable from "@loadable/component";
+
+const ReportCode = loadable(() => import("./ReportCode"));
+const ReportEdit = loadable(() => import("./ReportEdit"));
+const ReportQuery = loadable(() => import("./ReportQuery"));
 
 export const ReportFull = ({
   reportId,
   report,
   queryString,
+  apiUrl,
   fetchReport,
   topLevel,
   modalStyle = {},
@@ -30,6 +37,7 @@ export const ReportFull = ({
 }) => {
   const navigate = useNavigate();
   const classes = useStyles();
+  const [code, setCode] = useState(false);
   const [edit, setEdit] = useState(false);
   const [query, setQuery] = useState(false);
   const [info, setInfo] = useState(false);
@@ -65,6 +73,11 @@ export const ReportFull = ({
 
   const exportChart = (e, format = "png", filename = "report") => {
     let chartSVG;
+    if (format == "json") {
+      let link = `${apiUrl}/report?${queryString}`;
+      window.open(link, "_blank");
+      return;
+    }
     if (chartRef.current && chartRef.current.children) {
       chartSVG = chartRef.current.childNodes[0].childNodes[0];
     } else {
@@ -90,6 +103,32 @@ export const ReportFull = ({
     navigate(`/${path}?${queryString}`);
   };
 
+  let reportComponent;
+
+  if (code) {
+    reportComponent = (
+      <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
+        <ReportCode
+          reportId={queryString}
+          report={report}
+          queryString={queryString}
+        />
+      </div>
+    );
+  } else {
+    reportComponent = (
+      <Report
+        reportId={queryString}
+        report={report}
+        queryString={queryString}
+        inModal
+        chartRef={chartRef}
+        containerRef={containerRef}
+        topLevel={topLevel}
+      />
+    );
+  }
+
   let content = (
     <Grid
       container
@@ -105,15 +144,7 @@ export const ReportFull = ({
         ref={containerRef}
         style={{ height: "100%", width: "100%" }}
       >
-        <Report
-          reportId={queryString}
-          report={report}
-          queryString={queryString}
-          inModal
-          chartRef={chartRef}
-          containerRef={containerRef}
-          topLevel={topLevel}
-        />
+        {reportComponent}
       </Grid>
       {edit && (
         <Fragment>
@@ -211,7 +242,24 @@ export const ReportFull = ({
             />
           </Grid>
           <Grid item align="right">
-            <GetAppIcon onClick={exportChart} style={{ cursor: "pointer" }} />
+            <CodeIcon
+              onClick={(e) => {
+                setCode(!code);
+              }}
+              style={{ cursor: "pointer" }}
+            />
+          </Grid>
+          <Grid item align="right">
+            <GetAppIcon
+              onClick={(e) => {
+                if (code) {
+                  exportChart(e, "json");
+                } else {
+                  exportChart();
+                }
+              }}
+              style={{ cursor: "pointer" }}
+            />
           </Grid>
         </Grid>
       </Grid>
@@ -230,4 +278,4 @@ export const ReportFull = ({
   );
 };
 
-export default compose(dispatchReport)(ReportFull);
+export default compose(withApiUrl, dispatchReport)(ReportFull);

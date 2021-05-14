@@ -82,6 +82,7 @@
     "react-dom": "^16.13.1",
     "react-helmet": "^6.1.0",
     "react-hooks-visible": "^1.1.1",
+    "react-json-pretty": "^2.2.0",
     "react-leaflet": "^2.7.0",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.2.0",
