@@ -45,9 +45,13 @@ export const ReportFull = ({
     height *= 0.75;
     width *= 0.75;
     modal = true;
+  } else if (topLevel) {
+    width *= 0.96;
+    height *= 0.96;
   } else {
     marginLeft = width * -0.05;
     width *= 0.9;
+    height *= 0.9;
   }
 
   const downloadLink = (uri, filename) => {

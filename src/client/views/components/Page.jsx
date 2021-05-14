@@ -13,12 +13,14 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "100%",
   },
   item: { minWidth: "900px", maxWidth: "80%", align: "center" },
+  itemFull: { width: "100%", align: "center" },
 }));
 
 const Page = ({
   searchBox,
   panels,
   text,
+  topLevel,
   pageRef,
   recordId,
   fieldId,
@@ -26,6 +28,7 @@ const Page = ({
   result,
 }) => {
   const classes = useStyles();
+  const itemCss = topLevel ? classes.itemFull : classes.item;
   let items = [];
   if (panels && panels.length > 0) {
     panels.forEach((obj) => {
@@ -36,7 +39,7 @@ const Page = ({
         }
       });
       items.push(
-        <Grid item className={classes.item} style={styles}>
+        <Grid item className={itemCss} style={styles}>
           {obj.panel}
         </Grid>
       );
@@ -63,14 +66,14 @@ const Page = ({
       ref={pageRef}
     >
       {searchBox && (
-        <Grid item className={classes.item} style={{ marginTop: "2em" }}>
+        <Grid item className={itemCss} style={{ marginTop: "2em" }}>
           <SearchBox />
         </Grid>
       )}
       {title && (
         <Grid
           item
-          className={classnames(styles.pageTitle, classes.item)}
+          className={classnames(styles.pageTitle, itemCss)}
           style={{ marginBottom: "0.5em" }}
         >
           {title}
@@ -78,7 +81,7 @@ const Page = ({
       )}
       {items}
       {text && (
-        <Grid item className={classes.item}>
+        <Grid item className={itemCss}>
           {text}
         </Grid>
       )}

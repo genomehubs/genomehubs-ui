@@ -19,7 +19,7 @@ const basename = BASENAME || "";
 const useStyles = makeStyles((theme) => ({
   container: {
     minHeight: "100%",
-    minWidth: "100%",
+    minWidth: "900px",
     maxWidth: "100%",
     overflowX: "hidden",
   },
@@ -61,7 +61,6 @@ const ReportLayout = (props) => {
 
 const Layout = () => {
   let paths = [<DefaultLayout path="/*" />, <ReportLayout path="/reporturl" />];
-  console.log("Layout");
   return (
     <>
       <Router className={styles.fillParent} basepath={basename} primary={false}>

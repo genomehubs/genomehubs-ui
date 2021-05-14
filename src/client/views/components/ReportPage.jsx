@@ -25,7 +25,7 @@ const ReportPage = ({ location, topLevel, ...props }) => {
       />
     </div>
   );
-  return <Page searchBox={!topLevel} text={content} />;
+  return <Page searchBox={!topLevel} topLevel={topLevel} text={content} />;
 };
 
 export default ReportPage;
