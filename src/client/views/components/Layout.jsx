@@ -9,10 +9,11 @@ import classnames from "classnames";
 import loadable from "@loadable/component";
 import { compose } from "recompose";
 import { makeStyles } from "@material-ui/core/styles";
+import ReportPage from "./ReportPage";
 
 import styles from "./Styles.scss";
 
-const ReportPage = loadable(() => import("./ReportPage"));
+// const ReportPage = loadable(() => import("./ReportPage"));
 
 const basename = BASENAME || "";
 

@@ -6,13 +6,18 @@ import { compose } from "recompose";
 import loadable from "@loadable/component";
 import styles from "./Styles.scss";
 import withRoutes from "../hocs/withRoutes";
-
-const Landing = loadable(() => import("./Landing"));
-const ExplorePage = loadable(() => import("./ExplorePage"));
-const RecordPage = loadable(() => import("./RecordPage"));
-const ReportPage = loadable(() => import("./ReportPage"));
-const SearchPage = loadable(() => import("./SearchPage"));
-const GenericPage = loadable(() => import("./GenericPage"));
+import Landing from "./Landing";
+import ExplorePage from "./ExplorePage";
+import RecordPage from "./RecordPage";
+import ReportPage from "./ReportPage";
+import SearchPage from "./SearchPage";
+import GenericPage from "./GenericPage";
+// const Landing = loadable(() => import("./Landing"));
+// const ExplorePage = loadable(() => import("./ExplorePage"));
+// const RecordPage = loadable(() => import("./RecordPage"));
+// const ReportPage = loadable(() => import("./ReportPage"));
+// const SearchPage = loadable(() => import("./SearchPage"));
+// const GenericPage = loadable(() => import("./GenericPage"));
 // const AboutPage = loadable(() => import("./AboutPage"));
 // const TutorialPage = loadable(() => import("./TutorialPage"));
 

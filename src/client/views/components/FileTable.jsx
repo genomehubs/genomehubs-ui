@@ -17,7 +17,6 @@ import Typography from "@material-ui/core/Typography";
 import classnames from "classnames";
 import { compose } from "recompose";
 import formatter from "../functions/formatter";
-import loadable from "@loadable/component";
 import { makeStyles } from "@material-ui/core/styles";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";

@@ -27,8 +27,8 @@ import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
-
-const LocationMap = loadable(() => import("./LocationMap"));
+import LocationMap from "./LocationMap";
+// const LocationMap = loadable(() => import("./LocationMap"));
 
 const useRowStyles = makeStyles({
   root: {

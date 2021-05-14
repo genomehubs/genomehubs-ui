@@ -9,6 +9,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const devMode = process.env.NODE_ENV !== "production";
 
 const BUILD_DIR = path.resolve(__dirname, "dist/public");
+const STATIC_DIR = path.resolve(__dirname, "dist/public/static");
 const APP_DIR = path.resolve(__dirname, "src/client/views");
 
 const gitRevisionPlugin = new GitRevisionPlugin();
@@ -103,7 +104,7 @@ const config = {
         },
         {
           from: "./src/client/static",
-          to: "/static",
+          to: STATIC_DIR,
         },
       ],
     }),

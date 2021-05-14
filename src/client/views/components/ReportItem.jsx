@@ -8,10 +8,13 @@ import styles from "./Styles.scss";
 import withFetchReport from "../hocs/withFetchReport";
 import withReportById from "../hocs/withReportById";
 import ReportModal from "./ReportModal";
+import ReportSources from "./ReportSources";
+import ReportXPerRank from "./ReportXPerRank";
+import ReportXInY from "./ReportXInY";
 
-const ReportSources = loadable(() => import("./ReportSources"));
-const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
-const ReportXInY = loadable(() => import("./ReportXInY"));
+// const ReportSources = loadable(() => import("./ReportSources"));
+// const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
+// const ReportXInY = loadable(() => import("./ReportXInY"));
 
 const ReportItem = ({
   reportId,

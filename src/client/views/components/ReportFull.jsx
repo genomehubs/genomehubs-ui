@@ -14,6 +14,9 @@ import styles from "./Styles.scss";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import Report from "./Report";
 import ReportInfo from "./ReportInfo";
+import ReportCode from "./ReportCode";
+import ReportQuery from "./ReportQuery";
+import ReportEdit from "./ReportEdit";
 import withApiUrl from "../hocs/withApiUrl";
 import dispatchReport from "../hocs/dispatchReport";
 import { useStyles } from "./ReportModal";
@@ -21,9 +24,9 @@ import { useNavigate } from "@reach/router";
 
 import loadable from "@loadable/component";
 
-const ReportCode = loadable(() => import("./ReportCode"));
-const ReportEdit = loadable(() => import("./ReportEdit"));
-const ReportQuery = loadable(() => import("./ReportQuery"));
+// const ReportCode = loadable(() => import("./ReportCode"));
+// const ReportEdit = loadable(() => import("./ReportEdit"));
+// const ReportQuery = loadable(() => import("./ReportQuery"));
 
 export const ReportFull = ({
   reportId,
