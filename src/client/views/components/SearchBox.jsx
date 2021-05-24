@@ -66,10 +66,15 @@ const AutoCompleteOption = ({ option }) => {
   if (option.name_class) {
     primaryText = (
       <>
-        {option.title}
         {option.xref && (
-          <small style={{ float: "right" }}> [{option.name_class}]</small>
+          <div style={{ display: "inline-block" }}>
+            <Typography variant="body2" color="textSecondary">
+              {`${option.name_class}:`}
+            </Typography>
+          </div>
         )}
+        {option.xref && " "}
+        {option.title}
       </>
     );
     secondaryText = (
@@ -77,7 +82,7 @@ const AutoCompleteOption = ({ option }) => {
         {option.taxon_rank}
         {option.name_class != "scientific name" &&
           option.name_class != "taxon ID" && (
-            <span> :: {option.scientific_name}</span>
+            <span>: {option.scientific_name}</span>
           )}
       </Typography>
     );
