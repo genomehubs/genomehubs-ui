@@ -1,102 +1,16 @@
-import React, { createElement, useEffect, useState, Fragment } from "react";
-import { compose } from "recompose";
-import Grid from "@material-ui/core/Grid";
-import { withStyles } from "@material-ui/core/styles";
-import gfm from "remark-gfm";
-import { Link, useLocation } from "@reach/router";
-import styles from "./Styles.scss";
-import Report from "./Report";
-import withPages from "../hocs/withPages";
-import Tooltip from "@material-ui/core/Tooltip";
-import unified from "unified";
-import remarkParse from "remark-parse";
-import remarkReact from "remark-react";
+import React, { useEffect } from "react";
+import {
+  RehypeComponentsList,
+  compile,
+  processProps,
+} from "./MarkdownFunctions";
+
+import MarkdownInclude from "./MarkdownInclude";
 import classnames from "classnames";
-import NavLink from "./NavLink";
-import remarkDirective from "remark-directive";
-import { visit } from "unist-util-visit";
-import { h } from "hastscript";
-
-import remarkRehype from "remark-rehype";
-import rehypeReact from "rehype-react";
-import rehypeRaw from "rehype-raw";
-
-const siteName = SITENAME || "/";
-
-const muiStyles = (theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-});
-
-const processProps = (props, newProps = {}) => {
-  for (const [key, value] of Object.entries(props)) {
-    if (value == "") {
-      newProps[key] = true;
-    } else if (key == "class") {
-      newProps["class"] = styles[value];
-    } else {
-      newProps[key] = value;
-    }
-  }
-  return newProps;
-};
-
-const RehypeComponentsList = {
-  a: (props) => <NavLink {...processProps(props)} />,
-  grid: (props) => <Grid {...processProps(props)} />,
-  hub: (props) => <span {...processProps(props)}>{siteName}</span>,
-  report: (props) => <Report {...processProps(props)} />,
-  span: (props) => <span {...processProps(props)} />,
-  tooltip: (props) => {
-    return (
-      <Tooltip {...processProps(props, { placement: "top" })}>
-        <span>{props.children}</span>
-      </Tooltip>
-    );
-  },
-};
-
-function compile(val, components = RehypeComponentsList) {
-  const processor = unified()
-    .use(remarkParse)
-    .use(remarkReact)
-    .use(gfm)
-    .use(remarkDirective)
-    .use(htmlDirectives)
-    .use(remarkRehype)
-    .use(rehypeRaw)
-    .use(rehypeReact, {
-      createElement,
-      components,
-    });
-
-  const ast = processor.runSync(processor.parse(val));
-
-  return {
-    ast,
-    contents: processor.stringify(ast),
-  };
-}
-
-function htmlDirectives() {
-  return transform;
-
-  function transform(tree) {
-    visit(
-      tree,
-      ["textDirective", "leafDirective", "containerDirective"],
-      ondirective
-    );
-  }
-
-  function ondirective(node) {
-    var data = node.data || (node.data = {});
-    var hast = h(node.name, node.attributes);
-    data.hName = hast.tagName;
-    data.hProperties = hast.properties;
-  }
-}
+import { compose } from "recompose";
+import styles from "./Styles.scss";
+import withPages from "../hocs/withPages";
+import { withStyles } from "@material-ui/core/styles";
 
 const Markdown = ({
   classes,
@@ -112,10 +26,9 @@ const Markdown = ({
     }
   }, [pageId]);
 
-  RehypeComponentsList;
-
   const { contents, ast } = compile(pagesById, {
     ...RehypeComponentsList,
+    include: (props) => <MarkdownInclude {...processProps(props)} />,
     ...components,
   });
   let css;
