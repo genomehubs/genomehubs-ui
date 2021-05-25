@@ -24,7 +24,7 @@ const NamesPanel = ({ taxon_id, names }) => {
     }
     nameDivs.push(
       <span key={i} className={styles.name}>
-        {name.name} — {source}
+        {name.name} - {source}
       </span>
     );
   });

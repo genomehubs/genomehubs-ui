@@ -205,7 +205,7 @@ const AttributeTableRow = ({
     fieldValues.push(<TableCell key={"attribute"}>{attributeId}</TableCell>);
     let range;
     if (meta.max > meta.min) {
-      range = ` (${formatter(meta.min)}–${formatter(meta.max)})`;
+      range = ` (${formatter(meta.min)}-${formatter(meta.max)})`;
     }
     fieldValues.push(
       <TableCell key={"value"}>

@@ -20,7 +20,7 @@
 
 ::report{report="xInY" x="assembly_level=chromosome" y="assembly_span" rank="species" item xs=6}
 
-::report{report="xPerRank" x="genome_size>1000000000"item xs=3}
+::report{report="xPerRank" x="genome_size>1000000000" item xs=3}
 
 :::
 

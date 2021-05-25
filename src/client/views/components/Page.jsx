@@ -53,7 +53,7 @@ const Page = ({
   } else if (resultCount >= 0) {
     title = `${resultCount} ${resultCount == 1 ? "hit" : "hits"}`;
   } else if (resultCount < 0) {
-    title = `updating search results…`;
+    title = `updating search results...`;
   }
   return (
     <Grid

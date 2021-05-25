@@ -348,7 +348,7 @@ const SearchBox = ({
                   }}
                   style={{ textAlign: "right", cursor: "pointer" }}
                 >
-                  {showOptions ? "Hide" : "Show"} search options&hellip;
+                  {showOptions ? "Hide" : "Show"} search options...
                 </FormHelperText>
               </FormControl>
             </Grid>
