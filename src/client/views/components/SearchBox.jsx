@@ -62,14 +62,27 @@ const AutoCompleteSuggestion = ({ option }) => {
 
 const AutoCompleteOption = ({ option }) => {
   const classes = useStyles();
-  let secondaryText;
+  let primaryText, secondaryText;
   if (option.name_class) {
+    primaryText = (
+      <>
+        {option.xref && (
+          <div style={{ display: "inline-block" }}>
+            <Typography variant="body2" color="textSecondary">
+              {`${option.name_class}:`}
+            </Typography>
+          </div>
+        )}
+        {option.xref && " "}
+        {option.title}
+      </>
+    );
     secondaryText = (
       <Typography variant="body2" color="textSecondary">
         {option.taxon_rank}
         {option.name_class != "scientific name" &&
           option.name_class != "taxon ID" && (
-            <span> :: {option.scientific_name}</span>
+            <span>: {option.scientific_name}</span>
           )}
       </Typography>
     );
@@ -87,7 +100,7 @@ const AutoCompleteOption = ({ option }) => {
         <SearchIcon className={classes.icon} />
       </Grid>
       <Grid item xs>
-        <div>{option.title}</div>
+        <div>{primaryText}</div>
         <span style={{ float: "right" }}>
           <Typography variant="body2" color="textSecondary">
             {(option.name_class && option.taxon_id) || option.assembly_id}
@@ -227,6 +240,11 @@ const SearchBox = ({
           name_class: result.reason
             ? result.reason[0].fields["taxon_names.class"]
             : "taxon ID",
+          xref: Boolean(
+            result.reason &&
+              result.reason[0].fields["taxon_names.class"] &&
+              !result.reason[0].fields["taxon_names.class"][0].match(" name")
+          ),
         });
         terms.push(
           <div key={i} className={styles.term}>

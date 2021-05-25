@@ -14,9 +14,11 @@
 
 :::
 
+---
+
 :::grid{container direction="row" spacing="1"}
 
-::grid{item xs="3"}
+::grid[:include{pageId=about/example.md}]{item xs="3"}
 
 ::report{report="xInY" x="assembly_level=chromosome" y="assembly_span" rank="species" item xs=6}
 

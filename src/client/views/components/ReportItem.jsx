@@ -1,16 +1,17 @@
-import React, { useEffect, Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 
 import Grid from "@material-ui/core/Grid";
+import ReportHistogram from "./ReportHistogram";
+import ReportModal from "./ReportModal";
+import ReportSources from "./ReportSources";
+import ReportXInY from "./ReportXInY";
+import ReportXPerRank from "./ReportXPerRank";
 import Tooltip from "@material-ui/core/Tooltip";
 import { compose } from "recompose";
 import loadable from "@loadable/component";
 import styles from "./Styles.scss";
 import withFetchReport from "../hocs/withFetchReport";
 import withReportById from "../hocs/withReportById";
-import ReportModal from "./ReportModal";
-import ReportSources from "./ReportSources";
-import ReportXPerRank from "./ReportXPerRank";
-import ReportXInY from "./ReportXInY";
 
 // const ReportSources = loadable(() => import("./ReportSources"));
 // const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
@@ -38,6 +39,15 @@ const ReportItem = ({
   }, [reportId]);
   let component;
   switch (report) {
+    case "histogram":
+      component = (
+        <ReportHistogram
+          histogram={reportById}
+          chartRef={chartRef}
+          containerRef={containerRef}
+        />
+      );
+      break;
     case "sources":
       component = (
         <ReportSources

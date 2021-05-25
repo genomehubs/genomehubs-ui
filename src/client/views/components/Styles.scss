@@ -620,6 +620,10 @@ body,
       font-family: themed("bodyFont");
       font-size: themed("bodyFontSize");
 
+      figure {
+        margin: 0;
+      }
+
       h1,
       h2,
       h3,
@@ -648,7 +652,8 @@ body,
       }
 
       .reportHeading,
-      .reportCaption {
+      .reportCaption,
+      .caption {
         display: block;
         font-weight: 600;
         color: mix(themed("primary"), themed("secondary"), 75%);
