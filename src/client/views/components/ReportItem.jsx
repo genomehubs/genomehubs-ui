@@ -29,6 +29,7 @@ const ReportItem = ({
   topLevel,
   chartRef,
   containerRef,
+  ratio,
   delay = 0,
   ...gridProps
 }) => {
@@ -45,6 +46,7 @@ const ReportItem = ({
           histogram={reportById}
           chartRef={chartRef}
           containerRef={containerRef}
+          ratio={ratio}
         />
       );
       break;
@@ -72,6 +74,7 @@ const ReportItem = ({
           xInY={reportById}
           chartRef={chartRef}
           containerRef={containerRef}
+          ratio={ratio}
         />
       );
       break;

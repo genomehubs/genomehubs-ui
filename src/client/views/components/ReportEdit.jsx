@@ -1,27 +1,23 @@
 import React, { useState } from "react";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
+
 import FormControl from "@material-ui/core/FormControl";
+import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
 import SettingsButton from "./SettingsButton";
+import TextField from "@material-ui/core/TextField";
 import { compose } from "recompose";
-import withReportById from "../hocs/withReportById";
 import qs from "qs";
+import withReportById from "../hocs/withReportById";
 
-export const queryPropList = [
-  // "result",
-  "report",
-  "x",
-  "y",
-  // "z",
-  // "cat",
-  "rank",
-  // "taxonomy",
-];
+export const queryPropList = {
+  histogram: ["report", "x", "rank", "cat"],
+  xInY: ["report", "x", "y", "rank"],
+  xPerRank: ["report", "x", "rank"],
+};
 
-const reportTypes = ["xPerRank", "xInY"];
+const reportTypes = ["histogram", "xInY", "xPerRank"];
 
 export const ReportEdit = ({
   reportId,
@@ -38,7 +34,7 @@ export const ReportEdit = ({
   let query = qs.parse(reportById.report.queryString);
   const defaultState = () => {
     let obj = {};
-    queryPropList.forEach((queryProp) => {
+    queryPropList[report].forEach((queryProp) => {
       obj[queryProp] = query.hasOwnProperty(queryProp) ? query[queryProp] : "";
     });
     return obj;
@@ -68,7 +64,7 @@ export const ReportEdit = ({
     setValues(defaultState);
   };
 
-  queryPropList.forEach((queryProp) => {
+  queryPropList[report].forEach((queryProp) => {
     let input;
     if (queryProp == "report") {
       let items = reportTypes.map((rep) => {

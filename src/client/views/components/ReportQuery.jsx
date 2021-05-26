@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate } from "@reach/router";
+
 import Grid from "@material-ui/core/Grid";
-import { compose } from "recompose";
-import withReportById from "../hocs/withReportById";
 import SearchIcon from "@material-ui/icons/Search";
+import { compose } from "recompose";
 import qs from "qs";
-import withSearch from "../hocs/withSearch";
 import { setSearchTerm } from "../reducers/search";
+import { useNavigate } from "@reach/router";
+import withReportById from "../hocs/withReportById";
+import withSearch from "../hocs/withSearch";
 
 export const ReportQuery = ({ reportById, report, setPreferSearchTerm }) => {
   const navigate = useNavigate();

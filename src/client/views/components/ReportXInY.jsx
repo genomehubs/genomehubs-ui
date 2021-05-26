@@ -1,22 +1,23 @@
-import React, { Fragment, useRef } from "react";
-import Grid from "@material-ui/core/Grid";
-import useResize from "../hooks/useResize";
 // import { RadialChart } from "react-vis";
 import {
-  Label,
-  PieChart,
-  Pie,
-  Sector,
   Cell,
-  PolarAngleAxis,
-  RadialBarChart,
-  RadialBar,
-  Legend,
+  Label,
   LabelList,
+  Legend,
+  Pie,
+  PieChart,
+  PolarAngleAxis,
+  RadialBar,
+  RadialBarChart,
   ResponsiveContainer,
+  Sector,
 } from "recharts";
+import React, { Fragment, useRef } from "react";
+
+import Grid from "@material-ui/core/Grid";
 import { format } from "d3-format";
 import styles from "./Styles.scss";
+import useResize from "../hooks/useResize";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 const pct = format(".0%");
@@ -216,7 +217,7 @@ const RadialBarComponent = ({ data, height, width }) => {
   );
 };
 
-const ReportXInY = ({ xInY, chartRef, containerRef }) => {
+const ReportXInY = ({ xInY, chartRef, containerRef, ratio }) => {
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
@@ -224,6 +225,8 @@ const ReportXInY = ({ xInY, chartRef, containerRef }) => {
   let minDim = Math.floor(width);
   if (height) {
     minDim = Math.floor(Math.min(width, height));
+  } else {
+    minDim /= ratio;
   }
   if (xInY && xInY.status) {
     let chartData = [];

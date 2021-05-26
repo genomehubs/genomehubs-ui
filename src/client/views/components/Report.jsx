@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, Fragment } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 
-import qs from "qs";
 import ReportItem from "./ReportItem";
+import qs from "qs";
 
 export const queryPropList = [
   "result",
@@ -42,6 +42,7 @@ const Report = (props) => {
   reportProps.delay = props.delay;
   reportProps.containerRef = props.containerRef;
   reportProps.topLevel = props.topLevel;
+  reportProps.ratio = props.ratio || 1;
 
   return <ReportItem {...reportProps} />;
 };
