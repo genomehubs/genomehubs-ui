@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 
 import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import SettingsButton from "./SettingsButton";
+import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import { compose } from "recompose";
 import qs from "qs";
 import withReportById from "../hocs/withReportById";
 
 export const queryPropList = {
-  histogram: ["report", "x", "rank", "cat"],
+  histogram: ["report", "x", "rank", "cat", "includeEstimates"],
   xInY: ["report", "x", "y", "rank"],
   xPerRank: ["report", "x", "rank"],
 };
@@ -45,6 +47,15 @@ export const ReportEdit = ({
     e.preventDefault();
     e.stopPropagation();
     setValues({ ...values, [queryProp]: e.target.value });
+  };
+
+  const toggleSwitch = (e, queryProp) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setValues({
+      ...values,
+      [queryProp]: !values[queryProp],
+    });
   };
 
   const handleSubmit = (e) => {
@@ -86,6 +97,21 @@ export const ReportEdit = ({
           >
             {items}
           </Select>
+        </FormControl>
+      );
+    } else if (queryProp == "includeEstimates") {
+      input = (
+        <FormControl>
+          <Switch
+            id={"report-include-estimates"}
+            checked={values[queryProp]}
+            onClick={(e) => toggleSwitch(e, queryProp)}
+            name="include-estimates"
+            color="default"
+          />
+          <FormHelperText>
+            {values[queryProp] ? "include estimates" : "exclude estimates"}
+          </FormHelperText>
         </FormControl>
       );
     } else {
