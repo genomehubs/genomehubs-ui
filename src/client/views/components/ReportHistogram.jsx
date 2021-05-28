@@ -1,5 +1,7 @@
 // import { RadialChart } from "react-vis";
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -30,6 +32,7 @@ const COLORS = [
   "#6a3d9a",
 ];
 const sci = format(".3s");
+const f3 = format(".3r");
 
 const renderXTick = (tickProps) => {
   const { x, y, index, endLabel, lastIndex, payload, chartWidth } = tickProps;
@@ -87,7 +90,64 @@ const Histogram = ({
   lastIndex,
   xLabel,
   yLabel,
+  stacked,
 }) => {
+  let axes = [
+    <CartesianGrid strokeDasharray="3 3" vertical={false} />,
+    <XAxis
+      dataKey="x"
+      interval={0}
+      tickLine={false}
+      tick={(props) =>
+        renderXTick({ ...props, endLabel, lastIndex, chartWidth: width })
+      }
+    >
+      {width > 300 && (
+        <Label value={xLabel} offset={5} position="bottom" fill="#666" />
+      )}
+    </XAxis>,
+    <YAxis>
+      {width > 300 && (
+        <Label
+          value={yLabel}
+          offset={-10}
+          position="left"
+          fill="#666"
+          angle={-90}
+          style={{ textAnchor: "middle" }}
+        />
+      )}
+    </YAxis>,
+    <Tooltip />,
+  ];
+  if (width > 300) {
+    axes.push(<Legend verticalAlign="top" offset={28} height={28} />);
+  }
+  // return (
+  //   <AreaChart
+  //     width={width}
+  //     height={height}
+  //     data={data}
+  //     margin={{
+  //       top: 5,
+  //       right: 30,
+  //       left: 20,
+  //       bottom: width > 300 ? 25 : 5,
+  //     }}
+  //   >
+  //     {axes}
+  //     {cats.map((cat, i) => (
+  //       <Area
+  //         type={"monotone"}
+  //         dataKey={cat}
+  //         stroke={COLORS[i]}
+  //         fill={COLORS[i]}
+  //         stackId="1"
+  //         isAnimationActive={false}
+  //       />
+  //     ))}
+  //   </AreaChart>
+  // );
   return (
     <BarChart
       width={width}
@@ -102,41 +162,33 @@ const Histogram = ({
         bottom: width > 300 ? 25 : 5,
       }}
     >
-      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-      <XAxis
-        dataKey="x"
-        interval={0}
-        tickLine={false}
-        tick={(props) =>
-          renderXTick({ ...props, endLabel, lastIndex, chartWidth: width })
-        }
-      >
-        {width > 300 && (
-          <Label value={xLabel} offset={5} position="bottom" fill="#666" />
-        )}
-      </XAxis>
-      <YAxis>
-        {width > 300 && (
-          <Label
-            value={yLabel}
-            offset={-10}
-            position="left"
-            fill="#666"
-            angle={-90}
-            style={{ textAnchor: "middle" }}
-          />
-        )}
-      </YAxis>
-      <Tooltip />
-      {width > 300 && <Legend verticalAlign="top" offset={28} height={28} />}
+      {axes}
       {cats.map((cat, i) => (
-        <Bar dataKey={cat} fill={COLORS[i]} isAnimationActive={false} />
+        <Bar
+          dataKey={cat}
+          stackId={stacked ? 1 : false}
+          fill={COLORS[i]}
+          isAnimationActive={false}
+        />
       ))}
     </BarChart>
   );
 };
 
-const ReportHistogram = ({ histogram, chartRef, containerRef, ratio }) => {
+const scales = {
+  linear: (value, total) => value,
+  log10: (value, total) => (value > 0 ? f3(Math.log10(value)) : 0),
+  proportion: (value, total) => (total > 0 ? f3(value / total) : 0),
+};
+
+const ReportHistogram = ({
+  histogram,
+  chartRef,
+  containerRef,
+  ratio,
+  stacked,
+  yScale = "linear",
+}) => {
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
@@ -153,6 +205,11 @@ const ReportHistogram = ({ histogram, chartRef, containerRef, ratio }) => {
     let histograms = histogram.report.histogram.histograms;
     let xLabel = histogram.report.xLabel;
     let yLabel = histogram.report.yLabel;
+    if (yScale == "log10") {
+      yLabel = `Log10 ${yLabel}`;
+    } else if (yScale == "proportion") {
+      yLabel = `Proportional ${yLabel}`;
+    }
     let cats;
     let lastIndex = histograms.buckets.length - 2;
     let endLabel = sci(histograms.buckets[lastIndex + 1]);
@@ -162,7 +219,10 @@ const ReportHistogram = ({ histogram, chartRef, containerRef, ratio }) => {
         if (i < histograms.buckets.length - 1) {
           let series = {};
           histogram.report.histogram.cats.forEach((cat) => {
-            series[cat.label] = histograms.byCat[cat.key][i];
+            series[cat.label] = scales[yScale](
+              histograms.byCat[cat.key][i],
+              stacked ? histogram.report.histogram.x : cat.doc_count
+            );
           });
           chartData.push({
             x: sci(bucket),
@@ -176,7 +236,10 @@ const ReportHistogram = ({ histogram, chartRef, containerRef, ratio }) => {
         if (i < histograms.buckets.length - 1) {
           chartData.push({
             x: sci(bucket),
-            "all taxa": histograms.allValues[i],
+            "all taxa": scales[yScale](
+              histograms.allValues[i],
+              histogram.report.histogram.x
+            ),
           });
         }
       });
@@ -192,6 +255,7 @@ const ReportHistogram = ({ histogram, chartRef, containerRef, ratio }) => {
         yLabel={yLabel}
         endLabel={endLabel}
         lastIndex={lastIndex}
+        stacked={stacked}
       />
     );
     //   { value: x, name: xTerm },

@@ -9,6 +9,7 @@ import ReportXPerRank from "./ReportXPerRank";
 import Tooltip from "@material-ui/core/Tooltip";
 import { compose } from "recompose";
 import loadable from "@loadable/component";
+import qs from "qs";
 import styles from "./Styles.scss";
 import withFetchReport from "../hocs/withFetchReport";
 import withReportById from "../hocs/withReportById";
@@ -47,6 +48,7 @@ const ReportItem = ({
           chartRef={chartRef}
           containerRef={containerRef}
           ratio={ratio}
+          {...qs.parse(queryString)}
         />
       );
       break;

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 
 import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
 import Select from "@material-ui/core/Select";
 import SettingsButton from "./SettingsButton";
 import Switch from "@material-ui/core/Switch";
@@ -14,7 +17,15 @@ import qs from "qs";
 import withReportById from "../hocs/withReportById";
 
 export const queryPropList = {
-  histogram: ["report", "x", "rank", "cat", "includeEstimates"],
+  histogram: [
+    "report",
+    "x",
+    "rank",
+    "cat",
+    "includeEstimates",
+    "yScale",
+    "stacked",
+  ],
   xInY: ["report", "x", "y", "rank"],
   xPerRank: ["report", "x", "rank"],
 };
@@ -75,6 +86,8 @@ export const ReportEdit = ({
     setValues(defaultState);
   };
 
+  let toggles = [];
+
   queryPropList[report].forEach((queryProp) => {
     let input;
     if (queryProp == "report") {
@@ -99,20 +112,46 @@ export const ReportEdit = ({
           </Select>
         </FormControl>
       );
-    } else if (queryProp == "includeEstimates") {
+    } else if (queryProp == "includeEstimates" || queryProp == "stacked") {
+      toggles.push(
+        <div style={{ float: "left", marginRight: "2em" }}>
+          <FormControl key={queryProp}>
+            <Switch
+              id={`report-${queryProp}`}
+              checked={values[queryProp]}
+              onClick={(e) => toggleSwitch(e, queryProp)}
+              name={queryProp}
+              color="default"
+            />
+            <FormHelperText>{queryProp}</FormHelperText>
+          </FormControl>
+        </div>
+      );
+    } else if (queryProp == "yScale") {
       input = (
-        <FormControl>
-          <Switch
-            id={"report-include-estimates"}
-            checked={values[queryProp]}
-            onClick={(e) => toggleSwitch(e, queryProp)}
-            name="include-estimates"
-            color="default"
+        <RadioGroup
+          aria-label={queryProp}
+          name={queryProp}
+          value={values[queryProp] || "linear"}
+          onClick={(e) => handleChange(e, queryProp)}
+          row
+        >
+          <FormControlLabel
+            value="linear"
+            control={<Radio color="default" />}
+            label="linear"
           />
-          <FormHelperText>
-            {values[queryProp] ? "include estimates" : "exclude estimates"}
-          </FormHelperText>
-        </FormControl>
+          <FormControlLabel
+            value="log10"
+            control={<Radio color="default" />}
+            label="log10"
+          />
+          <FormControlLabel
+            value="proportion"
+            control={<Radio color="default" />}
+            label="proportion"
+          />
+        </RadioGroup>
       );
     } else {
       input = (
@@ -125,12 +164,21 @@ export const ReportEdit = ({
         />
       );
     }
+    if (input) {
+      fields.push(
+        <Grid item style={{ width: "100%" }}>
+          {input}
+        </Grid>
+      );
+    }
+  });
+  if (toggles.length > 0) {
     fields.push(
-      <Grid item style={{ width: "100%" }}>
-        {input}
+      <Grid item align="left">
+        {toggles}
       </Grid>
     );
-  });
+  }
   fields.push(
     <Grid item align="right">
       <SettingsButton
