@@ -47,7 +47,9 @@ export const RehypeComponentsList = {
       style={{ maxWidth: "100%", maxHeight: "100%" }}
     />
   ),
-  report: (props) => <Report {...processProps(props)} />,
+  report: (props) => (
+    <Report {...processProps(props)} className={styles.reportContainer} />
+  ),
   span: (props) => <span {...processProps(props)} />,
   tooltip: (props) => {
     return (

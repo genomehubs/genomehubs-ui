@@ -89,7 +89,7 @@ const ReportItem = ({
       container
       direction="column"
       spacing={1}
-      style={{ height: "100%", flexGrow: "1", width: "100%" }}
+      style={{ flexGrow: "1", width: "100%" }}
     >
       {heading && (
         <Grid item xs>
@@ -100,7 +100,7 @@ const ReportItem = ({
         {component}
       </Grid>
       {caption && !inModal && !topLevel && (
-        <Grid item xs>
+        <Grid item xs style={{ textAlign: "center" }}>
           <span className={styles.reportCaption}>{caption}</span>
         </Grid>
       )}
@@ -119,11 +119,7 @@ const ReportItem = ({
       </ReportModal>
     );
   }
-  return (
-    <Grid {...gridProps} style={{ height: "100%" }}>
-      {content}
-    </Grid>
-  );
+  return <Grid {...gridProps}>{content}</Grid>;
 };
 
 export default compose(withFetchReport, withReportById)(ReportItem);

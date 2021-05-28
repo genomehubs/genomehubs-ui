@@ -8,21 +8,13 @@
 
 ::report{report="xInY" x="c_value" rank="species,genus,family" item xs=4}
 
-::report{report="xPerRank" item xs=4 }
-
-::report{delay=500 report="xInY" x="assembly_span" rank="species" item xs=4}
+::report{report="histogram" x="assembly_span" result="taxon" cat="order" rank="genus" item xs="6" ratio=1.5}
 
 :::
 
 ---
 
-:::grid{container direction="row" spacing="1"}
-
-::grid{item xs="3"}
-
-::report{report="xInY" x="assembly_level=chromosome" y="assembly_span" rank="species" item xs=6}
-
-::report{report="xPerRank" x="genome_size>1000000000" item xs=3}
+:::grid{container direction="row"}
 
 :::
 

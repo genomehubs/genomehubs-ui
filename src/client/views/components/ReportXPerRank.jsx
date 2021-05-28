@@ -35,7 +35,11 @@ const ReportXPerRank = ({ perRank }) => {
   } else {
     return null;
   }
-  return <div style={{ width: "100%", textAlign: true }}>{values}</div>;
+  return (
+    <div style={{ textAlign: "center" }}>
+      <div style={{ display: "inline-block", textAlign: "left" }}>{values}</div>
+    </div>
+  );
 };
 
 export default ReportXPerRank;

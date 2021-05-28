@@ -434,7 +434,7 @@ body,
     }
 
     .textPanel {
-      border-top: solid 0.25px rgba(themed("primary"), 0.25);
+      border-top: 0.2em solid mix(themed("primary"), themed("secondary"), 50%);
       box-sizing: border-box;
       color: themed("primary");
       margin: 1em 0 1em 0;
@@ -644,7 +644,7 @@ body,
 
       .boldValue {
         display: inline-block;
-        min-width: 4em;
+        min-width: 5em;
         text-align: right;
         margin-right: 0.5em;
         font-weight: 600;
@@ -654,9 +654,29 @@ body,
       .reportHeading,
       .reportCaption,
       .caption {
-        display: block;
         font-weight: 600;
         color: mix(themed("primary"), themed("secondary"), 75%);
+      }
+
+      .reportContainer {
+        position: relative;
+        min-height: 100%;
+        padding: 2em;
+      }
+
+      .reportContainer:not(:last-child):after {
+        content: "";
+        position: absolute;
+        right: 2px;
+        top: 15%;
+        height: 70%;
+        border-right: 0.2em solid
+          mix(themed("primary"), themed("secondary"), 50%);
+      }
+
+      hr {
+        border: 0;
+        border-top: 0.2em solid mix(themed("primary"), themed("secondary"), 50%);
       }
 
       .outline {
