@@ -43,6 +43,8 @@ const Report = (props) => {
   reportProps.containerRef = props.containerRef;
   reportProps.topLevel = props.topLevel;
   reportProps.ratio = props.ratio || 1;
+  reportProps.stacked = props.stacked;
+  reportProps.yScale = props.yScale || 1;
 
   return <ReportItem {...reportProps} />;
 };
