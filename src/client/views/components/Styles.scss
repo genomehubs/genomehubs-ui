@@ -674,6 +674,30 @@ body,
           mix(themed("primary"), themed("secondary"), 50%);
       }
 
+      .reportContainer:before {
+        content: "";
+        position: absolute;
+        bottom: 2px;
+        left: 15%;
+        width: 70%;
+        border-bottom: 0.2em solid
+          mix(themed("primary"), themed("secondary"), 50%);
+      }
+
+      .centerContent {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        display: flex;
+      }
+
+      .centerContent :first-child {
+        max-width: 100%;
+        max-height: 100%;
+        margin: auto;
+        overflow: auto;
+      }
+
       hr {
         border: 0;
         border-top: 0.2em solid mix(themed("primary"), themed("secondary"), 50%);

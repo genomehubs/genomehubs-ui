@@ -4,15 +4,13 @@
 
 ## Data summary
 
-:::grid{container direction="row" spacing="4"}
+:::grid{container direction="row"}
 
-::report{report="xInY" x="c_value" rank="species,genus,family" item xs=4}
+::item[![GoaT](/static/about/browse.png)]{xs=4}
 
 ::report{report="histogram" x="assembly_span" result="taxon" cat="order" rank="genus" item xs="6" ratio=1.5}
 
 :::
-
----
 
 :::grid{container direction="row"}
 

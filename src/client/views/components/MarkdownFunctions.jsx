@@ -42,13 +42,15 @@ export const RehypeComponentsList = {
   grid: (props) => <Grid {...processProps(props)} />,
   hub: (props) => <span {...processProps(props)}>{siteName}</span>,
   img: (props) => (
-    <img
-      {...processProps(props)}
-      style={{ maxWidth: "100%", maxHeight: "100%" }}
-    />
+    <div className={styles.centerContent}>
+      <img {...processProps(props)} />
+    </div>
   ),
   report: (props) => (
     <Report {...processProps(props)} className={styles.reportContainer} />
+  ),
+  item: (props) => (
+    <Grid {...processProps(props)} item className={styles.reportContainer} />
   ),
   span: (props) => <span {...processProps(props)} />,
   tooltip: (props) => {

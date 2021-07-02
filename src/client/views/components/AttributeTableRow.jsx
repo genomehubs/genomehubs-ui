@@ -8,6 +8,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import LaunchIcon from "@material-ui/icons/Launch";
+import LocationMap from "./LocationMap";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -27,7 +28,7 @@ import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withTypes from "../hocs/withTypes";
-import LocationMap from "./LocationMap";
+
 // const LocationMap = loadable(() => import("./LocationMap"));
 
 const useRowStyles = makeStyles({
@@ -288,20 +289,31 @@ const AttributeTableRow = ({
       colSpan++;
     }
 
-    if (source == "direct" && meta.values) {
-      raw = (
-        <TableRow>
-          <TableCell></TableCell>
-          <TableCell
-            style={{ paddingBottom: 0, paddingTop: 0 }}
-            colSpan={colSpan}
-          >
-            <Collapse in={open.toString()} timeout="auto">
-              <NestedTable types={types[attributeId]} values={meta.values} />
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      );
+    if (source == "direct") {
+      let values = [];
+      if (meta.values) {
+        values = meta.values;
+      } else if (
+        meta.aggregation_method &&
+        meta.aggregation_method == "unique"
+      ) {
+        values = [meta];
+      }
+      if (values.length > 0) {
+        raw = (
+          <TableRow>
+            <TableCell></TableCell>
+            <TableCell
+              style={{ paddingBottom: 0, paddingTop: 0 }}
+              colSpan={colSpan}
+            >
+              <Collapse in={open.toString()} timeout="auto">
+                <NestedTable types={types[attributeId]} values={values} />
+              </Collapse>
+            </TableCell>
+          </TableRow>
+        );
+      }
     }
   }
   let header = (
