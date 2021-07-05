@@ -34,7 +34,7 @@ const ResultPanel = ({
   const handleTaxonClick = () => {
     setPreferSearchTerm(false);
     navigate(
-      `/records?taxon_id=${taxon_id}&result=${searchIndex}#${encodeURIComponent(
+      `/records?record_id=${taxon_id}&result=taxon#${encodeURIComponent(
         scientific_name
       )}`
     );
