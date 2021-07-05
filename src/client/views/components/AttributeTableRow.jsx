@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from "react";
-import { useLocation, useNavigate } from "@reach/router";
 
 import Box from "@material-ui/core/TableContainer";
 import Collapse from "@material-ui/core/Box";
@@ -24,6 +23,7 @@ import loadable from "@loadable/component";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "qs";
 import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
@@ -39,24 +39,39 @@ const useRowStyles = makeStyles({
   },
 });
 
-const NestedTable = ({ values, types }) => {
+const NestedTable = ({ values, types, setPreferSearchTerm }) => {
+  const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
+  const handleSourceClick = (record_id, result) => {
+    setPreferSearchTerm(false);
+    navigate(
+      `/records?record_id=${record_id}&result=${result}#${encodeURIComponent(
+        record_id
+      )}`
+    );
+  };
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  let goatHeader;
+  if (values[0].source_index) {
+    goatHeader = <TableCell>Source record</TableCell>;
+  }
   return (
     <Box margin={1}>
       <Table size="small" aria-label="raw values">
         <TableHead>
           <TableRow>
             <TableCell>Value</TableCell>
-            <TableCell>Source</TableCell>
+            {goatHeader}
+            <TableCell>Source link</TableCell>
             <TableCell>Comment</TableCell>
           </TableRow>
         </TableHead>
@@ -89,22 +104,43 @@ const NestedTable = ({ values, types }) => {
                   )}
                 </TableCell>
               );
+              let goatCell;
+              if (goatHeader) {
+                if (row.source_index) {
+                  goatCell = (
+                    <Tooltip
+                      title={`view ${row.source_index} record`}
+                      arrow
+                      placement={"top"}
+                    >
+                      <TableCell
+                        onClick={() =>
+                          handleSourceClick(row.source_id, row.source_index)
+                        }
+                        style={{ cursor: "pointer" }}
+                      >
+                        {row.source_id}
+                      </TableCell>
+                    </Tooltip>
+                  );
+                } else {
+                  goatCell = <TableCell></TableCell>;
+                }
+              }
               return (
                 <TableRow key={i}>
                   <TableCell component="th" scope="row">
                     {row.value}
                   </TableCell>
-                  {row.source_description ? (
-                    <Tooltip
-                      title={row.source_description}
-                      arrow
-                      placement={"top"}
-                    >
-                      {linkCell}
-                    </Tooltip>
-                  ) : (
-                    linkCell
-                  )}
+                  {goatCell}
+                  <Tooltip
+                    title={row.source_description || "open external source"}
+                    arrow
+                    placement={"top"}
+                  >
+                    {linkCell}
+                  </Tooltip>
+
                   <TableCell>{row.comment}</TableCell>
                 </TableRow>
               );
@@ -136,7 +172,6 @@ const AttributeTableRow = ({
   setPreferSearchTerm,
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [open, setOpen] = useState(false);
 
@@ -202,7 +237,7 @@ const AttributeTableRow = ({
     };
     let source;
     let aggSource;
-    let colSpan = 0;
+    let colSpan = 2;
     fieldValues.push(<TableCell key={"attribute"}>{attributeId}</TableCell>);
     let range;
     if (meta.max > meta.min) {
@@ -308,7 +343,11 @@ const AttributeTableRow = ({
               colSpan={colSpan}
             >
               <Collapse in={open.toString()} timeout="auto">
-                <NestedTable types={types[attributeId]} values={values} />
+                <NestedTable
+                  types={types[attributeId]}
+                  values={values}
+                  setPreferSearchTerm={setPreferSearchTerm}
+                />
               </Collapse>
             </TableCell>
           </TableRow>
