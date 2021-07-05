@@ -127,6 +127,10 @@ const NestedTable = ({ values, types, setPreferSearchTerm }) => {
                   goatCell = <TableCell></TableCell>;
                 }
               }
+              let comment = row.comment || "";
+              if (row.is_primary) {
+                comment = `Primary value. ${comment}`;
+              }
               return (
                 <TableRow key={i}>
                   <TableCell component="th" scope="row">
@@ -141,7 +145,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm }) => {
                     {linkCell}
                   </Tooltip>
 
-                  <TableCell>{row.comment}</TableCell>
+                  <TableCell>{comment}</TableCell>
                 </TableRow>
               );
             })}
