@@ -62,7 +62,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm }) => {
   };
   let goatHeader;
   if (values[0].source_index) {
-    goatHeader = <TableCell>Source record</TableCell>;
+    goatHeader = <TableCell>GoaT link</TableCell>;
   }
   return (
     <Box margin={1}>
@@ -71,7 +71,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm }) => {
           <TableRow>
             <TableCell>Value</TableCell>
             {goatHeader}
-            <TableCell>Source link</TableCell>
+            <TableCell>External link</TableCell>
             <TableCell>Comment</TableCell>
           </TableRow>
         </TableHead>

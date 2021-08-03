@@ -32,6 +32,12 @@ const COLORS = [
   "#6a3d9a",
 ];
 const sci = format(".3s");
+const sciInt = (v) => {
+  if (v < 1000) {
+    return Math.ceil(v);
+  }
+  return format(".3s")(v);
+};
 const f3 = format(".3r");
 
 const renderXTick = (tickProps) => {
@@ -205,6 +211,7 @@ const ReportHistogram = ({
     let histograms = histogram.report.histogram.histograms;
     let xLabel = histogram.report.xLabel;
     let yLabel = histogram.report.yLabel;
+    let valueType = histograms.valueType;
     if (yScale == "log10") {
       yLabel = `Log10 ${yLabel}`;
     } else if (yScale == "proportion") {
@@ -212,7 +219,10 @@ const ReportHistogram = ({
     }
     let cats;
     let lastIndex = histograms.buckets.length - 2;
-    let endLabel = sci(histograms.buckets[lastIndex + 1]);
+    let endLabel =
+      histograms.valueType == "integer"
+        ? sciInt(histograms.buckets[lastIndex + 1])
+        : sci(histograms.buckets[lastIndex + 1]);
     if (histograms.byCat) {
       cats = histogram.report.histogram.cats.map((cat) => cat.label);
       histograms.buckets.forEach((bucket, i) => {
@@ -225,7 +235,7 @@ const ReportHistogram = ({
             );
           });
           chartData.push({
-            x: sci(bucket),
+            x: valueType == "integer" ? sciInt(bucket) : sci(bucket),
             ...series,
           });
         }
@@ -235,7 +245,7 @@ const ReportHistogram = ({
       histograms.buckets.forEach((bucket, i) => {
         if (i < histograms.buckets.length - 1) {
           chartData.push({
-            x: sci(bucket),
+            x: valueType == "integer" ? sciInt(bucket) : sci(bucket),
             "all taxa": scales[yScale](
               histograms.allValues[i],
               histogram.report.histogram.x
