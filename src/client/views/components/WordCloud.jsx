@@ -13,6 +13,7 @@ import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withSummaryById from "../hocs/withSummaryById";
+import withTaxonomy from "../hocs/withTaxonomy";
 
 const WordCloud = ({
   summaryId,
@@ -24,6 +25,7 @@ const WordCloud = ({
   fetchSearchResults,
   setPreferSearchTerm,
   resetLookup,
+  taxonomy,
 }) => {
   const navigate = useNavigate();
   const height = 100;
@@ -43,6 +45,7 @@ const WordCloud = ({
       searchRawValues: true,
       includeEstimates: false,
       result: "taxon",
+      taxonomy,
     });
   };
   const updateSearch = (options) => {
@@ -100,6 +103,7 @@ const WordCloud = ({
 };
 
 export default compose(
+  withTaxonomy,
   withLookup,
   withSearch,
   withSummary,

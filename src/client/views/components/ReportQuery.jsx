@@ -8,8 +8,14 @@ import { setSearchTerm } from "../reducers/search";
 import { useNavigate } from "@reach/router";
 import withReportById from "../hocs/withReportById";
 import withSearch from "../hocs/withSearch";
+import withTaxonomy from "../hocs/withTaxonomy";
 
-export const ReportQuery = ({ reportById, report, setPreferSearchTerm }) => {
+export const ReportQuery = ({
+  reportById,
+  report,
+  setPreferSearchTerm,
+  taxonomy,
+}) => {
   const navigate = useNavigate();
   let terms = [];
   if (!reportById.report || !reportById.report[report]) {
@@ -21,6 +27,7 @@ export const ReportQuery = ({ reportById, report, setPreferSearchTerm }) => {
       ...searchTerm,
       summaryValues: "count",
       offset: 0,
+      taxonomy,
     };
     // delete options.fields;
     // delete options.excludeAncestral;
@@ -69,4 +76,4 @@ export const ReportQuery = ({ reportById, report, setPreferSearchTerm }) => {
   );
 };
 
-export default compose(withSearch, withReportById)(ReportQuery);
+export default compose(withTaxonomy, withSearch, withReportById)(ReportQuery);

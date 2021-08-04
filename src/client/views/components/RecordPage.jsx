@@ -16,6 +16,7 @@ import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSetLookup from "../hocs/withSetLookup";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
 const RecordPage = ({
@@ -30,6 +31,7 @@ const RecordPage = ({
   setSearchIndex,
   setPreviousSearchTerm,
   searchIndex,
+  taxonomy,
   types,
   searchById = {},
 }) => {
@@ -41,7 +43,9 @@ const RecordPage = ({
     } else {
       hash = location.hash;
     }
-    navigate(`?record_id=${recordId}&result=${result}${hash}`);
+    navigate(
+      `?record_id=${recordId}&result=${result}&taxonomy=${taxonomy}${hash}`
+    );
   };
 
   let results = [];
@@ -153,6 +157,7 @@ const RecordPage = ({
 
 export default compose(
   memo,
+  withTaxonomy,
   withRecord,
   withSearch,
   withSetLookup,

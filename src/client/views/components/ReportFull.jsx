@@ -1,28 +1,28 @@
 import React, { Fragment, useRef, useState } from "react";
 import { saveSvgAsPng, svgAsDataUri } from "save-svg-as-png";
+
 import CloseIcon from "@material-ui/icons/Close";
 import CodeIcon from "@material-ui/icons/Code";
-import GetAppIcon from "@material-ui/icons/GetApp";
-import LinkIcon from "@material-ui/icons/Link";
 import EditIcon from "@material-ui/icons/Edit";
-import InfoIcon from "@material-ui/icons/Info";
-import SearchIcon from "@material-ui/icons/Search";
+import GetAppIcon from "@material-ui/icons/GetApp";
 import Grid from "@material-ui/core/Grid";
-import { compose } from "recompose";
-import classnames from "classnames";
-import styles from "./Styles.scss";
-import useWindowDimensions from "../hooks/useWindowDimensions";
+import InfoIcon from "@material-ui/icons/Info";
+import LinkIcon from "@material-ui/icons/Link";
 import Report from "./Report";
-import ReportInfo from "./ReportInfo";
 import ReportCode from "./ReportCode";
-import ReportQuery from "./ReportQuery";
 import ReportEdit from "./ReportEdit";
-import withApiUrl from "../hocs/withApiUrl";
+import ReportInfo from "./ReportInfo";
+import ReportQuery from "./ReportQuery";
+import SearchIcon from "@material-ui/icons/Search";
+import classnames from "classnames";
+import { compose } from "recompose";
 import dispatchReport from "../hocs/dispatchReport";
-import { useStyles } from "./ReportModal";
-import { useNavigate } from "@reach/router";
-
 import loadable from "@loadable/component";
+import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
+import { useStyles } from "./ReportModal";
+import useWindowDimensions from "../hooks/useWindowDimensions";
+import withApiUrl from "../hocs/withApiUrl";
 
 // const ReportCode = loadable(() => import("./ReportCode"));
 // const ReportEdit = loadable(() => import("./ReportEdit"));
@@ -103,6 +103,7 @@ export const ReportFull = ({
 
   const permaLink = (queryString, toggle) => {
     let path = modal || topLevel ? "report" : toggle ? "reporturl" : "report";
+    // TODO: include taxonomy
     navigate(`/${path}?${queryString}`);
   };
 

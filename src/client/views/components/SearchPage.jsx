@@ -7,8 +7,8 @@ import TextPanel from "./TextPanel";
 import TreePanel from "./TreePanel";
 import classnames from "classnames";
 import { compose } from "recompose";
-import qs from "qs";
 import equal from "deep-equal";
+import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
@@ -64,6 +64,7 @@ const SearchPage = ({
             }
           } else {
             let hashedNav = (path) => {
+              // TODO: include taxonomy
               navigate(`${path}#${encodeURIComponent(hashTerm)}`);
             };
             setPreviousSearchTerm(options);

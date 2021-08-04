@@ -27,6 +27,7 @@ import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
 // const LocationMap = loadable(() => import("./LocationMap"));
@@ -39,7 +40,7 @@ const useRowStyles = makeStyles({
   },
 });
 
-const NestedTable = ({ values, types, setPreferSearchTerm }) => {
+const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -50,7 +51,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm }) => {
   const handleSourceClick = (record_id, result) => {
     setPreferSearchTerm(false);
     navigate(
-      `/records?record_id=${record_id}&result=${result}#${encodeURIComponent(
+      `/records?record_id=${record_id}&result=${result}&taxonomy=${taxonomy}#${encodeURIComponent(
         record_id
       )}`
     );
@@ -174,6 +175,7 @@ const AttributeTableRow = ({
   types,
   setSummaryField,
   setPreferSearchTerm,
+  taxonomy,
 }) => {
   const navigate = useNavigate();
 
@@ -191,6 +193,7 @@ const AttributeTableRow = ({
       includeEstimates: false,
       fields: fieldId,
       summaryValues: "count",
+      taxonomy,
     };
     navigate(
       `/search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
@@ -204,6 +207,7 @@ const AttributeTableRow = ({
       includeEstimates: false,
       fields: fieldId,
       summaryValues: "count",
+      taxonomy,
     };
     navigate(
       `/search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
@@ -351,6 +355,7 @@ const AttributeTableRow = ({
                   types={types[attributeId]}
                   values={values}
                   setPreferSearchTerm={setPreferSearchTerm}
+                  taxonomy={taxonomy}
                 />
               </Collapse>
             </TableCell>
@@ -387,6 +392,7 @@ const AttributeTableRow = ({
 };
 
 export default compose(
+  withTaxonomy,
   withRecord,
   withSummary,
   withSearch,

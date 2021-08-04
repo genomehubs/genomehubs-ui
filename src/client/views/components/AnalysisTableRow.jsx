@@ -16,6 +16,7 @@ import { useNavigate } from "@reach/router";
 import withAnalysesByAnyId from "../hocs/withAnalysesByAnyId";
 import withAnalysis from "../hocs/withAnalysis";
 import withRecord from "../hocs/withRecord";
+import withTaxonomy from "../hocs/withTaxonomy";
 
 const useRowStyles = makeStyles({
   root: {
@@ -35,6 +36,7 @@ const AnalysisTableRow = ({
   meta,
   setRecord,
   record,
+  taxonomy,
   currentResult,
 }) => {
   if (!meta) {
@@ -109,7 +111,7 @@ const AnalysisTableRow = ({
         className={classes.listSpan}
         key={entryId}
         onClick={() =>
-          handleClick({ id: entryId, currentId, result, navigate })
+          handleClick({ id: entryId, currentId, result, taxonomy, navigate })
         }
       >
         {entryId}
@@ -177,6 +179,7 @@ const AnalysisTableRow = ({
 
 export default compose(
   memo,
+  withTaxonomy,
   dispatchSetRecord,
   withAnalysis,
   withAnalysesByAnyId,

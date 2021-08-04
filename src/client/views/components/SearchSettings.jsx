@@ -29,6 +29,7 @@ import styles from "./Styles.scss";
 import withNames from "../hocs/withNames";
 import withRanks from "../hocs/withRanks";
 import withSearch from "../hocs/withSearch";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
 const useStyles = makeStyles((theme) => ({
@@ -52,6 +53,9 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchSettings = ({
   searchTerm,
+  setTaxonomy,
+  taxonomy,
+  taxonomies,
   hashTerm,
   searchResults,
   fetchSearchResults,
@@ -65,7 +69,7 @@ const SearchSettings = ({
   groupedTypes,
 }) => {
   const [state, setState] = React.useState(() => {
-    let initialState = {};
+    let initialState = { taxonomy };
     Object.keys(groupedTypes).forEach((key) => {
       let group = groupedTypes[key];
       initialState[`group-${key}`] = 0;
@@ -85,6 +89,15 @@ const SearchSettings = ({
   const handleIndexChange = (e) => {
     e.stopPropagation();
     setIndex(e.target.value);
+  };
+
+  const handleTaxonomyChange = (e) => {
+    e.stopPropagation();
+    setState({
+      ...state,
+      taxonomy: e.target.value,
+    });
+    // setTaxonomy(e.target.value);
   };
 
   const handleGroupChange = (event, group, checked) => {
@@ -138,6 +151,7 @@ const SearchSettings = ({
       ...(fields.length > 0 && { fields: fields.join(",") }),
       ...(names.length > 0 && { names: names.join(",") }),
       ...(ranks.length > 0 && { ranks: ranks.join(",") }),
+      taxonomy: state.taxonomy,
     };
     delete options.excludeAncestral;
     delete options.excludeDescendant;
@@ -150,6 +164,7 @@ const SearchSettings = ({
   const handleResetClick = () => {
     let options = {
       ...searchTerm,
+      taxonomy,
       offset: 0,
     };
     delete options.fields;
@@ -221,6 +236,10 @@ const SearchSettings = ({
     );
   });
 
+  let taxonomyValues = {};
+  taxonomies.forEach((taxonomy) => {
+    taxonomyValues[taxonomy.toUpperCase()] = taxonomy;
+  });
   return (
     <Paper className={classes.paper}>
       <Grid container alignItems="center" direction="column">
@@ -232,6 +251,15 @@ const SearchSettings = ({
               handleChange={handleIndexChange}
               helperText={"search index"}
               values={{ Taxon: "taxon", Assembly: "assembly" }}
+            />
+          </Grid>
+          <Grid item>
+            <BasicSelect
+              current={state.taxonomy}
+              id={"search-index-select"}
+              handleChange={handleTaxonomyChange}
+              helperText={"taxonomy"}
+              values={taxonomyValues}
             />
           </Grid>
         </Grid>
@@ -253,6 +281,7 @@ const SearchSettings = ({
 export default compose(
   memo,
   withTypes,
+  withTaxonomy,
   withSearch,
   withRanks,
   withNames

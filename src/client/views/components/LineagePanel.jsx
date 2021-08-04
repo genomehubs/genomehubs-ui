@@ -8,6 +8,7 @@ import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSetLookup from "../hocs/withSetLookup";
+import withTaxonomy from "../hocs/withTaxonomy";
 
 const LineagePanel = ({
   taxon_id,
@@ -17,6 +18,7 @@ const LineagePanel = ({
   setPreferSearchTerm,
   setLookupTerm,
   resetLookup,
+  taxonomy,
 }) => {
   const navigate = useNavigate();
 
@@ -25,7 +27,11 @@ const LineagePanel = ({
       setRecordId(taxon);
       fetchSearchResults({ query: `tax_eq(${taxon})`, result: "taxon" });
       setPreferSearchTerm(false);
-      navigate(`?record_id=${taxon}&result=taxon#${encodeURIComponent(name)}`);
+      navigate(
+        `?record_id=${taxon}&result=taxon&taxonomy=${taxonomy}#${encodeURIComponent(
+          name
+        )}`
+      );
       setLookupTerm(name);
     }
   };
@@ -63,4 +69,9 @@ const LineagePanel = ({
   );
 };
 
-export default compose(withSetLookup, withSearch, withRecord)(LineagePanel);
+export default compose(
+  withTaxonomy,
+  withSetLookup,
+  withSearch,
+  withRecord
+)(LineagePanel);

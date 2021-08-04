@@ -13,6 +13,7 @@ import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
 const ResultPanel = ({
@@ -28,13 +29,14 @@ const ResultPanel = ({
   summaryId,
   summary,
   types,
+  taxonomy,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const handleTaxonClick = () => {
     setPreferSearchTerm(false);
     navigate(
-      `/records?record_id=${taxon_id}&result=taxon#${encodeURIComponent(
+      `/records?record_id=${taxon_id}&result=taxon&taxonomy=${taxonomy}#${encodeURIComponent(
         scientific_name
       )}`
     );
@@ -46,7 +48,7 @@ const ResultPanel = ({
     setSummaryField(fieldId);
     setPreferSearchTerm(false);
     navigate(
-      `/explore?taxon_id=${taxon_id}&result=${searchIndex}&field_id=${fieldId}${location.hash}`
+      `/explore?taxon_id=${taxon_id}&result=${searchIndex}&taxonomy=${taxonomy}&field_id=${fieldId}${location.hash}`
     );
   };
   let css = classnames(
@@ -189,6 +191,7 @@ const ResultPanel = ({
 };
 
 export default compose(
+  withTaxonomy,
   withRecord,
   withSearch,
   withSummary,

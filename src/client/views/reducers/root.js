@@ -11,6 +11,8 @@ import { recordReducers } from "./record";
 import { reportReducers } from "./report";
 import { routeReducers } from "./routes";
 import { searchReducers } from "./search";
+import { taxonomyRanks } from "../selectors/types";
+import { taxonomyReducers } from "./taxonomy";
 import { trackingReducers } from "./tracking";
 import { treeReducers } from "./tree";
 import { typeReducers } from "./types";
@@ -29,6 +31,7 @@ const allReducers = Object.assign(
   reportReducers,
   routeReducers,
   searchReducers,
+  taxonomyReducers,
   trackingReducers,
   treeReducers,
   typeReducers

@@ -30,6 +30,7 @@ import styles from "./Styles.scss";
 import withNames from "../hocs/withNames";
 import withRanks from "../hocs/withRanks";
 import withSearch from "../hocs/withSearch";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
 const StyledTableRow = withStyles((theme) => ({
@@ -208,6 +209,7 @@ const ResultTable = ({
   activeRanks,
   searchIndex,
   setPreferSearchTerm,
+  taxonomy,
 }) => {
   if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
     return null;
@@ -227,7 +229,7 @@ const ResultTable = ({
       searchText = record.scientific_name;
     }
     navigate(
-      `/records?record_id=${recordId}&result=${searchIndex}#${encodeURIComponent(
+      `/records?record_id=${recordId}&result=${searchIndex}&taxonomy=${taxonomy}#${encodeURIComponent(
         searchText
       )}`
     );
@@ -559,6 +561,7 @@ const ResultTable = ({
 
 export default compose(
   withTypes,
+  withTaxonomy,
   withSearch,
   withRanks,
   withNames

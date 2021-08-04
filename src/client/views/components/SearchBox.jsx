@@ -22,6 +22,7 @@ import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
+import withTaxonomy from "../hocs/withTaxonomy";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -125,6 +126,7 @@ const SearchBox = ({
   searchIndex,
   searchTerm,
   setPreferSearchTerm,
+  taxonomy,
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
@@ -148,6 +150,7 @@ const SearchBox = ({
     if (!options.hasOwnProperty("summaryValues")) {
       options.summaryValues = "count";
     }
+    options.taxonomy = taxonomy;
     fetchSearchResults(options);
     setPreferSearchTerm(false);
     navigate(`/search?${qs.stringify(options)}#${encodeURIComponent(term)}`);
@@ -425,4 +428,4 @@ const SearchBox = ({
   );
 };
 
-export default compose(memo, withSearch, withLookup)(SearchBox);
+export default compose(memo, withTaxonomy, withSearch, withLookup)(SearchBox);

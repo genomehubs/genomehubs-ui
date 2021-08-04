@@ -12,6 +12,7 @@ import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
 import withSummaryById from "../hocs/withSummaryById";
+import withTaxonomy from "../hocs/withTaxonomy";
 
 const HistogramSVG = ({
   summaryId,
@@ -21,6 +22,7 @@ const HistogramSVG = ({
   fetchSummary,
   searchIndex,
   fetchSearchResults,
+  taxonomy,
   setPreferSearchTerm,
   setLookupTerm,
 }) => {
@@ -50,6 +52,7 @@ const HistogramSVG = ({
       includeEstimates: false,
       summaryValues: "count",
       result: "taxon",
+      taxonomy,
     });
   };
   const updateSearch = (options) => {
@@ -194,6 +197,7 @@ const HistogramSVG = ({
 };
 
 export default compose(
+  withTaxonomy,
   withLookup,
   withSearch,
   withSummary,

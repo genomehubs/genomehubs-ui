@@ -22,6 +22,7 @@ import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
 export const useStyles = makeStyles((theme) => ({
@@ -48,6 +49,7 @@ const SearchOptions = ({
   fetchSearchResults,
   setLookupTerm,
   setPreferSearchTerm,
+  taxonomy,
   types,
 }) => {
   const classes = useStyles();
@@ -330,6 +332,7 @@ const SearchOptions = ({
     let options = {
       ...moreOptions,
       query,
+      taxonomy,
     };
     setPreferSearchTerm(false);
     navigate(
@@ -454,4 +457,9 @@ const SearchOptions = ({
   );
 };
 
-export default compose(withTypes, withSearch, withLookup)(SearchOptions);
+export default compose(
+  withTypes,
+  withTaxonomy,
+  withSearch,
+  withLookup
+)(SearchOptions);
