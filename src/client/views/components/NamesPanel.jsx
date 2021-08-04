@@ -45,7 +45,15 @@ const NamesPanel = ({ taxon_id, names }) => {
       <div className={styles.header}>
         <span className={styles.title}>Names</span>
       </div>
-      <div style={{ maxWidth: "100%" }}>{nameDivs}</div>
+      <div
+        style={{
+          maxWidth: "100%",
+          columns: "3 200px",
+          columnRule: "1px solid",
+        }}
+      >
+        {nameDivs}
+      </div>
     </div>
   );
 };

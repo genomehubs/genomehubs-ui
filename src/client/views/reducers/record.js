@@ -77,14 +77,16 @@ export function fetchRecord(recordId, result, callback) {
         json = console.log("An error occured.", error);
       }
       let fetchedRecordId = json.records[0].record.taxon_id;
+      let fetchedTitle = json.records[0].record.scientific_name;
       if (result == "assembly") {
         fetchedRecordId = json.records[0].record.assembly_id;
+        fetchedTitle = fetchedRecordId;
       }
       if (fetchedRecordId == recordId) {
         dispatch(receiveRecord(json));
       } else if (callback) {
         dispatch(resetRecord());
-        callback(fetchedRecordId, result);
+        callback(fetchedRecordId, result, fetchedTitle);
       }
     } catch (err) {
       return dispatch(setApiStatus(false));

@@ -33,9 +33,15 @@ const RecordPage = ({
   types,
   searchById = {},
 }) => {
-  const changeRecordUrl = (recordId, result) => {
+  const changeRecordUrl = (recordId, result, hashTerm) => {
     const navigate = useNavigate();
-    navigate(`?record_id=${recordId}&result=${result}${location.hash}`);
+    let hash;
+    if (hashTerm) {
+      hash = `#${encodeURIComponent(hashTerm)}`;
+    } else {
+      hash = location.hash;
+    }
+    navigate(`?record_id=${recordId}&result=${result}${hash}`);
   };
 
   let results = [];
