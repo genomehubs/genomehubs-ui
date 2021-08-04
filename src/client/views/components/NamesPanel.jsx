@@ -15,15 +15,26 @@ const NamesPanel = ({ taxon_id, names }) => {
   let nameDivs = [];
   names.forEach((name, i) => {
     let source = name.class;
+    let prefix;
     if (name.source_stub) {
       source = (
         <a href={`${name.source_stub}${name.name}`} target="_blank">
           {source} <LaunchIcon fontSize="inherit" />
         </a>
       );
+    } else if (name.source_url_stub) {
+      if (name.source) {
+        prefix = `${name.source}:`;
+      }
+      source = (
+        <a href={`${name.source_url_stub}${name.name}`} target="_blank">
+          {source} <LaunchIcon fontSize="inherit" />
+        </a>
+      );
     }
     nameDivs.push(
       <span key={i} className={styles.name}>
+        {prefix}
         {name.name} - {source}
       </span>
     );

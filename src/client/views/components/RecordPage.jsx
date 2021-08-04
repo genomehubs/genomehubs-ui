@@ -12,6 +12,7 @@ import { compose } from "recompose";
 import { getRecordIsFetching } from "../reducers/record";
 import qs from "qs";
 import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSetLookup from "../hocs/withSetLookup";
@@ -32,6 +33,11 @@ const RecordPage = ({
   types,
   searchById = {},
 }) => {
+  const changeRecordUrl = (recordId, result) => {
+    const navigate = useNavigate();
+    navigate(`?record_id=${recordId}&result=${result}${location.hash}`);
+  };
+
   let results = [];
   let taxon = {};
   let options = qs.parse(location.search.replace(/^\?/, ""));
@@ -58,14 +64,20 @@ const RecordPage = ({
         options.result == "taxon" &&
         (!record.record || recordId != record.record.taxon_id)
       ) {
-        if (!recordIsFetching) fetchRecord(recordId, options.result);
+        if (!recordIsFetching) {
+          fetchRecord(recordId, options.result, changeRecordUrl);
+        }
         if (hashTerm) setLookupTerm(hashTerm);
       } else if (
         options.result == "assembly" &&
         (!record.record || recordId != record.record.assembly_id)
       ) {
-        if (!recordIsFetching) fetchRecord(recordId, options.result);
-        if (hashTerm) setLookupTerm(hashTerm);
+        if (!recordIsFetching) {
+          fetchRecord(recordId, options.result, changeRecordUrl);
+        }
+        if (hashTerm) {
+          setLookupTerm(hashTerm);
+        }
       }
     }
   }, [options]);

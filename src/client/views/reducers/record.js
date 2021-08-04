@@ -59,15 +59,15 @@ const records = handleActions(
 export const getRecords = (state) => state.records.byId;
 export const getRecordIsFetching = (state) => state.records.isFetching;
 
-export function fetchRecord(taxonId, result) {
+export function fetchRecord(recordId, result, callback) {
   return async function (dispatch) {
     const state = store.getState();
     const records = getRecords(state);
-    if (records[taxonId]) {
+    if (records[recordId]) {
       return;
     }
     dispatch(requestRecord());
-    let url = `${apiUrl}/record?recordId=${taxonId}&result=${result}`;
+    let url = `${apiUrl}/record?recordId=${recordId}&result=${result}`;
     try {
       let json;
       try {
@@ -76,7 +76,16 @@ export function fetchRecord(taxonId, result) {
       } catch (error) {
         json = console.log("An error occured.", error);
       }
-      dispatch(receiveRecord(json));
+      let fetchedRecordId = json.records[0].record.taxon_id;
+      if (result == "assembly") {
+        fetchedRecordId = json.records[0].record.assembly_id;
+      }
+      if (fetchedRecordId == recordId) {
+        dispatch(receiveRecord(json));
+      } else if (callback) {
+        dispatch(resetRecord());
+        callback(fetchedRecordId, result);
+      }
     } catch (err) {
       return dispatch(setApiStatus(false));
     }

@@ -19,7 +19,8 @@ const withRecord = (WrappedComponent) => (props) => {
   });
 
   const mapDispatchToProps = (dispatch) => ({
-    fetchRecord: (recordId, result) => dispatch(fetchRecord(recordId, result)),
+    fetchRecord: (recordId, result, callback) =>
+      dispatch(fetchRecord(recordId, result, callback)),
     setRecordId: (recordId) => dispatch(setCurrentRecordId(recordId)),
   });
 
