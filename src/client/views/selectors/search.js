@@ -82,7 +82,11 @@ export function fetchSearchResults(options, navigate) {
         }
       } else {
         if (navigate) {
-          navigate(`/search?${qs.stringify(options)}`, { replace: true });
+          let navOptions = { ...options };
+          if (json.queryString) {
+            navOptions.query = json.queryString;
+          }
+          navigate(`/search?${qs.stringify(navOptions)}`, { replace: true });
         }
         dispatch(receiveSearch(json));
       }
