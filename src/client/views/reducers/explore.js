@@ -21,7 +21,7 @@ function onReceiveSummary(state, action) {
   const { payload, meta } = action;
   const { status, summaries } = payload;
   const summary = summaries[0];
-  const id = `${summary.lineage}--${summary.field}--${summary.name}`;
+  const id = `${summary.lineage}--${summary.field}--${summary.name}--${summary.taxonomy}`;
 
   const updatedWithSummaryState = immutableUpdate(state, {
     byId: { [id]: summary },

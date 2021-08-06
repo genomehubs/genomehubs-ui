@@ -1,17 +1,18 @@
 import React, { Fragment, memo } from "react";
 
+import ExplorePage from "./ExplorePage";
+import GenericPage from "./GenericPage";
+import Landing from "./Landing";
+import RecordPage from "./RecordPage";
+import ReportPage from "./ReportPage";
 import { Router } from "@reach/router";
+import SearchPage from "./SearchPage";
 import classnames from "classnames";
 import { compose } from "recompose";
 import loadable from "@loadable/component";
 import styles from "./Styles.scss";
 import withRoutes from "../hocs/withRoutes";
-import Landing from "./Landing";
-import ExplorePage from "./ExplorePage";
-import RecordPage from "./RecordPage";
-import ReportPage from "./ReportPage";
-import SearchPage from "./SearchPage";
-import GenericPage from "./GenericPage";
+
 // const Landing = loadable(() => import("./Landing"));
 // const ExplorePage = loadable(() => import("./ExplorePage"));
 // const RecordPage = loadable(() => import("./RecordPage"));

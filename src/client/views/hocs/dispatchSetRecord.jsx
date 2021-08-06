@@ -8,14 +8,14 @@ import { setPreferSearchTerm } from "../reducers/search";
 const dispatchSetRecord = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({});
   const mapDispatchToProps = (dispatch) => ({
-    setRecord: ({ id, name, currentId, result, navigate }) => {
+    setRecord: ({ id, name, currentId, result, taxonomy, navigate }) => {
       if (id != currentId) {
         dispatch(setCurrentRecordId(id));
         dispatch(fetchSearchResults({ query: id, result }));
         dispatch(setPreferSearchTerm(false));
         if (navigate) {
           navigate(
-            `?record_id=${id}&result=${result}#${encodeURIComponent(
+            `?record_id=${id}&result=${result}&taxonomy=${taxonomy}#${encodeURIComponent(
               name || id
             )}`
           );

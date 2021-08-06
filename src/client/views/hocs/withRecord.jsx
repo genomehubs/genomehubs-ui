@@ -3,6 +3,7 @@ import {
   getCurrentRecord,
   getCurrentRecordId,
   getRecordIsFetching,
+  resetRecord,
   setCurrentRecordId,
 } from "../reducers/record";
 
@@ -19,8 +20,9 @@ const withRecord = (WrappedComponent) => (props) => {
   });
 
   const mapDispatchToProps = (dispatch) => ({
-    fetchRecord: (recordId, result, callback) =>
-      dispatch(fetchRecord(recordId, result, callback)),
+    fetchRecord: (recordId, result, taxonomy, callback) =>
+      dispatch(fetchRecord(recordId, result, taxonomy, callback)),
+    resetRecord: () => dispatch(resetRecord()),
     setRecordId: (recordId) => dispatch(setCurrentRecordId(recordId)),
   });
 

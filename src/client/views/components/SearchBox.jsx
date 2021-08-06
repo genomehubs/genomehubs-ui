@@ -163,7 +163,7 @@ const SearchBox = ({
   };
   const updateTerm = (value) => {
     setLookupTerm(value);
-    fetchLookup(value);
+    fetchLookup({ lookupTerm: value, taxonomy });
   };
   const handleChange = (e, newValue) => {
     if (newValue != lookupTerm) {

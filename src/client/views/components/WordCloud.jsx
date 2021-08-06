@@ -2,9 +2,7 @@ import React, { useEffect } from "react";
 
 import Skeleton from "@material-ui/lab/Skeleton";
 import { TagCloud } from "react-tagcloud";
-import Tooltip from "@material-ui/core/Tooltip";
 import { compose } from "recompose";
-import { formatter } from "../functions/formatter";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
@@ -34,7 +32,7 @@ const WordCloud = ({
   useEffect(() => {
     if (summaryId && visible) {
       setTimeout(() => {
-        fetchSummary(parts[0], parts[1], parts[2], searchIndex);
+        fetchSummary(parts[0], parts[1], parts[2], parts[3], searchIndex);
       }, sequence * 100);
     }
   }, [summaryId, visible]);

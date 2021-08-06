@@ -22,21 +22,19 @@ export function fetchTaxonomies() {
       return;
     }
     dispatch(requestTaxonomies());
-    // let url = `${apiUrl}/resultFields?result=${result}`;
-    // try {
-    //   let json;
-    //   try {
-    //     const response = await fetch(url);
-    //     json = await response.json();
-    //   } catch (error) {
-    //     json = console.log("An error occured.", error);
-    //   }
-    //   json.index = result;
-    let taxonomyList = ["ncbi", "ott"];
-    dispatch(receiveTaxonomies(taxonomyList));
-    dispatch(setCurrentTaxonomy(taxonomyList[0]));
-    // } catch (err) {
-    //   return dispatch(setApiStatus(false));
-    // }
+    let url = `${apiUrl}/taxonomies`;
+    try {
+      let json;
+      try {
+        const response = await fetch(url);
+        json = await response.json();
+      } catch (error) {
+        json = console.log("An error occured.", error);
+      }
+      dispatch(receiveTaxonomies(json));
+      dispatch(setCurrentTaxonomy(json[0]));
+    } catch (err) {
+      return dispatch(setApiStatus(false));
+    }
   };
 }

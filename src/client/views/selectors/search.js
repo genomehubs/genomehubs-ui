@@ -10,6 +10,7 @@ import {
   setSearchTerm,
 } from "../reducers/search";
 
+import { getCurrentTaxonomy } from "../reducers/taxonomy";
 import qs from "qs";
 import { setTreeQuery } from "../reducers/tree";
 import store from "../store";
@@ -23,6 +24,7 @@ export function fetchSearchResults(options, navigate) {
     }
     const state = store.getState();
     const searchHistory = getSearchHistory(state);
+    const taxonomy = getCurrentTaxonomy(state);
     dispatch(setSearchHistory(options));
 
     let searchTerm = options.query;
@@ -57,7 +59,6 @@ export function fetchSearchResults(options, navigate) {
       if (!json.results || json.results.length == 0) {
         if (!searchTerm.match(/[\(\)<>=\n\*]/)) {
           options.query = `tax_name(${searchTerm})`;
-          console.log(options);
           dispatch(setPreferSearchTerm(true));
           dispatch(fetchSearchResults(options, navigate));
           // } else if (searchTerm.match(/tax_tree/)) {

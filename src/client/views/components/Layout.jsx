@@ -4,13 +4,12 @@ import Footer from "./Footer";
 import Grid from "@material-ui/core/Grid";
 import Header from "./Header";
 import Main from "./Main";
+import ReportPage from "./ReportPage";
 import { Router } from "@reach/router";
 import classnames from "classnames";
-import loadable from "@loadable/component";
 import { compose } from "recompose";
+import loadable from "@loadable/component";
 import { makeStyles } from "@material-ui/core/styles";
-import ReportPage from "./ReportPage";
-
 import styles from "./Styles.scss";
 
 // const ReportPage = loadable(() => import("./ReportPage"));

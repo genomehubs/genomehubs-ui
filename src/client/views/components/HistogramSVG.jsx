@@ -34,7 +34,7 @@ const HistogramSVG = ({
   useEffect(() => {
     if (summaryId && visible) {
       setTimeout(() => {
-        fetchSummary(parts[0], parts[1], parts[2], searchIndex);
+        fetchSummary(parts[0], parts[1], parts[2], parts[3], searchIndex);
       }, sequence * 100);
     }
   }, [summaryId, visible]);

@@ -9,6 +9,7 @@ import WordCloud from "./WordCloud";
 import classnames from "classnames";
 import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
+import qs from "qs";
 import styles from "./Styles.scss";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
@@ -33,12 +34,13 @@ const ResultPanel = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  let options = qs.parse(location.search.replace(/^\?/, ""));
   const handleTaxonClick = () => {
     setPreferSearchTerm(false);
     navigate(
-      `/records?record_id=${taxon_id}&result=taxon&taxonomy=${taxonomy}#${encodeURIComponent(
-        scientific_name
-      )}`
+      `/records?record_id=${taxon_id}&result=taxon&taxonomy=${
+        options.taxonomy || taxonomy
+      }#${encodeURIComponent(scientific_name)}`
     );
     // setRecordId(taxon_id);
   };
@@ -48,7 +50,9 @@ const ResultPanel = ({
     setSummaryField(fieldId);
     setPreferSearchTerm(false);
     navigate(
-      `/explore?taxon_id=${taxon_id}&result=${searchIndex}&taxonomy=${taxonomy}&field_id=${fieldId}${location.hash}`
+      `/explore?taxon_id=${taxon_id}&result=${searchIndex}&taxonomy=${
+        options.taxonomy || taxonomy
+      }&field_id=${fieldId}${location.hash}`
     );
   };
   let css = classnames(

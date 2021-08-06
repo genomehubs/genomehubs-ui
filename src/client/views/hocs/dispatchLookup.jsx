@@ -7,9 +7,9 @@ const dispatchLookup = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({});
 
   const mapDispatchToProps = (dispatch) => ({
-    fetchLookup: (lookupTerm, result) => {
+    fetchLookup: ({ lookupTerm, result, taxonomy }) => {
       if (lookupTerm.length > 3) {
-        dispatch(fetchLookup(lookupTerm, result));
+        dispatch(fetchLookup({ lookupTerm, result, taxonomy }));
       } else {
         dispatch(resetLookup());
       }

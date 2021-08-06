@@ -11,7 +11,7 @@ export const receiveTaxonomies = createAction(
 
 const defaultState = () => ({
   isFetching: false,
-  ids: ["ncbi", "ott"],
+  ids: [],
 });
 
 const taxonomies = handleActions(
@@ -37,7 +37,7 @@ export const setCurrentTaxonomy = createAction("SET_CURRENT_TAXONOMY");
 export const currentTaxonomy = handleAction(
   "SET_CURRENT_TAXONOMY",
   (state, action) => action.payload,
-  "ncbi"
+  ""
 );
 export const getCurrentTaxonomy = (state) => state.currentTaxonomy;
 

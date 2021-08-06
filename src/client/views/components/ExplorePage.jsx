@@ -11,6 +11,7 @@ import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSetLookup from "../hocs/withSetLookup";
 import withSummary from "../hocs/withSummary";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
 const ExplorePage = ({
@@ -24,6 +25,7 @@ const ExplorePage = ({
   setSearchIndex,
   fetchSearchResults,
   setRecordId,
+  taxonomy,
   types,
 }) => {
   let results = [];
@@ -39,9 +41,10 @@ const ExplorePage = ({
         fetchSearchResults({
           query: `tax_eq(${options.taxon_id})`,
           result: options.result,
+          taxonomy: options.taxonomy,
           includeEstimates: true,
         });
-        fetchRecord(options.taxon_id, options.result);
+        fetchRecord(options.taxon_id, options.result, options.taxonomy);
         setRecordId(options.taxon_id);
         setSearchIndex(options.result);
         setSummaryField(options.field_id);
@@ -64,7 +67,7 @@ const ExplorePage = ({
   if (taxon_id) {
     let summaryId;
     if (summaryField && types[summaryField]) {
-      summaryId = `${taxon_id}--${summaryField}--${summary}`;
+      summaryId = `${taxon_id}--${summaryField}--${summary}--${options.taxonomy}`;
     }
     results.push(
       <ResultPanel
@@ -80,7 +83,7 @@ const ExplorePage = ({
     lineage.lineage.forEach((ancestor, i) => {
       let summaryId;
       if (summaryField) {
-        summaryId = `${ancestor.taxon_id}--${summaryField}--${summary}`;
+        summaryId = `${ancestor.taxon_id}--${summaryField}--${summary}--${options.taxonomy}`;
       }
 
       results.push(
@@ -108,6 +111,7 @@ const ExplorePage = ({
 };
 
 export default compose(
+  withTaxonomy,
   withRecord,
   withSearch,
   withTypes,

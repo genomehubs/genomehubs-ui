@@ -41,7 +41,7 @@ const lookupTerms = handleActions(
 
 export const getLookupTerms = (state) => state.lookupTerms;
 
-export function fetchLookup(lookupTerm, result = "multi") {
+export function fetchLookup({ lookupTerm, result = "multi", taxonomy }) {
   return function (dispatch) {
     if (!lookupTerm) dispatch(receiveLookup(defaultState));
     if (lookupTerm.match(/[\(\)<>=]/)) return;
@@ -49,6 +49,7 @@ export function fetchLookup(lookupTerm, result = "multi") {
     let options = {
       searchTerm: lookupTerm,
       result,
+      taxonomy,
     };
     const queryString = qs.stringify(options);
     let url = `${apiUrl}/lookup?${queryString}`;

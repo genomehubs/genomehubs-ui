@@ -173,7 +173,6 @@ export const FileModal = ({ meta, apiUrl, children }) => {
       )}
     </Grid>
   );
-  console.log(meta);
   return (
     <div onClick={handleOpen}>
       {children}

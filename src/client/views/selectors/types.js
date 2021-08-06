@@ -218,7 +218,7 @@ export const getGroupedTypes = createSelector(
   }
 );
 
-export function fetchTypes(result) {
+export function fetchTypes(result, taxonomy) {
   return async function (dispatch) {
     const state = store.getState();
     const types = getTypes(state);
@@ -230,7 +230,7 @@ export function fetchTypes(result) {
       return;
     }
     dispatch(requestTypes(result));
-    let url = `${apiUrl}/resultFields?result=${result}`;
+    let url = `${apiUrl}/resultFields?result=${result}&taxonomy=${taxonomy}`;
     try {
       let json;
       try {

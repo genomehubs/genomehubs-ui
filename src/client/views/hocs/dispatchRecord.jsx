@@ -1,4 +1,8 @@
-import { fetchRecord, setCurrentRecordId } from "../reducers/record";
+import {
+  fetchRecord,
+  resetRecord,
+  setCurrentRecordId,
+} from "../reducers/record";
 
 import React from "react";
 import { connect } from "react-redux";
@@ -7,7 +11,9 @@ const dispatchRecord = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({});
 
   const mapDispatchToProps = (dispatch) => ({
-    fetchRecord: (recordId, result) => dispatch(fetchRecord(recordId, result)),
+    fetchRecord: (recordId, result, taxonomy, callback) =>
+      dispatch(fetchRecord(recordId, result, taxonomy, callback)),
+    resetRecord: () => dispatch(resetRecord()),
     setRecordId: (recordId) => dispatch(setCurrentRecordId(recordId)),
   });
 

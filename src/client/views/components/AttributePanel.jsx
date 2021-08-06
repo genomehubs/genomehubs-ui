@@ -25,7 +25,6 @@ const AttributePanel = ({ attributes, result, taxonId }) => {
   );
 
   let attributeTable;
-  // console.log(attributes);
   if (attributes) {
     let tableRows = Object.keys(attributes).map((attributeId) => {
       return (

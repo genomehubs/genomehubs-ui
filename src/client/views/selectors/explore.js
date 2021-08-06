@@ -14,17 +14,17 @@ import { formatter } from "../functions/formatter";
 import { interpolateGreens } from "d3-scale-chromatic";
 import store from "../store";
 
-export function fetchSummary(lineage, field, summary, result) {
+export function fetchSummary(lineage, field, summary, taxonomy, result) {
   return async function (dispatch) {
     const state = store.getState();
     const fetching = getSummariesFetching(state);
     const summaries = getSummaries(state);
-    let id = `${lineage}--${field}--${summary}`;
+    let id = `${lineage}--${field}--${summary}--${taxonomy}`;
     if (summaries[id] || fetching[id]) {
       return;
     }
-    dispatch(requestSummary(`${lineage}--${field}--${summary}`));
-    let url = `${apiUrl}/summary?recordId=${lineage}&result=${result}&summary=${summary}&fields=${field}`;
+    dispatch(requestSummary(`${lineage}--${field}--${summary}--${taxonomy}`));
+    let url = `${apiUrl}/summary?recordId=${lineage}&result=${result}&taxonomy=${taxonomy}&summary=${summary}&fields=${field}`;
     try {
       let json;
       try {

@@ -59,7 +59,7 @@ const records = handleActions(
 export const getRecords = (state) => state.records.byId;
 export const getRecordIsFetching = (state) => state.records.isFetching;
 
-export function fetchRecord(recordId, result, callback) {
+export function fetchRecord(recordId, result, taxonomy, callback) {
   return async function (dispatch) {
     const state = store.getState();
     const records = getRecords(state);
@@ -67,7 +67,7 @@ export function fetchRecord(recordId, result, callback) {
       return;
     }
     dispatch(requestRecord());
-    let url = `${apiUrl}/record?recordId=${recordId}&result=${result}`;
+    let url = `${apiUrl}/record?recordId=${recordId}&result=${result}&taxonomy=${taxonomy}`;
     try {
       let json;
       try {
@@ -86,7 +86,7 @@ export function fetchRecord(recordId, result, callback) {
         dispatch(receiveRecord(json));
       } else if (callback) {
         dispatch(resetRecord());
-        callback(fetchedRecordId, result, fetchedTitle);
+        callback(fetchedRecordId, result, taxonomy, fetchedTitle);
       }
     } catch (err) {
       return dispatch(setApiStatus(false));

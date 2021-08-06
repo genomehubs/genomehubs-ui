@@ -31,11 +31,12 @@ const RecordPage = ({
   setSearchIndex,
   setPreviousSearchTerm,
   searchIndex,
+  setTaxonomy,
   taxonomy,
   types,
   searchById = {},
 }) => {
-  const changeRecordUrl = (recordId, result, hashTerm) => {
+  const changeRecordUrl = (recordId, result, taxonomy, hashTerm) => {
     const navigate = useNavigate();
     let hash;
     if (hashTerm) {
@@ -44,7 +45,8 @@ const RecordPage = ({
       hash = location.hash;
     }
     navigate(
-      `?record_id=${recordId}&result=${result}&taxonomy=${taxonomy}${hash}`
+      `?record_id=${recordId}&result=${result}&taxonomy=${taxonomy}${hash}`,
+      { replace: true }
     );
   };
 
@@ -61,6 +63,7 @@ const RecordPage = ({
       let searchTerm = {
         result: options.result,
         includeEstimates: true,
+        taxonomy: options.taxonomy || taxonomy,
       };
       if (options.result == "taxon") {
         searchTerm.query = `tax_eq(${options.record_id})`;
@@ -72,18 +75,32 @@ const RecordPage = ({
     } else if (recordId) {
       if (
         options.result == "taxon" &&
-        (!record.record || recordId != record.record.taxon_id)
+        (!record.record ||
+          recordId != record.record.taxon_id ||
+          options.taxonomy != taxonomy)
       ) {
         if (!recordIsFetching) {
-          fetchRecord(recordId, options.result, changeRecordUrl);
+          fetchRecord(
+            recordId,
+            options.result,
+            options.taxonomy,
+            changeRecordUrl
+          );
         }
-        if (hashTerm) setLookupTerm(hashTerm);
+        if (hashTerm) {
+          setLookupTerm(hashTerm);
+        }
       } else if (
         options.result == "assembly" &&
         (!record.record || recordId != record.record.assembly_id)
       ) {
         if (!recordIsFetching) {
-          fetchRecord(recordId, options.result, changeRecordUrl);
+          fetchRecord(
+            recordId,
+            options.result,
+            options.taxonomy,
+            changeRecordUrl
+          );
         }
         if (hashTerm) {
           setLookupTerm(hashTerm);

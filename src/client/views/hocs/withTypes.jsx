@@ -1,11 +1,13 @@
-import React from "react";
-import { connect } from "react-redux";
 import {
-  getTypesMap,
+  fetchTypes,
   getDisplayTypes,
   getGroupedTypes,
-  fetchTypes,
+  getTypesMap,
 } from "../selectors/types";
+
+import React from "react";
+import { connect } from "react-redux";
+import { resetTypes } from "../reducers/types";
 
 const withTypes = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
@@ -14,7 +16,8 @@ const withTypes = (WrappedComponent) => (props) => {
     groupedTypes: getGroupedTypes(state),
   });
   const mapDispatchToProps = (dispatch) => ({
-    fetchTypes: (result) => dispatch(fetchTypes(result)),
+    fetchTypes: (result, taxonomy) => dispatch(fetchTypes(result, taxonomy)),
+    resetTypes: () => dispatch(resetTypes()),
   });
 
   const Connected = connect(

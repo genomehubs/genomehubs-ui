@@ -1,18 +1,79 @@
-import React, { useEffect } from "react";
+// import React, { useEffect } from "react";
 
+// import CopyrightIcon from "@material-ui/icons/Copyright";
+// import classnames from "classnames";
+// import { compose } from "recompose";
+// import styles from "./Styles.scss";
+// import withTypes from "../hocs/withTypes";
+// import withVersion from "../hocs/withVersion";
+
+// const Footer = ({ version, fetchTypes, types }) => {
+//   useEffect(() => {
+//     fetchTypes("multi");
+//   }, []);
+
+//   let dataRelease;
+//   if (version.hub) {
+//     let releaseLink = `release ${version.release}`;
+//     if (version.source) {
+//       releaseLink = (
+//         <a className={styles.link} href={version.source} target="_blank">
+//           {releaseLink}
+//         </a>
+//       );
+//     }
+//     dataRelease = (
+//       <span style={{ float: "left", marginLeft: "1em" }}>
+//         {version.hub} data {releaseLink}
+//       </span>
+//     );
+//   }
+//   return (
+//     <footer>
+//       {dataRelease}
+//       <span style={{ float: "right", marginRight: "1em" }}>
+//         Powered by{" "}
+//         <a
+//           className={styles.link}
+//           href="https://genomehubs.org/"
+//           target="_blank"
+//         >
+//           GenomeHubs
+//         </a>{" "}
+//         <CopyrightIcon fontSize="inherit" /> 2021
+//       </span>
+//     </footer>
+//   );
+// };
+
+// export default compose(withVersion, withTypes)(Footer);
+
+import React, { memo, useEffect, useState } from "react";
+
+import BasicMenu from "./BasicMenu";
 import CopyrightIcon from "@material-ui/icons/Copyright";
+import Grid from "@material-ui/core/Grid";
+import Taxonomy from "./Taxonomy";
 import classnames from "classnames";
 import { compose } from "recompose";
+import dispatchRecord from "../hocs/dispatchRecord";
+import qs from "qs";
+import { resetRecord } from "../reducers/record";
 import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 import withVersion from "../hocs/withVersion";
 
-const Footer = ({ version, fetchTypes, types }) => {
+const Footer = ({ version, fetchTypes, types, resetRecord }) => {
+  let options = qs.parse(location.search.replace(/^\?/, ""));
   useEffect(() => {
-    fetchTypes("multi");
+    fetchTypes("multi", options.taxonomy);
   }, []);
+  const navigate = useNavigate();
 
   let dataRelease;
+
   if (version.hub) {
     let releaseLink = `release ${version.release}`;
     if (version.source) {
@@ -30,20 +91,41 @@ const Footer = ({ version, fetchTypes, types }) => {
   }
   return (
     <footer>
-      {dataRelease}
-      <span style={{ float: "right", marginRight: "1em" }}>
-        Powered by{" "}
-        <a
-          className={styles.link}
-          href="https://genomehubs.org/"
-          target="_blank"
-        >
-          GenomeHubs
-        </a>{" "}
-        <CopyrightIcon fontSize="inherit" /> 2021
-      </span>
+      <Grid
+        container
+        direction="row"
+        xs={12}
+        spacing={0}
+        style={{ maxHeight: "100%" }}
+      >
+        <Grid item xs={4}>
+          {dataRelease}
+        </Grid>
+        <Grid item xs={4}>
+          <Taxonomy />
+        </Grid>
+        <Grid item xs={4}>
+          <span style={{ float: "right", marginRight: "1em" }}>
+            Powered by{" "}
+            <a
+              className={styles.link}
+              href="https://genomehubs.org/"
+              target="_blank"
+            >
+              GenomeHubs
+            </a>{" "}
+            <CopyrightIcon fontSize="inherit" /> 2021
+          </span>
+        </Grid>
+      </Grid>
     </footer>
   );
 };
 
-export default compose(withVersion, withTypes)(Footer);
+export default compose(
+  memo,
+  withTaxonomy,
+  dispatchRecord,
+  withVersion,
+  withTypes
+)(Footer);
