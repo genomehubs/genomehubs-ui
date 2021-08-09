@@ -51,6 +51,8 @@ module.exports = {
   version: process.env.GH_VERSION || "v2.0",
   // hostname
   hostname: GH_HOST,
+  // default taxonomy
+  taxonomy: process.env.GH_TAXONOMY,
   mode: process.env.NODE_ENV || "test",
   ga_id: process.env.GH_GA_ID || "",
   gdpr_url: process.env.GH_GDPR_URL || "",

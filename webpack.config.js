@@ -82,6 +82,7 @@ const config = {
       GIT_VERSION: JSON.stringify(gitRevisionPlugin.version()),
       HOME: JSON.stringify(protocol + "://" + main.hostname),
       MESSAGE: JSON.stringify(main.message),
+      TAXONOMY: JSON.stringify(main.taxonomy),
       SITENAME: JSON.stringify(main.siteName),
       VERSION: JSON.stringify(main.version),
     }),

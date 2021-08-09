@@ -36,7 +36,7 @@ export const getTaxonomiesFetching = (state) => state.taxonomies.isFetching;
 export const setCurrentTaxonomy = createAction("SET_CURRENT_TAXONOMY");
 export const currentTaxonomy = handleAction(
   "SET_CURRENT_TAXONOMY",
-  (state, action) => action.payload,
+  (state, action) => action.payload || TAXONOMY || "",
   ""
 );
 export const getCurrentTaxonomy = (state) => state.currentTaxonomy;
