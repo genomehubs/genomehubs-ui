@@ -31,7 +31,6 @@ export function fetchTaxonomies() {
       } catch (error) {
         json = console.log("An error occured.", error);
       }
-      console.log(json);
       dispatch(receiveTaxonomies(json));
       dispatch(setCurrentTaxonomy(json[0]));
     } catch (err) {

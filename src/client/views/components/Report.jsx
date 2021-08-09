@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useRef } from "react";
 
 import ReportItem from "./ReportItem";
 import qs from "qs";
+import { useLocation } from "@reach/router";
 
 export const queryPropList = [
   "result",
@@ -15,9 +16,14 @@ export const queryPropList = [
 ];
 
 const Report = (props) => {
+  const location = useLocation();
   const reportRef = useRef();
+  let options = qs.parse(location.search.replace(/^\?/, ""));
   let reportProps = { ...props };
   let queryProps = {};
+  if (options.taxonomy) {
+    queryProps = { taxonomy: options.taxonomy };
+  }
   if (!props.report) {
     return null;
   }

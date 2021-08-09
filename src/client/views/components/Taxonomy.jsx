@@ -28,7 +28,6 @@ const Taxonomy = ({
     resetRecord();
     navigate(`${location.pathname}?${qs.stringify(options)}${location.hash}`);
   };
-  console.log(taxonomies);
 
   return (
     <BasicMenu

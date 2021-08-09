@@ -209,6 +209,9 @@ const ReportHistogram = ({
     let chartData = [];
     let chart;
     let histograms = histogram.report.histogram.histograms;
+    if (!histograms) {
+      return null;
+    }
     let xLabel = histogram.report.xLabel;
     let yLabel = histogram.report.yLabel;
     let valueType = histograms.valueType;
