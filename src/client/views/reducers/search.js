@@ -115,7 +115,7 @@ export const setSearchIndex = createAction("SET_SEARCH_INDEX");
 export const searchIndex = handleAction(
   "SET_SEARCH_INDEX",
   (state, action) => action.payload,
-  "multi"
+  "taxon"
 );
 export const getSearchIndex = (state) => state.searchIndex;
 
