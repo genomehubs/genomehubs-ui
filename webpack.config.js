@@ -109,6 +109,7 @@ const config = {
         },
       ],
     }),
+    new webpack.ExtendedAPIPlugin(),
   ],
   module: {
     rules: [

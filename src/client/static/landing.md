@@ -28,6 +28,6 @@ The values in this GenomeHub are shown alongside a color-coding system to indica
 
 ## Data sources
 
-The data in this GenomeHub have been collated from the following sources:
+The data in :hub have been collated from the following sources:
 
 ::report{report="sources"}

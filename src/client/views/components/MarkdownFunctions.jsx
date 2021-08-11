@@ -23,6 +23,7 @@ import withPages from "../hocs/withPages";
 import { withStyles } from "@material-ui/core/styles";
 
 const siteName = SITENAME || "/";
+const webpackHash = __webpack_hash__ || COMMIT_HASH;
 
 export const processProps = (props, newProps = {}) => {
   for (const [key, value] of Object.entries(props)) {
@@ -30,6 +31,8 @@ export const processProps = (props, newProps = {}) => {
       newProps[key] = true;
     } else if (key == "class") {
       newProps["class"] = styles[value];
+    } else if (key == "src") {
+      newProps["src"] = value.match(/\?/) ? value : `${value}?${webpackHash}`;
     } else {
       newProps[key] = value;
     }

@@ -10,11 +10,12 @@ import { createSelector } from "reselect";
 import qs from "qs";
 
 export const pagesUrl = PAGES_URL || false;
+export const webpackHash = __webpack_hash__ || COMMIT_HASH;
 
 export function fetchPages(pageId) {
   return async function (dispatch) {
     dispatch(requestPages());
-    let url = `${pagesUrl}/${pageId}`;
+    let url = `${pagesUrl}/${pageId}?${webpackHash}`;
     try {
       let markdown;
       try {
