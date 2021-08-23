@@ -15,6 +15,7 @@ import TextField from "@material-ui/core/TextField";
 import { compose } from "recompose";
 import qs from "qs";
 import withReportById from "../hocs/withReportById";
+import withTaxonomy from "../hocs/withTaxonomy";
 
 export const queryPropList = {
   histogram: [
@@ -39,6 +40,7 @@ export const ReportEdit = ({
   fetchReport,
   modal,
   permaLink,
+  taxonomy,
 }) => {
   let fields = [];
   if (!reportById.report || !reportById.report.queryString) {
@@ -73,6 +75,7 @@ export const ReportEdit = ({
     e.preventDefault();
     let newQueryString = qs.stringify({
       result: "taxon",
+      taxonomy,
       ...Object.fromEntries(Object.entries(values).filter(([_, v]) => v != "")),
     });
     if (modal) {
@@ -198,4 +201,4 @@ export const ReportEdit = ({
   );
 };
 
-export default compose(withReportById)(ReportEdit);
+export default compose(withTaxonomy, withReportById)(ReportEdit);
