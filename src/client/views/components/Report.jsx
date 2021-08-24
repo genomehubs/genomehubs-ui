@@ -28,6 +28,7 @@ const Report = (props) => {
     return null;
   }
   queryProps.report = props.report;
+  queryProps.disableModal = props.disableModal;
   if (!props.result) {
     reportProps.result = "taxon";
     queryProps.result = "taxon";

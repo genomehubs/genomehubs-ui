@@ -21,6 +21,7 @@ import withReportById from "../hocs/withReportById";
 const ReportItem = ({
   reportId,
   report,
+  disableModal,
   queryString,
   fetchReport,
   reportById,
@@ -111,6 +112,7 @@ const ReportItem = ({
       <ReportModal
         reportId={reportId}
         report={report}
+        disableModal={disableModal}
         queryString={queryString}
         heading={heading}
         caption={caption}

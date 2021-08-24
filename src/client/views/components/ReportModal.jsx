@@ -30,14 +30,20 @@ export const useStyles = makeStyles((theme) => ({
   img: {},
 }));
 
-export const ReportModal = ({ reportId, report, queryString, children }) => {
+export const ReportModal = ({
+  reportId,
+  report,
+  disableModal,
+  queryString,
+  children,
+}) => {
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
-  let hasModal = report === "sources" ? false : true;
+  disableModal = report === "sources" ? true : disableModal;
 
   const handleOpen = () => {
-    if (hasModal) {
+    if (!disableModal) {
       setOpen(true);
     }
   };
@@ -60,14 +66,14 @@ export const ReportModal = ({ reportId, report, queryString, children }) => {
     <div onClick={handleOpen} style={{ height: "100%", width: "100%" }}>
       <div
         style={{
-          cursor: open ? "default" : hasModal ? "pointer" : "default",
+          cursor: open ? "default" : disableModal ? "default" : "pointer",
           height: "100%",
           width: "100%",
         }}
       >
         <div
           style={{
-            pointerEvents: open ? "auto" : hasModal ? "none" : "auto",
+            pointerEvents: open ? "auto" : disableModal ? "auto" : "none",
             height: "100%",
             width: "100%",
           }}
