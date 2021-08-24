@@ -10,7 +10,7 @@ const NavLink = ({ to, tab, ...props }) => {
   if (to) {
     to = "/" + to + location.search + location.hash;
   } else if (props.href) {
-    if (props.href.match(/\./)) {
+    if (props.href.match(/\:\/\//)) {
       return (
         <a href={props.href} target="_blank">
           {props.children} <LaunchIcon fontSize="inherit" />
