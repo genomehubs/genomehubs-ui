@@ -72,7 +72,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
           <TableRow>
             <TableCell>Value</TableCell>
             {goatHeader}
-            <TableCell>External link</TableCell>
+            <TableCell>External source</TableCell>
             <TableCell>Comment</TableCell>
           </TableRow>
         </TableHead>
@@ -91,7 +91,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
                 } else {
                   link_url = url ? url : url_stub;
                 }
-              } else if (url) {
+              } else if (url && !Array.isArray(url)) {
                 link_url = url;
               }
               let linkCell = (
@@ -139,7 +139,11 @@ const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
                   </TableCell>
                   {goatCell}
                   <Tooltip
-                    title={row.source_description || "open external source"}
+                    title={
+                      row.source_description || link_url
+                        ? "open external source"
+                        : "no external link"
+                    }
                     arrow
                     placement={"top"}
                   >
