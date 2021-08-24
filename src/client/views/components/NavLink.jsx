@@ -1,3 +1,4 @@
+import LaunchIcon from "@material-ui/icons/Launch";
 import { Link } from "@reach/router";
 import React from "react";
 import classnames from "classnames";
@@ -9,6 +10,13 @@ const NavLink = ({ to, tab, ...props }) => {
   if (to) {
     to = "/" + to + location.search + location.hash;
   } else if (props.href) {
+    if (props.href.match(/\./)) {
+      return (
+        <a href={props.href} target="_blank">
+          {props.children} <LaunchIcon fontSize="inherit" />
+        </a>
+      );
+    }
     to = "/" + props.href + location.search + location.hash;
   }
   return (
