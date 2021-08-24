@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import Modal from "@material-ui/core/Modal";
+
 import DialogContent from "@material-ui/core/DialogContent";
+import Modal from "@material-ui/core/Modal";
+import ReportFull from "./ReportFull";
 import { compose } from "recompose";
 import { makeStyles } from "@material-ui/core/styles";
 import withApiUrl from "../hocs/withApiUrl";
-import ReportFull from "./ReportFull";
 
 function getModalStyle() {
   return {
@@ -33,9 +34,12 @@ export const ReportModal = ({ reportId, report, queryString, children }) => {
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
+  let hasModal = report === "sources" ? false : true;
 
   const handleOpen = () => {
-    setOpen(true);
+    if (hasModal) {
+      setOpen(true);
+    }
   };
 
   const handleClose = () => {
@@ -56,14 +60,14 @@ export const ReportModal = ({ reportId, report, queryString, children }) => {
     <div onClick={handleOpen} style={{ height: "100%", width: "100%" }}>
       <div
         style={{
-          cursor: open ? "default" : "pointer",
+          cursor: open ? "default" : hasModal ? "pointer" : "default",
           height: "100%",
           width: "100%",
         }}
       >
         <div
           style={{
-            pointerEvents: open ? "auto" : "none",
+            pointerEvents: open ? "auto" : hasModal ? "none" : "auto",
             height: "100%",
             width: "100%",
           }}
