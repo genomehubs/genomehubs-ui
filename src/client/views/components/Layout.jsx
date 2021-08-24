@@ -18,7 +18,7 @@ const basename = BASENAME || "";
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    minHeight: "100%",
+    minHeight: "100vh",
     minWidth: "900px",
     maxWidth: "100%",
     overflowX: "hidden",
