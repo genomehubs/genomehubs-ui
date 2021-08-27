@@ -73,7 +73,9 @@ const CustomShape = (props, chartProps) => {
   let scale = scales[chartProps.zScale]();
   let domain = [1, chartProps.zDomain[1]];
   scale.domain(domain).range([2, w]);
-  if (chartProps.zScale == "proportion") {
+  if (chartProps.n == 1) {
+    scale.range([0.1, 1]);
+  } else if (chartProps.zScale == "proportion") {
     scale.domain([0, 1]).range([0, w]);
     z /= chartProps.catSums[props.name];
   }
@@ -224,7 +226,7 @@ const ReportScatter = ({
   containerRef,
   ratio,
   stacked,
-  zScale,
+  zScale = "linear",
 }) => {
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
