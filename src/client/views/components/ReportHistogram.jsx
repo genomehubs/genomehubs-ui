@@ -183,6 +183,7 @@ const Histogram = ({
 
 const scales = {
   linear: (value, total) => value,
+  sqrt: (value, total) => f3(Math.sqrt(value)),
   log10: (value, total) => (value > 0 ? f3(Math.log10(value)) : 0),
   proportion: (value, total) => (total > 0 ? f3(value / total) : 0),
 };

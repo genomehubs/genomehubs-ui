@@ -12,10 +12,10 @@ import {
   ZAxis,
 } from "recharts";
 import React, { Fragment, useRef } from "react";
+import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
 
 import Grid from "@material-ui/core/Grid";
 import { format } from "d3-format";
-import { scaleLinear } from "d3-scale";
 import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";
 
@@ -40,53 +40,6 @@ const sciInt = (v) => {
 };
 const f3 = format(".3r");
 
-const renderXTick = (tickProps) => {
-  const { x, y, index, endLabel, lastIndex, payload, chartWidth } = tickProps;
-  const { value, offset } = payload;
-  // if (month % 3 === 1) {
-  //   return <text x={x} y={y - 4} textAnchor="middle">{`Q${quarterNo}`}</text>;
-  // }
-
-  // const isLast = month === 11;
-
-  // if (month % 3 === 0 || isLast) {
-  let endTick;
-  let pathX;
-  if (index == lastIndex) {
-    pathX = Math.floor(x + offset) + 0.5;
-    endTick = (
-      <>
-        <text x={pathX} y={y + 14} textAnchor="middle" fill="#666">
-          {endLabel}
-        </text>
-        <path d={`M${pathX},${y - 8}v${6}`} stroke="#666" />
-      </>
-    );
-  }
-  pathX = Math.floor(x - offset) + 0.5;
-  let showTickLabel = true;
-  if (chartWidth < 300 && index > 0) {
-    showTickLabel = false;
-  } else if (chartWidth < 450) {
-    if (endTick || index % 2 != 0) {
-      showTickLabel = false;
-    }
-  }
-  return (
-    <g>
-      {showTickLabel && (
-        <text x={pathX} y={y + 14} textAnchor="middle" fill="#666">
-          {value}
-        </text>
-      )}
-      <path d={`M${pathX},${y - 8}v${6}`} stroke="#666" />
-      {endTick}
-    </g>
-  );
-  // }
-  // return null;
-};
-
 // const CustomShape = (props, chartProps) => {
 //   let h = props.yAxis.height / chartProps.yLength;
 //   let w = props.xAxis.width / chartProps.xLength;
@@ -105,12 +58,26 @@ const renderXTick = (tickProps) => {
 //   );
 // };
 
+const scales = {
+  linear: scaleLinear,
+  log10: scaleLog,
+  sqrt: scaleSqrt,
+  proportion: scaleLinear,
+};
+
 const CustomShape = (props, chartProps) => {
   let h = props.yAxis.height / chartProps.yLength;
   let height = h / chartProps.n;
   let w = props.xAxis.width / chartProps.xLength;
-  let scale = scaleLinear().domain(chartProps.zDomain).range([1, w]);
-  let width = scale(props.payload.z);
+  let z = props.payload.z;
+  let scale = scales[chartProps.zScale]();
+  let domain = [1, chartProps.zDomain[1]];
+  scale.domain(domain).range([2, w]);
+  if (chartProps.zScale == "proportion") {
+    scale.domain([0, 1]).range([0, w]);
+    z /= chartProps.catSums[props.name];
+  }
+  let width = scale(z);
   return (
     <Rectangle
       {...props}
@@ -120,7 +87,8 @@ const CustomShape = (props, chartProps) => {
       fill={props.fill}
       x={props.cx} // {props.cx + (w - width) / 2}
       y={chartProps.n > 1 ? props.cy - h + height * chartProps.i : props.cy - h}
-      fillOpacity={chartProps.n > 1 ? 1 : props.zAxis.scale(props.payload.z)}
+      // fillOpacity={chartProps.n > 1 ? 1 : props.zAxis.scale(props.payload.z)}
+      fillOpacity={chartProps.n > 1 ? 1 : scale(props.payload.z)}
     />
   );
 };
@@ -149,6 +117,7 @@ const Heatmap = ({
       range={[buckets[0], buckets[buckets.length - 1]]}
       ticks={buckets}
       tickFormatter={sci}
+      interval={0}
     >
       <Label value={xLabel} offset={5} position="bottom" fill="#666" />
     </XAxis>,
@@ -160,10 +129,11 @@ const Heatmap = ({
       domain={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
       range={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
       tickFormatter={sci}
+      interval={0}
     >
       <Label
         value={yLabel}
-        offset={-10}
+        offset={0}
         position="left"
         fill="#666"
         angle={-90}
@@ -248,13 +218,14 @@ const Heatmap = ({
   );
 };
 
-const scales = {
-  linear: (value, total) => value,
-  log10: (value, total) => (value > 0 ? f3(Math.log10(value)) : 0),
-  proportion: (value, total) => (total > 0 ? f3(value / total) : 0),
-};
-
-const ReportScatter = ({ scatter, chartRef, containerRef, ratio, stacked }) => {
+const ReportScatter = ({
+  scatter,
+  chartRef,
+  containerRef,
+  ratio,
+  stacked,
+  zScale,
+}) => {
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
@@ -276,8 +247,6 @@ const ReportScatter = ({ scatter, chartRef, containerRef, ratio, stacked }) => {
     let yLabel = scatter.report.yLabel;
     let valueType = heatmaps.valueType;
     let cats;
-    console.log(scatter);
-    console.log(heatmaps);
     let lastIndex = heatmaps.buckets.length - 2;
     let endLabel =
       heatmaps.valueType == "integer"
@@ -286,10 +255,12 @@ const ReportScatter = ({ scatter, chartRef, containerRef, ratio, stacked }) => {
 
     let h = heatmaps.yBuckets[1] - heatmaps.yBuckets[0];
     let w = heatmaps.buckets[1] - heatmaps.buckets[0];
-
+    let catSums;
     if (heatmaps.byCat) {
+      catSums = {};
       cats = scatter.report.histogram.cats.map((cat) => cat.label);
       scatter.report.histogram.cats.forEach((cat) => {
+        catSums[cat.label] = 0;
         let catData = [];
         heatmaps.buckets.forEach((bucket, i) => {
           if (i < heatmaps.buckets.length - 1) {
@@ -303,7 +274,9 @@ const ReportScatter = ({ scatter, chartRef, containerRef, ratio, stacked }) => {
                     x: bucket,
                     y: yBucket,
                     z,
+                    // sum: heatmaps.allYValues[i][j],
                   });
+                  catSums[cat.label] += z;
                 }
               }
             });
@@ -352,6 +325,8 @@ const ReportScatter = ({ scatter, chartRef, containerRef, ratio, stacked }) => {
           yLength: heatmaps.yBuckets.length - 1,
           xLength: heatmaps.buckets.length - 1,
           n: cats.length,
+          zScale: zScale,
+          catSums,
         }}
       />
     );

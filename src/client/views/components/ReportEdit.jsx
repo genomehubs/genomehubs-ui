@@ -27,7 +27,17 @@ export const queryPropList = {
     "yScale",
     "stacked",
   ],
-  scatter: ["report", "x", "y", "rank", "cat", "includeEstimates"],
+  scatter: [
+    "report",
+    "x",
+    "y",
+    "rank",
+    "cat",
+    "includeEstimates",
+    "zScale",
+    "xOpts",
+    "yOpts",
+  ],
   xInY: ["report", "x", "y", "rank"],
   xPerRank: ["report", "x", "rank"],
 };
@@ -131,7 +141,7 @@ export const ReportEdit = ({
           </FormControl>
         </div>
       );
-    } else if (queryProp == "yScale") {
+    } else if (queryProp.endsWith("Scale")) {
       input = (
         <RadioGroup
           aria-label={queryProp}
@@ -144,6 +154,11 @@ export const ReportEdit = ({
             value="linear"
             control={<Radio color="default" />}
             label="linear"
+          />
+          <FormControlLabel
+            value="sqrt"
+            control={<Radio color="default" />}
+            label="sqrt"
           />
           <FormControlLabel
             value="log10"
