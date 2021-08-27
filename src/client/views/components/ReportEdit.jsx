@@ -27,11 +27,12 @@ export const queryPropList = {
     "yScale",
     "stacked",
   ],
+  scatter: ["report", "x", "y", "rank", "cat", "includeEstimates"],
   xInY: ["report", "x", "y", "rank"],
   xPerRank: ["report", "x", "rank"],
 };
 
-const reportTypes = ["histogram", "xInY", "xPerRank"];
+const reportTypes = ["histogram", "scatter", "xInY", "xPerRank"];
 
 export const ReportEdit = ({
   reportId,

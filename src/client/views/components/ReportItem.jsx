@@ -3,6 +3,7 @@ import React, { Fragment, useEffect } from "react";
 import Grid from "@material-ui/core/Grid";
 import ReportHistogram from "./ReportHistogram";
 import ReportModal from "./ReportModal";
+import ReportScatter from "./ReportScatter";
 import ReportSources from "./ReportSources";
 import ReportXInY from "./ReportXInY";
 import ReportXPerRank from "./ReportXPerRank";
@@ -46,6 +47,17 @@ const ReportItem = ({
       component = (
         <ReportHistogram
           histogram={reportById}
+          chartRef={chartRef}
+          containerRef={containerRef}
+          ratio={ratio}
+          {...qs.parse(queryString)}
+        />
+      );
+      break;
+    case "scatter":
+      component = (
+        <ReportScatter
+          scatter={reportById}
           chartRef={chartRef}
           containerRef={containerRef}
           ratio={ratio}
