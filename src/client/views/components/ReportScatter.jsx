@@ -16,7 +16,9 @@ import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
 
 import Grid from "@material-ui/core/Grid";
 import { format } from "d3-format";
+import qs from "qs";
 import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
 import useResize from "../hooks/useResize";
 
 const COLORS = [
@@ -65,6 +67,28 @@ const scales = {
   proportion: scaleLinear,
 };
 
+const searchByCell = ({
+  xQuery,
+  xLabel,
+  yLabel,
+  xBounds,
+  yBounds,
+  navigate,
+  fields,
+  ranks,
+}) => {
+  let query = xQuery.query;
+  query += ` AND ${xLabel} >= ${xBounds[0]} AND ${xLabel} < ${xBounds[1]}`;
+  query += ` AND ${yLabel} >= ${yBounds[0]} AND ${yLabel} < ${yBounds[1]}`;
+  // let fields = `${xLabel},${yLabel}`;
+  fields = fields.join(",");
+  if (ranks) {
+    ranks = ranks.join(",");
+  }
+  let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
+  navigate(`/search?${queryString}`);
+};
+
 const CustomShape = (props, chartProps) => {
   let h = props.yAxis.height / chartProps.yLength;
   let height = h / chartProps.n;
@@ -81,17 +105,37 @@ const CustomShape = (props, chartProps) => {
   }
   let width = scale(z);
   return (
-    <Rectangle
-      {...props}
-      height={chartProps.n > 1 ? height : h}
-      width={chartProps.n > 1 ? width : w}
-      // mask={`url(#mask-stripe-${chartProps.n}-${chartProps.i})`}
-      fill={props.fill}
-      x={props.cx} // {props.cx + (w - width) / 2}
-      y={chartProps.n > 1 ? props.cy - h + height * chartProps.i : props.cy - h}
-      // fillOpacity={chartProps.n > 1 ? 1 : props.zAxis.scale(props.payload.z)}
-      fillOpacity={chartProps.n > 1 ? 1 : scale(props.payload.z)}
-    />
+    <>
+      <Rectangle
+        height={h}
+        width={w}
+        x={props.cx}
+        y={props.cy - h}
+        style={{ cursor: "pointer" }}
+        fill={"rgba(255,255,255,0"}
+        onClick={() =>
+          searchByCell({
+            ...chartProps,
+            xBounds: [props.payload.x, props.payload.xBound],
+            yBounds: [props.payload.y, props.payload.yBound],
+          })
+        }
+      />
+      <Rectangle
+        {...props}
+        height={chartProps.n > 1 ? height : h}
+        width={chartProps.n > 1 ? width : w}
+        // mask={`url(#mask-stripe-${chartProps.n}-${chartProps.i})`}
+        fill={props.fill}
+        x={props.cx} // {props.cx + (w - width) / 2}
+        y={
+          chartProps.n > 1 ? props.cy - h + height * chartProps.i : props.cy - h
+        }
+        // fillOpacity={chartProps.n > 1 ? 1 : props.zAxis.scale(props.payload.z)}
+        fillOpacity={chartProps.n > 1 ? 1 : scale(props.payload.z)}
+        style={{ pointerEvents: "none" }}
+      />
+    </>
   );
 };
 
@@ -115,13 +159,20 @@ const Heatmap = ({
       type="number"
       dataKey="x"
       scale="log"
+      angle={buckets.length > 15 ? -90 : 0}
       domain={[buckets[0], buckets[buckets.length - 1]]}
       range={[buckets[0], buckets[buckets.length - 1]]}
       ticks={buckets}
       tickFormatter={sci}
       interval={0}
+      style={{ textAnchor: buckets.length > 15 ? "end" : "auto" }}
     >
-      <Label value={xLabel} offset={5} position="bottom" fill="#666" />
+      <Label
+        value={xLabel}
+        offset={buckets.length > 15 ? 20 : 0}
+        position="bottom"
+        fill="#666"
+      />
     </XAxis>,
     <YAxis
       type="number"
@@ -144,7 +195,7 @@ const Heatmap = ({
     </YAxis>,
     <ZAxis
       type="number"
-      dataKey="z"
+      dataKey="count"
       domain={[chartProps.zDomain[0], chartProps.zDomain[1]]}
       range={[0.1, 1]}
       scale="sqrt"
@@ -202,7 +253,7 @@ const Heatmap = ({
         top: 5,
         right: 30,
         left: 20,
-        bottom: width > 300 ? 25 : 5,
+        bottom: width > 300 ? (buckets.length > 15 ? 35 : 25) : 5,
       }}
     >
       {/* {patterns} */}
@@ -228,6 +279,7 @@ const ReportScatter = ({
   stacked,
   zScale = "linear",
 }) => {
+  const navigate = useNavigate();
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
@@ -275,8 +327,10 @@ const ReportScatter = ({
                     w,
                     x: bucket,
                     y: yBucket,
+                    xBound: heatmaps.buckets[i + 1],
+                    yBound: heatmaps.yBuckets[j + 1],
                     z,
-                    // sum: heatmaps.allYValues[i][j],
+                    count: heatmaps.allYValues[i][j],
                   });
                   catSums[cat.label] += z;
                 }
@@ -300,7 +354,10 @@ const ReportScatter = ({
                   w,
                   x: bucket,
                   y: yBucket,
+                  xBound: heatmaps.buckets[i + 1],
+                  yBound: heatmaps.yBuckets[j + 1],
                   z,
+                  count: z,
                 });
               }
             }
@@ -309,7 +366,6 @@ const ReportScatter = ({
       });
       chartData.push(catData);
     }
-
     chart = (
       <Heatmap
         data={chartData}
@@ -329,6 +385,12 @@ const ReportScatter = ({
           n: cats.length,
           zScale: zScale,
           catSums,
+          xQuery: scatter.report.xQuery,
+          xLabel: scatter.report.xLabel,
+          yLabel: scatter.report.yLabel,
+          fields: heatmaps.fields,
+          ranks: heatmaps.ranks,
+          navigate,
         }}
       />
     );
