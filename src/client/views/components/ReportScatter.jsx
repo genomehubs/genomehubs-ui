@@ -86,7 +86,8 @@ const searchByCell = ({
     ranks = ranks.join(",");
   }
   let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
-  navigate(`/search?${queryString}`);
+  let hash = encodeURIComponent(query);
+  navigate(`/search?${queryString}#${hash}`);
 };
 
 const CustomShape = (props, chartProps) => {
