@@ -2,6 +2,12 @@
 
 :hub (Genomes on a Tree) is built using GenomeHubs 2.0, to present metadata including genome sizes, C values, and chromosome numbers for all taxa across the tree of life.
 
+## How to use GoaT
+
+In the search box above try typing: 
+
+Chiroptera
+
 ## Data summary
 
 :::grid{container direction="row"}

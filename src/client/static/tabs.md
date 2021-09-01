@@ -3,3 +3,4 @@
 - help
 - sources
 - api
+- projects
