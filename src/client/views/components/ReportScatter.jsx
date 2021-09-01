@@ -6,15 +6,15 @@ import {
   Rectangle,
   Scatter,
   ScatterChart,
-  Tooltip,
   XAxis,
   YAxis,
   ZAxis,
 } from "recharts";
-import React, { Fragment, useRef } from "react";
+import React, { useRef, useState } from "react";
 import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
 
 import Grid from "@material-ui/core/Grid";
+import Tooltip from "@material-ui/core/Tooltip";
 import { format } from "d3-format";
 import qs from "qs";
 import styles from "./Styles.scss";
@@ -86,42 +86,64 @@ const searchByCell = ({
     ranks = ranks.join(",");
   }
   let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
-  let hash = encodeURIComponent(query);
-  navigate(`/search?${queryString}#${hash}`);
+  // let hash = encodeURIComponent(query);
+  navigate(`/search?${queryString}`);
+};
+
+const CellInfo = ({ x, y, count }) => {
+  return (
+    <div>
+      <div>x: {x}</div>
+      <div>y: {y}</div>
+      <div>count: {count}</div>
+    </div>
+  );
 };
 
 const CustomShape = (props, chartProps) => {
   let h = props.yAxis.height / chartProps.yLength;
   let height = h / chartProps.n;
   let w = props.xAxis.width / chartProps.xLength;
-  let z = props.payload.z;
-  let scale = scales[chartProps.zScale]();
-  let domain = [1, chartProps.zDomain[1]];
-  scale.domain(domain).range([2, w]);
-  if (chartProps.n == 1) {
-    scale.range([0.1, 1]);
-  } else if (chartProps.zScale == "proportion") {
-    scale.domain([0, 1]).range([0, w]);
-    z /= chartProps.catSums[props.name];
-  }
-  let width = scale(z);
-  return (
+  let heatRect;
+  let xRange = `${sci(props.payload.x)}-${sci(props.payload.xBound)}`;
+  let yRange = `${sci(props.payload.y)}-${sci(props.payload.yBound)}`;
+  let bgRect = (
     <>
-      <Rectangle
-        height={h}
-        width={w}
-        x={props.cx}
-        y={props.cy - h}
-        style={{ cursor: "pointer" }}
-        fill={"rgba(255,255,255,0"}
-        onClick={() =>
-          searchByCell({
-            ...chartProps,
-            xBounds: [props.payload.x, props.payload.xBound],
-            yBounds: [props.payload.y, props.payload.yBound],
-          })
-        }
-      />
+      <Tooltip
+        title={<CellInfo x={xRange} y={yRange} count={props.payload.count} />}
+        arrow
+      >
+        <Rectangle
+          height={h}
+          width={w}
+          x={props.cx}
+          y={props.cy - h}
+          style={{ cursor: "pointer" }}
+          fill={"rgba(255,255,255,0)"}
+          onClick={() =>
+            searchByCell({
+              ...chartProps,
+              xBounds: [props.payload.x, props.payload.xBound],
+              yBounds: [props.payload.y, props.payload.yBound],
+            })
+          }
+        />
+      </Tooltip>
+    </>
+  );
+  if (!chartProps.hasRawData) {
+    let z = props.payload.z;
+    let scale = scales[chartProps.zScale]();
+    let domain = [1, chartProps.zDomain[1]];
+    scale.domain(domain).range([2, w]);
+    if (chartProps.n == 1) {
+      scale.range([0.1, 1]);
+    } else if (chartProps.zScale == "proportion") {
+      scale.domain([0, 1]).range([0, w]);
+      z /= chartProps.catSums[props.name];
+    }
+    let width = scale(z);
+    heatRect = (
       <Rectangle
         {...props}
         height={chartProps.n > 1 ? height : h}
@@ -136,12 +158,20 @@ const CustomShape = (props, chartProps) => {
         fillOpacity={chartProps.n > 1 ? 1 : scale(props.payload.z)}
         style={{ pointerEvents: "none" }}
       />
+    );
+  }
+
+  return (
+    <>
+      {bgRect}
+      {heatRect}
     </>
   );
 };
 
 const Heatmap = ({
   data,
+  pointData,
   width,
   height,
   cats,
@@ -195,13 +225,14 @@ const Heatmap = ({
       />
     </YAxis>,
     <ZAxis
+      id={0}
       type="number"
       dataKey="count"
       domain={[chartProps.zDomain[0], chartProps.zDomain[1]]}
       range={[0.1, 1]}
       scale="sqrt"
     ></ZAxis>,
-    <Tooltip />,
+    // <Tooltip />,
   ];
   if (width > 300) {
     axes.push(<Legend verticalAlign="top" offset={28} height={28} />);
@@ -244,7 +275,6 @@ const Heatmap = ({
   //     ))}
   //   </defs>
   // );
-
   return (
     <ScatterChart
       width={width}
@@ -268,6 +298,19 @@ const Heatmap = ({
           isAnimationActive={false}
         />
       ))}
+      {pointData &&
+        cats.map((cat, i) => (
+          <Scatter
+            name={`${cat}_points`}
+            legendType="none"
+            data={pointData[i]}
+            fill={COLORS[i]}
+            shape={"circle"}
+            zAxisId={1}
+            isAnimationActive={false}
+            style={{ pointerEvents: "none" }}
+          />
+        ))}
     </ScatterChart>
   );
 };
@@ -311,6 +354,11 @@ const ReportScatter = ({
     let h = heatmaps.yBuckets[1] - heatmaps.yBuckets[0];
     let w = heatmaps.buckets[1] - heatmaps.buckets[0];
     let catSums;
+    let pointData;
+    let hasRawData = heatmaps.rawData ? true : false;
+    if (hasRawData) {
+      pointData = [];
+    }
     if (heatmaps.byCat) {
       catSums = {};
       cats = scatter.report.histogram.cats.map((cat) => cat.label);
@@ -340,6 +388,9 @@ const ReportScatter = ({
           }
         });
         chartData.push(catData);
+        if (hasRawData) {
+          pointData.push(heatmaps.rawData[cat.key]);
+        }
       });
     } else {
       cats = ["all taxa"];
@@ -366,10 +417,14 @@ const ReportScatter = ({
         }
       });
       chartData.push(catData);
+      if (hasRawData) {
+        pointData.push(heatmaps.rawData);
+      }
     }
     chart = (
       <Heatmap
         data={chartData}
+        pointData={pointData}
         width={width}
         height={minDim}
         buckets={heatmaps.buckets}
@@ -391,6 +446,7 @@ const ReportScatter = ({
           yLabel: scatter.report.yLabel,
           fields: heatmaps.fields,
           ranks: heatmaps.ranks,
+          hasRawData,
           navigate,
         }}
       />

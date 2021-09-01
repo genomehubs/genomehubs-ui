@@ -37,6 +37,7 @@ export const queryPropList = {
     "zScale",
     "xOpts",
     "yOpts",
+    "scatterThreshold",
   ],
   xInY: ["report", "x", "y", "rank"],
   xPerRank: ["report", "x", "rank"],
