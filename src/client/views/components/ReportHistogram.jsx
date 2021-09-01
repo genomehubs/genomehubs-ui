@@ -15,6 +15,7 @@ import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import { format } from "d3-format";
+import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import useResize from "../hooks/useResize";
@@ -87,6 +88,19 @@ const renderXTick = (tickProps) => {
   // return null;
 };
 
+const searchByCell = ({ xQuery, xLabel, xBounds, navigate, fields, ranks }) => {
+  let query = xQuery.query;
+  query += ` AND ${xLabel} >= ${xBounds[0]} AND ${xLabel} < ${xBounds[1]}`;
+  // let fields = `${xLabel},${yLabel}`;
+  fields = fields.join(",");
+  if (ranks) {
+    ranks = ranks.join(",");
+  }
+  let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
+  // let hash = encodeURIComponent(query);
+  navigate(`/search?${queryString}`);
+};
+
 const CustomBackground = ({ chartProps, ...props }) => {
   if (chartProps.i > 0) {
     return null;
@@ -94,18 +108,30 @@ const CustomBackground = ({ chartProps, ...props }) => {
   // console.log(props);
   let h = props.background.height;
   let w = props.width * chartProps.n;
-  let xRange = `${sci(chartProps.buckets[props.index])}-${sci(
-    chartProps.buckets[props.index + 1]
-  )}`;
+  let xBounds = [
+    chartProps.buckets[props.index],
+    chartProps.buckets[props.index + 1],
+  ];
+  let xRange = `${sci(xBounds[0])}-${sci(xBounds[1])}`;
   let { x, ...counts } = props.payload;
   let count = 0;
   let series = [];
-  Object.keys(counts).forEach((key) => {
-    count += counts[key];
+  Object.keys(counts).forEach((key, i) => {
+    if (counts[key] > 0) {
+      count += counts[key];
+      series.push(
+        <div key={key}>
+          {key}: {counts[key]}
+        </div>
+      );
+    }
   });
   return (
     <>
-      <Tooltip title={<CellInfo x={xRange} count={count} />} arrow>
+      <Tooltip
+        title={<CellInfo x={xRange} count={count} rows={series} />}
+        arrow
+      >
         <Rectangle
           height={h}
           width={w}
@@ -116,8 +142,7 @@ const CustomBackground = ({ chartProps, ...props }) => {
           onClick={() =>
             searchByCell({
               ...chartProps,
-              xBounds: [props.payload.x, props.payload.xBound],
-              yBounds: [props.payload.y, props.payload.yBound],
+              xBounds,
             })
           }
         />
@@ -293,7 +318,6 @@ const ReportHistogram = ({
         if (i < histograms.buckets.length - 1) {
           let series = {};
           histogram.report.histogram.cats.forEach((cat) => {
-            console.log(yScale);
             series[cat.label] = scales[yScale](
               histograms.byCat[cat.key][i],
               stacked ? histogram.report.histogram.x : cat.doc_count
