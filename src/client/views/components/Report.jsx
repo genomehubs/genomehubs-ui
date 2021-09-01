@@ -51,7 +51,11 @@ const Report = (props) => {
   reportProps.topLevel = props.topLevel;
   reportProps.ratio = props.ratio || 1;
   reportProps.stacked = props.stacked;
-  reportProps.yScale = props.yScale || 1;
+  reportProps.yScale = props.yScale || "linear";
+  reportProps.zScale = props.yScale || "linear";
+  reportProps.xOpts = props.xOpts;
+  reportProps.yOpts = props.yOpts;
+  reportProps.scatterThreshold = props.scatterThreshold;
 
   return <ReportItem {...reportProps} />;
 };

@@ -1,22 +1,22 @@
 // import { RadialChart } from "react-vis";
 import {
-  Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Label,
   Legend,
-  Tooltip,
+  Rectangle,
   XAxis,
   YAxis,
 } from "recharts";
 import React, { Fragment, useRef } from "react";
 
+import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
+import Tooltip from "@material-ui/core/Tooltip";
 import { format } from "d3-format";
 import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
 import useResize from "../hooks/useResize";
 
 const COLORS = [
@@ -87,6 +87,45 @@ const renderXTick = (tickProps) => {
   // return null;
 };
 
+const CustomBackground = ({ chartProps, ...props }) => {
+  if (chartProps.i > 0) {
+    return null;
+  }
+  // console.log(props);
+  let h = props.background.height;
+  let w = props.width * chartProps.n;
+  let xRange = `${sci(chartProps.buckets[props.index])}-${sci(
+    chartProps.buckets[props.index + 1]
+  )}`;
+  let { x, ...counts } = props.payload;
+  let count = 0;
+  let series = [];
+  Object.keys(counts).forEach((key) => {
+    count += counts[key];
+  });
+  return (
+    <>
+      <Tooltip title={<CellInfo x={xRange} count={count} />} arrow>
+        <Rectangle
+          height={h}
+          width={w}
+          x={props.background.x}
+          y={props.background.y}
+          style={{ cursor: "pointer" }}
+          fill={"rgba(255,255,255,0)"}
+          onClick={() =>
+            searchByCell({
+              ...chartProps,
+              xBounds: [props.payload.x, props.payload.xBound],
+              yBounds: [props.payload.y, props.payload.yBound],
+            })
+          }
+        />
+      </Tooltip>
+    </>
+  );
+};
+
 const Histogram = ({
   data,
   width,
@@ -97,10 +136,12 @@ const Histogram = ({
   xLabel,
   yLabel,
   stacked,
+  chartProps,
 }) => {
   let axes = [
     <CartesianGrid strokeDasharray="3 3" vertical={false} />,
     <XAxis
+      xAxisId={0}
       dataKey="x"
       interval={0}
       tickLine={false}
@@ -112,6 +153,7 @@ const Histogram = ({
         <Label value={xLabel} offset={5} position="bottom" fill="#666" />
       )}
     </XAxis>,
+    <XAxis xAxisId={1} dataKey="x" hide={true}></XAxis>,
     <YAxis>
       {width > 300 && (
         <Label
@@ -124,7 +166,7 @@ const Histogram = ({
         />
       )}
     </YAxis>,
-    <Tooltip />,
+    // <Tooltip />,
   ];
   if (width > 300) {
     axes.push(<Legend verticalAlign="top" offset={28} height={28} />);
@@ -172,9 +214,26 @@ const Histogram = ({
       {cats.map((cat, i) => (
         <Bar
           dataKey={cat}
+          xAxisId={1}
+          legendType={"none"}
+          isAnimationActive={false}
+          shape={
+            <CustomBackground
+              chartProps={{
+                ...chartProps,
+                i,
+              }}
+            />
+          }
+        />
+      ))}
+      {cats.map((cat, i) => (
+        <Bar
+          dataKey={cat}
           stackId={stacked ? 1 : false}
           fill={COLORS[i]}
           isAnimationActive={false}
+          style={{ pointerEvents: "none" }}
         />
       ))}
     </BarChart>
@@ -196,6 +255,7 @@ const ReportHistogram = ({
   stacked,
   yScale = "linear",
 }) => {
+  const navigate = useNavigate();
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
@@ -233,6 +293,7 @@ const ReportHistogram = ({
         if (i < histograms.buckets.length - 1) {
           let series = {};
           histogram.report.histogram.cats.forEach((cat) => {
+            console.log(yScale);
             series[cat.label] = scales[yScale](
               histograms.byCat[cat.key][i],
               stacked ? histogram.report.histogram.x : cat.doc_count
@@ -270,6 +331,18 @@ const ReportHistogram = ({
         endLabel={endLabel}
         lastIndex={lastIndex}
         stacked={stacked}
+        chartProps={{
+          zDomain: histograms.zDomain,
+          xLength: histograms.buckets.length - 1,
+          n: cats.length,
+          yScale: yScale,
+          xQuery: histogram.report.xQuery,
+          xLabel: histogram.report.xLabel,
+          fields: histograms.fields,
+          ranks: histograms.ranks,
+          buckets: histograms.buckets,
+          navigate,
+        }}
       />
     );
     //   { value: x, name: xTerm },

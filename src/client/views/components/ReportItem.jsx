@@ -34,8 +34,20 @@ const ReportItem = ({
   containerRef,
   ratio,
   delay = 0,
+  stacked,
+  xOpts,
+  yOpts,
+  scatterThreshold,
+  yScale,
+  zScale,
   ...gridProps
 }) => {
+  queryString = qs.stringify({
+    xOpts,
+    yOpts,
+    scatterThreshold,
+    ...qs.parse(queryString),
+  });
   useEffect(() => {
     if (!reportById || Object.keys(reportById).length == 0) {
       setTimeout(() => fetchReport({ reportId, queryString }), delay);
@@ -50,6 +62,9 @@ const ReportItem = ({
           chartRef={chartRef}
           containerRef={containerRef}
           ratio={ratio}
+          stacked={stacked}
+          xOpts={xOpts}
+          // yScale={yScale}
           {...qs.parse(queryString)}
         />
       );
@@ -61,6 +76,10 @@ const ReportItem = ({
           chartRef={chartRef}
           containerRef={containerRef}
           ratio={ratio}
+          xOpts={xOpts}
+          yOpts={yOpts}
+          zScale={zScale}
+          scatterThreshold={scatterThreshold}
           {...qs.parse(queryString)}
         />
       );

@@ -13,6 +13,7 @@ import {
 import React, { useRef, useState } from "react";
 import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
 
+import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import { format } from "d3-format";
@@ -88,16 +89,6 @@ const searchByCell = ({
   let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
   // let hash = encodeURIComponent(query);
   navigate(`/search?${queryString}`);
-};
-
-const CellInfo = ({ x, y, count }) => {
-  return (
-    <div>
-      <div>x: {x}</div>
-      <div>y: {y}</div>
-      <div>count: {count}</div>
-    </div>
-  );
 };
 
 const CustomShape = (props, chartProps) => {
@@ -320,7 +311,6 @@ const ReportScatter = ({
   chartRef,
   containerRef,
   ratio,
-  stacked,
   zScale = "linear",
 }) => {
   const navigate = useNavigate();
