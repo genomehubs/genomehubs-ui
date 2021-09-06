@@ -17,6 +17,7 @@ import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import { format } from "d3-format";
+import formats from "../functions/formats";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
@@ -34,14 +35,6 @@ const COLORS = [
   "#fdbf6f",
   "#cab2d6",
 ];
-const sci = format(".3s");
-const sciInt = (v) => {
-  if (v < 1000) {
-    return Math.ceil(v);
-  }
-  return format(".3s")(v);
-};
-const f3 = format(".3r");
 
 // const CustomShape = (props, chartProps) => {
 //   let h = props.yAxis.height / chartProps.yLength;
@@ -96,8 +89,12 @@ const CustomShape = (props, chartProps) => {
   let height = h / chartProps.n;
   let w = props.xAxis.width / chartProps.xLength;
   let heatRect;
-  let xRange = `${sci(props.payload.x)}-${sci(props.payload.xBound)}`;
-  let yRange = `${sci(props.payload.y)}-${sci(props.payload.yBound)}`;
+  let xRange = `${chartProps.xFormat(props.payload.x)}-${chartProps.xFormat(
+    props.payload.xBound
+  )}`;
+  let yRange = `${chartProps.yFormat(props.payload.y)}-${chartProps.yFormat(
+    props.payload.yBound
+  )}`;
   let bgRect = (
     <>
       <Tooltip
@@ -185,7 +182,7 @@ const Heatmap = ({
       domain={[buckets[0], buckets[buckets.length - 1]]}
       range={[buckets[0], buckets[buckets.length - 1]]}
       ticks={buckets}
-      tickFormatter={sci}
+      tickFormatter={chartProps.xFormat}
       interval={0}
       style={{ textAnchor: buckets.length > 15 ? "end" : "auto" }}
     >
@@ -203,7 +200,7 @@ const Heatmap = ({
       ticks={yBuckets}
       domain={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
       range={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
-      tickFormatter={sci}
+      tickFormatter={chartProps.yFormat}
       interval={0}
     >
       <Label
@@ -334,13 +331,10 @@ const ReportScatter = ({
     let xLabel = scatter.report.xLabel;
     let yLabel = scatter.report.yLabel;
     let valueType = heatmaps.valueType;
+    let yValueType = heatmaps.yValueType || "integer";
     let cats;
     let lastIndex = heatmaps.buckets.length - 2;
-    let endLabel =
-      heatmaps.valueType == "integer"
-        ? sciInt(heatmaps.buckets[lastIndex + 1])
-        : sci(heatmaps.buckets[lastIndex + 1]);
-
+    let endLabel = formats(heatmaps.buckets[lastIndex + 1], valueType);
     let h = heatmaps.yBuckets[1] - heatmaps.yBuckets[0];
     let w = heatmaps.buckets[1] - heatmaps.buckets[0];
     let catSums;
@@ -434,6 +428,8 @@ const ReportScatter = ({
           xQuery: scatter.report.xQuery,
           xLabel: scatter.report.xLabel,
           yLabel: scatter.report.yLabel,
+          xFormat: (value) => formats(value, valueType),
+          yFormat: (value) => formats(value, yValueType),
           fields: heatmaps.fields,
           ranks: heatmaps.ranks,
           hasRawData,

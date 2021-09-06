@@ -255,6 +255,9 @@ const AttributeTableRow = ({
     if (meta.max > meta.min) {
       range = ` (${formatter(meta.min)}-${formatter(meta.max)})`;
     }
+    if (meta.from && meta.to) {
+      range = ` (${formatter(meta.from)} to ${formatter(meta.to)})`;
+    }
     fieldValues.push(
       <TableCell key={"value"}>
         <Fragment>{formatter(meta.value)}</Fragment>

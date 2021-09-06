@@ -14,7 +14,7 @@ import React, { Fragment, useRef } from "react";
 import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
-import { format } from "d3-format";
+import formats from "../functions/formats";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
@@ -32,14 +32,6 @@ const COLORS = [
   "#ff7f00",
   "#6a3d9a",
 ];
-const sci = format(".3s");
-const sciInt = (v) => {
-  if (v < 1000) {
-    return Math.ceil(v);
-  }
-  return format(".3s")(v);
-};
-const f3 = format(".3r");
 
 const renderXTick = (tickProps) => {
   const { x, y, index, endLabel, lastIndex, payload, chartWidth } = tickProps;
@@ -112,7 +104,10 @@ const CustomBackground = ({ chartProps, ...props }) => {
     chartProps.buckets[props.index],
     chartProps.buckets[props.index + 1],
   ];
-  let xRange = `${sci(xBounds[0])}-${sci(xBounds[1])}`;
+  let xRange = `${chartProps.xFormat(xBounds[0])}-${chartProps.xFormat(
+    xBounds[1]
+  )}`;
+
   let { x, ...counts } = props.payload;
   let count = 0;
   let series = [];
@@ -161,6 +156,7 @@ const Histogram = ({
   xLabel,
   yLabel,
   stacked,
+  cumulative,
   chartProps,
 }) => {
   let axes = [
@@ -267,9 +263,11 @@ const Histogram = ({
 
 const scales = {
   linear: (value, total) => value,
-  sqrt: (value, total) => f3(Math.sqrt(value)),
-  log10: (value, total) => (value > 0 ? f3(Math.log10(value)) : 0),
-  proportion: (value, total) => (total > 0 ? f3(value / total) : 0),
+  sqrt: (value, total) => formats(Math.sqrt(value), "float"),
+  log10: (value, total) =>
+    value > 0 ? formats(Math.log10(value), "float") : 0,
+  proportion: (value, total) =>
+    total > 0 ? formats(value / total, "float") : 0,
 };
 
 const ReportHistogram = ({
@@ -278,6 +276,7 @@ const ReportHistogram = ({
   containerRef,
   ratio,
   stacked,
+  cumulative,
   yScale = "linear",
 }) => {
   const navigate = useNavigate();
@@ -308,37 +307,47 @@ const ReportHistogram = ({
     }
     let cats;
     let lastIndex = histograms.buckets.length - 2;
-    let endLabel =
-      histograms.valueType == "integer"
-        ? sciInt(histograms.buckets[lastIndex + 1])
-        : sci(histograms.buckets[lastIndex + 1]);
+    let endLabel = formats(histograms.buckets[lastIndex + 1], valueType);
     if (histograms.byCat) {
       cats = histogram.report.histogram.cats.map((cat) => cat.label);
+      let sums = {};
       histograms.buckets.forEach((bucket, i) => {
         if (i < histograms.buckets.length - 1) {
           let series = {};
           histogram.report.histogram.cats.forEach((cat) => {
+            let value = histograms.byCat[cat.key][i];
+            if (cumulative) {
+              if (!sums[cat.key]) {
+                sums[cat.key] = 0;
+              }
+              value += sums[cat.key];
+              sums[cat.key] = value;
+            }
+
             series[cat.label] = scales[yScale](
-              histograms.byCat[cat.key][i],
+              value,
               stacked ? histogram.report.histogram.x : cat.doc_count
             );
           });
           chartData.push({
-            x: valueType == "integer" ? sciInt(bucket) : sci(bucket),
+            x: formats(bucket, valueType),
             ...series,
           });
         }
       });
     } else {
       cats = ["all taxa"];
+      let sum = 0;
       histograms.buckets.forEach((bucket, i) => {
         if (i < histograms.buckets.length - 1) {
+          let value = histograms.allValues[i];
+          if (cumulative) {
+            value += sum;
+            sum = value;
+          }
           chartData.push({
-            x: valueType == "integer" ? sciInt(bucket) : sci(bucket),
-            "all taxa": scales[yScale](
-              histograms.allValues[i],
-              histogram.report.histogram.x
-            ),
+            x: formats(bucket, valueType),
+            "all taxa": scales[yScale](value, histogram.report.histogram.x),
           });
         }
       });
@@ -365,6 +374,7 @@ const ReportHistogram = ({
           fields: histograms.fields,
           ranks: histograms.ranks,
           buckets: histograms.buckets,
+          xFormat: (value) => formats(value, valueType),
           navigate,
         }}
       />

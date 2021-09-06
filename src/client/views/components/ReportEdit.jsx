@@ -25,7 +25,9 @@ export const queryPropList = {
     "cat",
     "includeEstimates",
     "yScale",
+    "xOpts",
     "stacked",
+    "cumulative",
   ],
   scatter: [
     "report",
@@ -127,7 +129,11 @@ export const ReportEdit = ({
           </Select>
         </FormControl>
       );
-    } else if (queryProp == "includeEstimates" || queryProp == "stacked") {
+    } else if (
+      queryProp == "includeEstimates" ||
+      queryProp == "stacked" ||
+      queryProp == "cumulative"
+    ) {
       toggles.push(
         <div style={{ float: "left", marginRight: "2em" }}>
           <FormControl key={queryProp}>

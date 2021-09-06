@@ -35,6 +35,7 @@ const ReportItem = ({
   ratio,
   delay = 0,
   stacked,
+  cumulative,
   xOpts,
   yOpts,
   scatterThreshold,
@@ -63,6 +64,7 @@ const ReportItem = ({
           containerRef={containerRef}
           ratio={ratio}
           stacked={stacked}
+          cumulative={cumulative}
           xOpts={xOpts}
           // yScale={yScale}
           {...qs.parse(queryString)}
