@@ -70,15 +70,28 @@ const searchByCell = ({
   navigate,
   fields,
   ranks,
+  valueType,
+  yValueType,
 }) => {
   let query = xQuery.query;
-  query += ` AND ${xLabel} >= ${xBounds[0]} AND ${xLabel} < ${xBounds[1]}`;
-  query += ` AND ${yLabel} >= ${yBounds[0]} AND ${yLabel} < ${yBounds[1]}`;
+  if (valueType == "date") {
+    query += ` AND ${xLabel} >= ${new Date(
+      xBounds[0]
+    ).toISOString()} AND ${xLabel} < ${new Date(xBounds[1]).toISOString()}`;
+    query += ` AND ${yLabel} >= ${new Date(
+      yBounds[0]
+    ).toISOString()} AND ${yLabel} < ${new Date(yBounds[1]).toISOString()}`;
+  } else {
+    query += ` AND ${xLabel} >= ${xBounds[0]} AND ${xLabel} < ${xBounds[1]}`;
+    query += ` AND ${yLabel} >= ${yBounds[0]} AND ${yLabel} < ${yBounds[1]}`;
+  }
+
   // let fields = `${xLabel},${yLabel}`;
   fields = fields.join(",");
   if (ranks) {
     ranks = ranks.join(",");
   }
+  console.log({ ...xQuery, query, fields, ranks });
   let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
   // let hash = encodeURIComponent(query);
   navigate(`/search?${queryString}`);
@@ -432,6 +445,8 @@ const ReportScatter = ({
           yFormat: (value) => formats(value, yValueType),
           fields: heatmaps.fields,
           ranks: heatmaps.ranks,
+          valueType,
+          yValueType,
           hasRawData,
           navigate,
         }}

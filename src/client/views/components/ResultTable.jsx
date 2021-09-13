@@ -12,11 +12,11 @@ import Grid from "@material-ui/core/Grid";
 import Grow from "@material-ui/core/Grow";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import MuiTableCell from "@material-ui/core/TableCell";
 import SearchPagination from "./SearchPagination";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
@@ -64,6 +64,12 @@ const useStyles = makeStyles((theme) => ({
     width: 1,
   },
 }));
+
+const TableCell = withStyles((theme) => ({
+  root: {
+    padding: "1px 6px",
+  },
+}))(MuiTableCell);
 
 const StyledCheckbox = (props) => {
   return (

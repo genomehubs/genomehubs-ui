@@ -1,9 +1,6 @@
 import React, { memo, useState } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
-import Accordion from "@material-ui/core/Accordion";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import BasicSelect from "./BasicSelect";
 import Button from "@material-ui/core/Button";
@@ -15,6 +12,9 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
+import MuiAccordion from "@material-ui/core/Accordion";
+import MuiAccordionDetails from "@material-ui/core/AccordionDetails";
+import MuiAccordionSummary from "@material-ui/core/AccordionSummary";
 import Paper from "@material-ui/core/Paper";
 import ReplayIcon from "@material-ui/icons/Replay";
 import Select from "@material-ui/core/Select";
@@ -29,6 +29,7 @@ import styles from "./Styles.scss";
 import withNames from "../hocs/withNames";
 import withRanks from "../hocs/withRanks";
 import withSearch from "../hocs/withSearch";
+import { withStyles } from "@material-ui/core/styles";
 import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
@@ -50,6 +51,48 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
 }));
+
+const Accordion = withStyles({
+  root: {
+    border: "1px solid rgba(0, 0, 0, .125)",
+    boxShadow: "none",
+    "&:not(:last-child)": {
+      borderBottom: 0,
+    },
+    "&:before": {
+      display: "none",
+    },
+    "&$expanded": {
+      margin: "auto",
+    },
+  },
+  expanded: {},
+})(MuiAccordion);
+
+const AccordionSummary = withStyles({
+  root: {
+    borderBottom: "1px solid rgba(0, 0, 0, .125)",
+    marginBottom: -1,
+    minHeight: "1em",
+    "&$expanded": {
+      minHeight: "1em",
+    },
+    padding: "0 1em",
+  },
+  content: {
+    margin: "3px 0",
+    "&$expanded": {
+      margin: "3px 0",
+    },
+  },
+  expanded: {},
+})(MuiAccordionSummary);
+
+const AccordionDetails = withStyles((theme) => ({
+  root: {
+    padding: "0 1em",
+  },
+}))(MuiAccordionDetails);
 
 const SearchSettings = ({
   searchTerm,

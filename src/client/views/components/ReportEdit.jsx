@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import Box from "@material-ui/core/Box";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
@@ -116,13 +117,13 @@ export const ReportEdit = ({
         );
       });
       input = (
-        <FormControl style={{ width: "100%" }}>
+        <FormControl style={{ width: "95%" }}>
           <InputLabel id="select-report-label">report</InputLabel>
           <Select
             labelId="select-report-label"
             id="select-report"
             value={values["report"]}
-            style={{ width: "100%" }}
+            style={{ width: "95%" }}
             onChange={(e) => handleChange(e, "report")}
           >
             {items}
@@ -185,14 +186,14 @@ export const ReportEdit = ({
           id={queryProp + Math.random()}
           label={queryProp}
           value={values[queryProp]}
-          style={{ width: "100%" }}
+          style={{ width: "95%" }}
           onChange={(e) => handleChange(e, queryProp)}
         />
       );
     }
     if (input) {
       fields.push(
-        <Grid item style={{ width: "100%" }}>
+        <Grid item style={{ width: "95%" }}>
           {input}
         </Grid>
       );
@@ -214,13 +215,22 @@ export const ReportEdit = ({
     </Grid>
   );
   return (
-    <Grid
-      container
-      direction="column"
-      style={{ height: "100%", width: "100%" }}
+    // <Grid
+    //   container
+    //   direction="column"
+    //   style={{ height: "100%", width: "100%" }}
+    // >
+    <Box
+      style={{
+        height: "100%",
+        width: "100%",
+        overflowY: "auto",
+        overflowX: "none",
+      }}
     >
       {fields}
-    </Grid>
+    </Box>
+    // </Grid>
   );
 };
 
