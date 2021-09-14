@@ -37,8 +37,10 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     width: "100%",
     minWidth: "600px",
-    padding: theme.spacing(2),
-    marginTop: theme.spacing(2),
+    padding: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    border: "none",
+    boxShadow: "none",
   },
   root: {
     width: "100%",
@@ -104,7 +106,6 @@ const SearchSettings = ({
   fetchSearchResults,
   setPreferSearchTerm,
   searchIndex,
-  setSearchIndex,
   types,
   displayRanks,
   taxonomyRanks,
@@ -127,12 +128,6 @@ const SearchSettings = ({
     return initialState;
   });
   let index = searchIndex;
-  let setIndex = setSearchIndex;
-
-  const handleIndexChange = (e) => {
-    e.stopPropagation();
-    setIndex(e.target.value);
-  };
 
   const handleTaxonomyChange = (e) => {
     e.stopPropagation();
@@ -287,16 +282,7 @@ const SearchSettings = ({
     <Paper className={classes.paper}>
       <Grid container alignItems="center" direction="column">
         <Grid container alignItems="center" direction="row" spacing={2}>
-          <Grid item>
-            <BasicSelect
-              current={index}
-              id={"search-index-select"}
-              handleChange={handleIndexChange}
-              helperText={"search index"}
-              values={{ Taxon: "taxon", Assembly: "assembly" }}
-            />
-          </Grid>
-          <Grid item>
+          {/* <Grid item>
             <BasicSelect
               current={state.taxonomy}
               id={"search-index-select"}
@@ -304,13 +290,13 @@ const SearchSettings = ({
               helperText={"taxonomy"}
               values={taxonomyValues}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
         <Grid container alignItems="flex-start" direction="row" spacing={2}>
           {groups}
         </Grid>
 
-        <Grid container justify="end" direction="row" spacing={2}>
+        <Grid container alignItems="left" direction="row" spacing={2} xs={12}>
           <SettingsButton
             handleClick={handleClick}
             handleResetClick={handleResetClick}

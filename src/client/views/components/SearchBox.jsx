@@ -10,6 +10,7 @@ import Popper from "@material-ui/core/Popper";
 import SearchIcon from "@material-ui/icons/Search";
 import SearchOptions from "./SearchOptions";
 import SearchSettings from "./SearchSettings";
+import SearchToggles from "./SearchToggles";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/TextField";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -22,6 +23,7 @@ import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
+import withSearchDefaults from "../hocs/withSearchDefaults";
 import withTaxonomy from "../hocs/withTaxonomy";
 
 const useStyles = makeStyles((theme) => ({
@@ -123,6 +125,7 @@ const SearchBox = ({
   fetchLookup,
   fetchSearchResults,
   setSearchIndex,
+  searchDefaults,
   searchIndex,
   searchTerm,
   setPreferSearchTerm,
@@ -142,13 +145,24 @@ const SearchBox = ({
   let [showOptions, setShowOptions] = useState(false);
   let [showSettings, setShowSettings] = useState(false);
   let [result, setResult] = useState(searchIndex);
-  let fields = searchTerm.fields;
+  let fields = searchTerm.fields || searchDefaults.fields;
+  let ranks = searchTerm.ranks || searchDefaults.ranks;
+  let names = searchTerm.names || searchDefaults.names;
   const dispatchSearch = (options, term) => {
     if (!options.hasOwnProperty("includeEstimates")) {
-      options.includeEstimates = true;
+      options.includeEstimates = searchDefaults.includeEstimates;
     }
     if (!options.hasOwnProperty("summaryValues")) {
       options.summaryValues = "count";
+    }
+    if (!options.hasOwnProperty("fields")) {
+      options.fields = fields;
+    }
+    if (!options.hasOwnProperty("ranks")) {
+      options.ranks = ranks;
+    }
+    if (!options.hasOwnProperty("names")) {
+      options.names = names;
     }
     options.taxonomy = taxonomy;
     fetchSearchResults(options);
@@ -321,8 +335,7 @@ const SearchBox = ({
           }}
         >
           <Grid container direction="row" alignItems="center">
-            <Grid item xs={1}></Grid>
-            <Grid item xs={1}></Grid>
+            <Grid item xs={2}></Grid>
             <Grid item ref={searchBoxRef} xs={"auto"}>
               <FormControl className={classes.formControl}>
                 <Autocomplete
@@ -361,7 +374,7 @@ const SearchBox = ({
                     return <AutoCompleteOption option={option} />;
                   }}
                 />
-                <FormHelperText
+                {/* <FormHelperText
                   labelPlacement="end"
                   onClick={() => {
                     setShowOptions(!showOptions);
@@ -370,10 +383,10 @@ const SearchBox = ({
                   style={{ textAlign: "right", cursor: "pointer" }}
                 >
                   {showOptions ? "Hide" : "Show"} search options...
-                </FormHelperText>
+                </FormHelperText> */}
               </FormControl>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={2}>
               <Tooltip title="Click to search" arrow placement={"top"}>
                 <IconButton
                   className={classes.search}
@@ -384,7 +397,7 @@ const SearchBox = ({
                 </IconButton>
               </Tooltip>
             </Grid>
-            <Grid item xs={1}>
+            {/* <Grid item xs={1}>
               <Tooltip
                 title="Open search setting to show/hide columns"
                 arrow
@@ -403,7 +416,7 @@ const SearchBox = ({
                   />
                 </IconButton>
               </Tooltip>
-            </Grid>
+            </Grid> */}
           </Grid>
           <Popper
             id={"search-options"}
@@ -424,8 +437,21 @@ const SearchBox = ({
           </Popper>
         </form>
       </Grid>
+      <Grid container direction="row" alignItems="center">
+        <Grid item xs={2}></Grid>
+        <Grid item xs={8}>
+          <SearchToggles />
+        </Grid>
+        <Grid item xs={2}></Grid>
+      </Grid>
     </Grid>
   );
 };
 
-export default compose(memo, withTaxonomy, withSearch, withLookup)(SearchBox);
+export default compose(
+  memo,
+  withTaxonomy,
+  withSearch,
+  withSearchDefaults,
+  withLookup
+)(SearchBox);

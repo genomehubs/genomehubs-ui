@@ -76,7 +76,7 @@ const SearchPage = ({
       } else if (searchTerm.query && !options.query) {
         setPreviousSearchTerm({});
         setSearchTerm({});
-        setSearchIndex("multi");
+        setSearchIndex("taxon");
         fetchSearchResults({});
       }
       // if (hashTerm != lookupTerm) {

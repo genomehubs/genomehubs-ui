@@ -31,6 +31,7 @@ export const useStyles = makeStyles((theme) => ({
     minWidth: "600px",
     padding: theme.spacing(2),
     marginTop: theme.spacing(2),
+    boxShadow: "none",
   },
   formControl: {
     margin: theme.spacing(2),
@@ -48,6 +49,8 @@ const SearchOptions = ({
   searchResults,
   fetchSearchResults,
   setLookupTerm,
+  searchIndex,
+  setSearchIndex,
   setPreferSearchTerm,
   taxonomy,
   types,
@@ -65,6 +68,14 @@ const SearchOptions = ({
     genus: "genus",
     species: "species",
     subspecies: "subspecies",
+  };
+  const [index, setIndex] = useState(searchIndex);
+  // let index = searchIndex;
+  // let setIndex = setSearchIndex;
+
+  const handleIndexChange = (e) => {
+    e.stopPropagation();
+    setIndex(e.target.value);
   };
 
   let filters = {};
@@ -332,6 +343,7 @@ const SearchOptions = ({
     let options = {
       ...moreOptions,
       query,
+      result: index,
       taxonomy,
     };
     setPreferSearchTerm(false);
@@ -342,6 +354,17 @@ const SearchOptions = ({
   return (
     <Paper className={classes.paper}>
       <Grid container alignItems="center" direction="column" spacing={2}>
+        <Grid container direction="row">
+          <Grid item>
+            <BasicSelect
+              current={index}
+              id={"search-index-select"}
+              handleChange={handleIndexChange}
+              helperText={"search index"}
+              values={{ Taxon: "taxon", Assembly: "assembly" }}
+            />
+          </Grid>
+        </Grid>
         <Grid container alignItems="center" direction="row" spacing={2}>
           <Tooltip title="Taxon ID or scientific name" arrow placement={"top"}>
             <Grid item>

@@ -173,6 +173,23 @@ export const getSearchNameClasses = createSelector(
   }
 );
 
+const searchDefaultValues = {
+  includeDescendants: true,
+  includeEstimates: false,
+};
+
+export const setSearchDefaults = createAction("SET_SEARCH_DEFAULTS");
+export const resetSearchDefaults = createAction("RESET_SEARCH_DEFAULTS");
+export const searchDefaults = handleActions(
+  {
+    SET_SEARCH_DEFAULTS: (state, action) =>
+      immutableUpdate(state, action.payload),
+    RESET_SEARCH_DEFAULTS: (state, action) => searchDefaultValues,
+  },
+  searchDefaultValues
+);
+export const getSearchDefaults = (state) => state.searchDefaults;
+
 export const searchReducers = {
   searchTerm,
   searchIndex,
@@ -180,4 +197,5 @@ export const searchReducers = {
   searchHistory,
   preferSearchTerm,
   previousSearchTerm,
+  searchDefaults,
 };

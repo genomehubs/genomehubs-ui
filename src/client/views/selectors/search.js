@@ -1,6 +1,7 @@
 import { apiUrl, setApiStatus } from "../reducers/api";
 import {
   cancelSearch,
+  getSearchDefaults,
   getSearchHistory,
   receiveSearch,
   requestSearch,
@@ -25,6 +26,7 @@ export function fetchSearchResults(options, navigate) {
     const state = store.getState();
     const searchHistory = getSearchHistory(state);
     const taxonomy = getCurrentTaxonomy(state);
+    const searchDefaults = getSearchDefaults(state);
     dispatch(setSearchHistory(options));
 
     let searchTerm = options.query;
@@ -33,9 +35,12 @@ export function fetchSearchResults(options, navigate) {
     }
     if (options.result == "taxon" && !options.query.match(/[\(\)<>=\n\*]/)) {
       if (!options.hasOwnProperty("includeEstimates")) {
-        options.includeEstimates = true;
+        options.includeEstimates = searchDefaults.includeEstimates;
       }
-      options.query = `tax_name(${options.query})`;
+      let taxFilter = searchDefaults.includeDescendants
+        ? "tax_tree"
+        : "tax_name";
+      options.query = `${taxFilter}(${options.query})`;
     }
     // if (!options.hasOwnProperty("summaryValues")) {
     //   options.summaryValues = "count";
