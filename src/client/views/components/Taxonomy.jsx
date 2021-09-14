@@ -13,6 +13,7 @@ const Taxonomy = ({
   setTaxonomy,
   taxonomy = "",
   taxonomies = [],
+  display = true,
 }) => {
   let options = qs.parse(location.search.replace(/^\?/, ""));
   useEffect(() => {
@@ -28,6 +29,10 @@ const Taxonomy = ({
     resetRecord();
     navigate(`${location.pathname}?${qs.stringify(options)}${location.hash}`);
   };
+
+  if (!display) {
+    return null;
+  }
 
   return (
     <BasicMenu

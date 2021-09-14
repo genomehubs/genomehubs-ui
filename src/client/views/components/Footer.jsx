@@ -54,11 +54,15 @@ import BasicMenu from "./BasicMenu";
 import CopyrightIcon from "@material-ui/icons/Copyright";
 import Grid from "@material-ui/core/Grid";
 import Taxonomy from "./Taxonomy";
+import bbsrcLogo from "./img/bbsrc-logo.png";
+// import Taxonomy from "./Taxonomy";
 import classnames from "classnames";
 import { compose } from "recompose";
 import dispatchRecord from "../hocs/dispatchRecord";
+import dtolLogo from "./img/dtol-logo.png";
 import qs from "qs";
 import { resetRecord } from "../reducers/record";
+import sangerLogo from "./img/sanger-logo.png";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withTaxonomy from "../hocs/withTaxonomy";
@@ -91,6 +95,7 @@ const Footer = ({ version, fetchTypes, types, resetRecord }) => {
   }
   return (
     <footer>
+      <Taxonomy display={false} />
       <Grid
         container
         direction="row"
@@ -98,13 +103,23 @@ const Footer = ({ version, fetchTypes, types, resetRecord }) => {
         spacing={0}
         style={{ maxHeight: "100%" }}
       >
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           {dataRelease}
         </Grid>
-        <Grid item xs={4}>
-          <Taxonomy />
+        <Grid item xs={6}>
+          <img
+            src={sangerLogo}
+            href="https://www.sanger.ac.uk/"
+            target="_blank"
+          />
+          <img
+            src={dtolLogo}
+            href="https://www.darwintreeoflife.org"
+            target="_blank"
+          />
+          <img src={bbsrcLogo} href="https://bbsrc.ukri.org/" target="_blank" />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <span style={{ float: "right", marginRight: "1em" }}>
             Powered by{" "}
             <a
