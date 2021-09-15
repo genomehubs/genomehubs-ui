@@ -78,11 +78,14 @@ const searchByCell = ({
     query += ` AND ${xLabel} >= ${new Date(
       xBounds[0]
     ).toISOString()} AND ${xLabel} < ${new Date(xBounds[1]).toISOString()}`;
+  } else {
+    query += ` AND ${xLabel} >= ${xBounds[0]} AND ${xLabel} < ${xBounds[1]}`;
+  }
+  if (yValueType == "date") {
     query += ` AND ${yLabel} >= ${new Date(
       yBounds[0]
     ).toISOString()} AND ${yLabel} < ${new Date(yBounds[1]).toISOString()}`;
   } else {
-    query += ` AND ${xLabel} >= ${xBounds[0]} AND ${xLabel} < ${xBounds[1]}`;
     query += ` AND ${yLabel} >= ${yBounds[0]} AND ${yLabel} < ${yBounds[1]}`;
   }
 
@@ -91,7 +94,6 @@ const searchByCell = ({
   if (ranks) {
     ranks = ranks.join(",");
   }
-  console.log({ ...xQuery, query, fields, ranks });
   let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
   // let hash = encodeURIComponent(query);
   navigate(`/search?${queryString}`);
@@ -99,8 +101,18 @@ const searchByCell = ({
 
 const CustomShape = (props, chartProps) => {
   let h = props.yAxis.height / chartProps.yLength;
+  if (chartProps.yValueType == "date") {
+    h =
+      props.yAxis.scale(props.payload.y) -
+      props.yAxis.scale(props.payload.yBound);
+  }
   let height = h / chartProps.n;
   let w = props.xAxis.width / chartProps.xLength;
+  if (chartProps.valueType == "date") {
+    w =
+      props.xAxis.scale(props.payload.xBound) -
+      props.xAxis.scale(props.payload.x);
+  }
   let heatRect;
   let xRange = `${chartProps.xFormat(props.payload.x)}-${chartProps.xFormat(
     props.payload.xBound
