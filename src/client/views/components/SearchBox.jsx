@@ -8,8 +8,8 @@ import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import IconButton from "@material-ui/core/IconButton";
 import Popper from "@material-ui/core/Popper";
 import SearchIcon from "@material-ui/icons/Search";
-import SearchOptions from "./SearchOptions";
-import SearchSettings from "./SearchSettings";
+// import SearchOptions from "./SearchOptions";
+// import SearchSettings from "./SearchSettings";
 import SearchToggles from "./SearchToggles";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/TextField";
@@ -142,8 +142,8 @@ const SearchBox = ({
     }
     return false;
   });
-  let [showOptions, setShowOptions] = useState(false);
-  let [showSettings, setShowSettings] = useState(false);
+  // let [showOptions, setShowOptions] = useState(false);
+  // let [showSettings, setShowSettings] = useState(false);
   let [result, setResult] = useState(searchIndex);
   let fields = searchTerm.fields || searchDefaults.fields;
   let ranks = searchTerm.ranks || searchDefaults.ranks;
@@ -418,7 +418,7 @@ const SearchBox = ({
               </Tooltip>
             </Grid> */}
           </Grid>
-          <Popper
+          {/* <Popper
             id={"search-options"}
             open={showOptions}
             anchorEl={searchBoxRef.current}
@@ -434,7 +434,7 @@ const SearchBox = ({
             placement={"bottom"}
           >
             <SearchSettings />
-          </Popper>
+          </Popper> */}
         </form>
       </Grid>
       <Grid container direction="row" alignItems="center">

@@ -1,12 +1,13 @@
 import React, { memo } from "react";
-import { compose } from "recompose";
-import classnames from "classnames";
-import withFadeInOut from "../hocs/withFadeInOut";
+
 import Markdown from "./Markdown";
+import Tab from "./Tab";
+import classnames from "classnames";
+import { compose } from "recompose";
 // import withPages from "../hocs/withPages";
 import dispatchRoutes from "../hocs/dispatchRoutes";
 import styles from "./Styles.scss";
-import Tab from "./Tab";
+import withFadeInOut from "../hocs/withFadeInOut";
 
 const Tabs = ({ setRoute }) => {
   let css = classnames(styles.tabHolder);

@@ -5,9 +5,11 @@ import classnames from "classnames";
 import styles from "./Styles.scss";
 import { useLocation } from "@reach/router";
 
-const NavLink = ({ to, tab, ...props }) => {
+const NavLink = ({ to, tab, url, ...props }) => {
   const location = useLocation();
-  if (to) {
+  if (url) {
+    to = url;
+  } else if (to) {
     to = "/" + to + location.search + location.hash;
   } else if (props.href) {
     if (props.href.match(/\:\/\//)) {

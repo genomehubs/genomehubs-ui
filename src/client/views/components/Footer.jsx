@@ -55,7 +55,6 @@ import CopyrightIcon from "@material-ui/icons/Copyright";
 import Grid from "@material-ui/core/Grid";
 import Taxonomy from "./Taxonomy";
 import bbsrcLogo from "./img/bbsrc-logo.png";
-// import Taxonomy from "./Taxonomy";
 import classnames from "classnames";
 import { compose } from "recompose";
 import dispatchRecord from "../hocs/dispatchRecord";

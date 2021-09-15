@@ -190,6 +190,16 @@ export const searchDefaults = handleActions(
 );
 export const getSearchDefaults = (state) => state.searchDefaults;
 
+export const setSuggestedTerms = createAction("SET_SUGGESTED_TERMS");
+export const suggestedTerms = handleActions(
+  {
+    SET_SUGGESTED_TERMS: (state, action) =>
+      immutableUpdate(state, action.payload),
+  },
+  {}
+);
+export const getSuggestedTerms = (state) => state.suggestedTerms;
+
 export const searchReducers = {
   searchTerm,
   searchIndex,
@@ -198,4 +208,5 @@ export const searchReducers = {
   preferSearchTerm,
   previousSearchTerm,
   searchDefaults,
+  suggestedTerms,
 };
