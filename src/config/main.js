@@ -58,4 +58,5 @@ module.exports = {
   gdpr_url: process.env.GH_GDPR_URL || "",
   message: process.env.GH_MESSAGE || false,
   disableHostCheck: String(process.env.GH_DISABLE_HOST_CHECK) === "true",
+  suggestedTerm: process.env.GH_SUGGESTED_TERM,
 };

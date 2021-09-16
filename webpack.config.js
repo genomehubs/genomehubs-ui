@@ -85,6 +85,7 @@ const config = {
       TAXONOMY: JSON.stringify(main.taxonomy),
       SITENAME: JSON.stringify(main.siteName),
       VERSION: JSON.stringify(main.version),
+      SUGGESTED_TERM: JSON.stringify(main.suggestedTerm),
     }),
     new HtmlWebpackPlugin({
       hash: true,

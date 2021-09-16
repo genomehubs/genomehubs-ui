@@ -117,6 +117,8 @@ const AutoCompleteOption = ({ option }) => {
 
 const siteName = SITENAME || "GenomeHub";
 
+const suggestedTerm = SUGGESTED_TERM || undefined;
+
 const SearchBox = ({
   lookupTerm,
   setLookupTerm,
@@ -313,6 +315,10 @@ const SearchBox = ({
       });
     });
   }
+  let searchText = `Type to search ${siteName}`;
+  if (suggestedTerm) {
+    searchText += ` (e.g. ${suggestedTerm})`;
+  }
   return (
     <Grid
       container
@@ -360,7 +366,7 @@ const SearchBox = ({
                       onKeyPress={handleKeyPress}
                       {...params}
                       inputRef={searchInputRef}
-                      label={`Search ${siteName}`}
+                      label={searchText}
                       variant="outlined"
                       fullWidth
                       multiline
