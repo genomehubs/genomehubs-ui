@@ -22,6 +22,7 @@ import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
+import withSearchDefaults from "../hocs/withSearchDefaults";
 import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
@@ -51,6 +52,7 @@ const SearchOptions = ({
   setLookupTerm,
   searchIndex,
   setSearchIndex,
+  setSearchDefaults,
   setPreferSearchTerm,
   taxonomy,
   types,
@@ -346,6 +348,12 @@ const SearchOptions = ({
       result: index,
       taxonomy,
     };
+    let includeDescendants = options.includeDescendants;
+    let includeEstimates = options.includeEstimates;
+    setSearchDefaults({
+      includeDescendants,
+      includeEstimates,
+    });
     setPreferSearchTerm(false);
     navigate(
       `/search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
@@ -484,5 +492,6 @@ export default compose(
   withTypes,
   withTaxonomy,
   withSearch,
+  withSearchDefaults,
   withLookup
 )(SearchOptions);
