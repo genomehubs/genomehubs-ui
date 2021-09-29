@@ -1,8 +1,10 @@
 import {
   resetSearch,
+  resetSearchDefaults,
   saveSearchResults,
   setPreferSearchTerm,
   setPreviousSearchTerm,
+  setSearchDefaults,
   setSearchIndex,
   setSearchTerm,
 } from "../reducers/search";
@@ -28,6 +30,8 @@ const dispatchSearch = (WrappedComponent) => (props) => {
     setPreviousSearchTerm: (options) =>
       dispatch(setPreviousSearchTerm(options)),
     saveSearchResults: (options, format) => saveSearchResults(options, format),
+    setSearchDefaults: (options) => dispatch(setSearchDefaults(options)),
+    resetSearchDefaults: () => dispatch(resetSearchDefaults()),
   });
 
   const Connected = connect(

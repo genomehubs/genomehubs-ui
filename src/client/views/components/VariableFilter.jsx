@@ -7,17 +7,19 @@ import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import { useStyles } from "./SearchOptions";
+import { useStyles } from "./QueryBuilder";
 
 const VariableFilter = ({
   field,
   operator = "",
   value = "",
+  summary = "value",
   bool,
   label,
   fields,
   handleVariableChange,
   handleOperatorChange,
+  handleSummaryChange,
   handleValueChange,
   handleUpdate,
   handleDismiss,
@@ -38,6 +40,17 @@ const VariableFilter = ({
       {bool && (
         <Grid item>
           <Typography>{bool}</Typography>
+        </Grid>
+      )}
+      {field && handleSummaryChange && (
+        <Grid item>
+          <BasicSelect
+            current={summary}
+            id={`summary-${field}-select`}
+            handleChange={handleSummaryChange}
+            helperText={"summary"}
+            values={{ value: "value", min: "min", max: "max" }}
+          />
         </Grid>
       )}
       <Grid item>

@@ -1,6 +1,7 @@
 import React, { memo, useRef, useState } from "react";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
+// import ChipInputAutoSuggest from "./ChipInputAutoSuggest";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
@@ -8,8 +9,6 @@ import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import IconButton from "@material-ui/core/IconButton";
 import Popper from "@material-ui/core/Popper";
 import SearchIcon from "@material-ui/icons/Search";
-// import SearchOptions from "./SearchOptions";
-// import SearchSettings from "./SearchSettings";
 import SearchToggles from "./SearchToggles";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/TextField";
@@ -25,6 +24,17 @@ import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSearchDefaults from "../hocs/withSearchDefaults";
 import withTaxonomy from "../hocs/withTaxonomy";
+
+// const suggestions = [
+//   "assembly_span",
+//   "AND",
+//   "assembly_date",
+//   "contig_n50",
+//   "tax_name",
+//   "tax_rank",
+//   "tax_tree",
+//   "tax_eq",
+// ];
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -403,44 +413,7 @@ const SearchBox = ({
                 </IconButton>
               </Tooltip>
             </Grid>
-            {/* <Grid item xs={1}>
-              <Tooltip
-                title="Open search setting to show/hide columns"
-                arrow
-                placement={"top"}
-              >
-                <IconButton
-                  className={classes.search}
-                  aria-label="search settings"
-                  onClick={() => {
-                    setShowSettings(!showSettings);
-                    setShowOptions(false);
-                  }}
-                >
-                  <SettingsIcon
-                    style={{ transform: showSettings ? "rotate(90deg)" : "" }}
-                  />
-                </IconButton>
-              </Tooltip>
-            </Grid> */}
           </Grid>
-          {/* <Popper
-            id={"search-options"}
-            open={showOptions}
-            anchorEl={searchBoxRef.current}
-            placement={"bottom"}
-          >
-            <SearchOptions />
-          </Popper>
-          <Popper
-            id={"search-settings"}
-            style={{ maxWidth: "800px" }}
-            open={showSettings}
-            anchorEl={searchBoxRef.current}
-            placement={"bottom"}
-          >
-            <SearchSettings />
-          </Popper> */}
         </form>
       </Grid>
       <Grid container direction="row" alignItems="center">
@@ -450,6 +423,13 @@ const SearchBox = ({
         </Grid>
         <Grid item xs={2}></Grid>
       </Grid>
+      {/* <Grid container direction="row" alignItems="center">
+        <Grid item xs={2}></Grid>
+        <Grid item xs={8}>
+          <ChipInputAutoSuggest data={suggestions} />
+        </Grid>
+        <Grid item xs={2}></Grid>
+      </Grid> */}
     </Grid>
   );
 };

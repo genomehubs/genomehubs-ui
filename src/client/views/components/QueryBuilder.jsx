@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import AddIcon from "@material-ui/icons/Add";
 import BasicComplete from "./BasicComplete";
@@ -45,7 +45,7 @@ export const useStyles = makeStyles((theme) => ({
 
 // const handleValueChange =
 
-const SearchOptions = ({
+const QueryBuilder = ({
   searchTerm,
   searchResults,
   fetchSearchResults,
@@ -71,7 +71,66 @@ const SearchOptions = ({
     species: "species",
     subspecies: "subspecies",
   };
+  let taxFilters = {
+    taxon: null,
+    filter: false,
+    rank: "",
+    level: null,
+  };
   const [index, setIndex] = useState(searchIndex);
+  let [varFilters, setVarFilters] = useState({});
+  let [varSummaries, setVarSummaries] = useState({});
+  let [taxFilter, setTaxFilter] = useState(taxFilters);
+  let bool = false;
+
+  useEffect(() => {
+    let filters = {};
+    let summaries = {};
+    if (searchTerm.query) {
+      searchTerm.query.split(/\s*AND\s*/).forEach((term) => {
+        let taxQuery = term.match(/tax_(\w+)\((.+?)\)/);
+        if (taxQuery) {
+          if (taxQuery[1] == "rank") {
+            taxFilters.rank = taxQuery[2];
+            bool = "AND";
+          } else if (taxQuery[1] == "depth") {
+            taxFilters.depth = taxQuery[2];
+          } else {
+            taxFilters.taxon = taxQuery[2];
+            taxFilters.filter = `tax_${taxQuery[1]}`;
+          }
+        } else {
+          let parts = term.split(/\s*([\>\<=]+)\s*/);
+          if (types[parts[0]]) {
+            if (!filters[parts[0]]) {
+              filters[parts[0]] = {};
+            }
+            if (!summaries[parts[0]]) {
+              summaries[parts[0]] = {};
+            }
+            filters[parts[0]][parts[1]] = parts[2];
+            summaries[parts[0]][parts[1]] = "value";
+          } else {
+            let [summary, attr] = term.split(/[\(\))]/);
+            if (types[attr]) {
+              if (!filters[attr]) {
+                filters[attr] = {};
+              }
+              if (!summaries[attr]) {
+                summaries[attr] = {};
+              }
+              filters[attr][parts[1]] = parts[2];
+              summaries[attr][parts[1]] = summary;
+            }
+          }
+        }
+      });
+    }
+    setVarFilters(filters);
+    setVarSummaries(summaries);
+    setTaxFilter(taxFilters);
+  }, []);
+
   // let index = searchIndex;
   // let setIndex = setSearchIndex;
 
@@ -79,40 +138,6 @@ const SearchOptions = ({
     e.stopPropagation();
     setIndex(e.target.value);
   };
-
-  let filters = {};
-  let taxFilters = {
-    taxon: null,
-    filter: false,
-    rank: "",
-    level: null,
-  };
-  let bool = false;
-  if (searchTerm.query) {
-    searchTerm.query.split(/\s*AND\s*/).forEach((term) => {
-      let taxQuery = term.match(/tax_(\w+)\((.+?)\)/);
-      if (taxQuery) {
-        if (taxQuery[1] == "rank") {
-          taxFilters.rank = taxQuery[2];
-          bool = "AND";
-        } else if (taxQuery[1] == "depth") {
-          taxFilters.depth = taxQuery[2];
-        } else {
-          taxFilters.taxon = taxQuery[2];
-          taxFilters.filter = `tax_${taxQuery[1]}`;
-        }
-      } else {
-        let parts = term.split(/\s*([\>\<=]+)\s*/);
-        if (types[parts[0]]) {
-          if (!filters[parts[0]]) {
-            filters[parts[0]] = {};
-          }
-          filters[parts[0]][parts[1]] = parts[2];
-        }
-      }
-    });
-  }
-  let [varFilters, setVarFilters] = useState(filters);
 
   const buildQuery = () => {
     let query = "";
@@ -135,7 +160,13 @@ const SearchOptions = ({
     let newFilterArray = [];
     Object.keys(varFilters).forEach((key, i) => {
       Object.keys(varFilters[key]).forEach((operator) => {
-        newFilterArray.push(`${key}${operator}${varFilters[key][operator]}`);
+        if (varSummaries[key][operator] != "value") {
+          newFilterArray.push(
+            `${varSummaries[key][operator]}(${key})${operator}${varFilters[key][operator]}`
+          );
+        } else {
+          newFilterArray.push(`${key}${operator}${varFilters[key][operator]}`);
+        }
       });
     });
     if (newFilterArray.length > 0) {
@@ -149,35 +180,52 @@ const SearchOptions = ({
   const handleVariableChange = (e, key, operator) => {
     e.stopPropagation();
     let value;
+    let summary;
     let prevState;
+    let summState;
     if (key && operator) {
       value = varFilters[key][operator];
+      summary = varSummaries[key][operator];
       prevState = {
         ...varFilters,
         [key]: {
           ...varFilters[key],
         },
-        [e.target.value]: {
-          ...varFilters[e.target.value],
+      };
+      summState = {
+        ...varSummaries,
+        [key]: {
+          ...varSummaries[key],
         },
       };
       delete prevState[key][operator];
+      delete summState[key][operator];
     } else {
       operator = "";
       prevState = {
         ...varFilters,
       };
+      summState = {
+        ...varSummaries,
+      };
     }
     setVarFilters({
       ...prevState,
-      ...(key && {
-        [key]: {
-          ...prevState[key],
-        },
-      }),
+      // ...(key && {
+      //   [key]: {
+      //     ...prevState[key],
+      //   },
+      // }),
       [e.target.value]: {
         ...prevState[e.target.value],
         [operator]: value,
+      },
+    });
+    setVarSummaries({
+      ...summState,
+      [e.target.value]: {
+        ...summState[e.target.value],
+        [operator]: summary ? summary : "value",
       },
     });
   };
@@ -216,23 +264,55 @@ const SearchOptions = ({
             fields={variableValues}
             operator={operator}
             value={varFilters[key][operator]}
+            summary={varSummaries[key][operator]}
             bool={bool}
             handleVariableChange={(e) => handleVariableChange(e, key, operator)}
+            handleSummaryChange={(e) => {
+              e.stopPropagation();
+              let prevState = {
+                ...varSummaries,
+                [key]: {
+                  ...varSummaries[key],
+                },
+              };
+              setVarSummaries({
+                ...prevState,
+                [key]: {
+                  ...prevState[key],
+                  [operator]: e.target.value,
+                },
+              });
+            }}
             handleOperatorChange={(e) => {
               e.stopPropagation();
               let value = varFilters[key][operator];
+              let summary = varSummaries[key][operator];
               let prevState = {
                 ...varFilters,
                 [key]: {
                   ...varFilters[key],
                 },
               };
+              let summState = {
+                ...varSummaries,
+                [key]: {
+                  ...varSummaries[key],
+                },
+              };
               delete prevState[key][operator];
+              delete summState[key][operator];
               setVarFilters({
                 ...prevState,
                 [key]: {
                   ...prevState[key],
                   [e.target.value]: value,
+                },
+              });
+              setVarSummaries({
+                ...summState,
+                [key]: {
+                  ...summState[key],
+                  [e.target.value]: summary,
                 },
               });
             }}
@@ -292,12 +372,7 @@ const SearchOptions = ({
   //     }
   //   });
   // }
-  let [taxFilter, setTaxFilter] = useState(
-    // currentTaxon
-    //   ? { taxon: currentTaxon, filter: currentFilter }
-    //   : { filter: "tax_tree" }
-    taxFilters
-  );
+
   let [moreOptions, setMoreOptions] = useState(() => {
     let opts = { ...searchTerm };
     if (!opts.includeEstimates || opts.includeEstimates == "false") {
@@ -494,4 +569,4 @@ export default compose(
   withSearch,
   withSearchDefaults,
   withLookup
-)(SearchOptions);
+)(QueryBuilder);

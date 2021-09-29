@@ -1,11 +1,11 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
+import BasicTextField from "./BasicTextField";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import React from "react";
 import Select from "@material-ui/core/Select";
-import BasicTextField from "./BasicTextField";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -29,9 +29,15 @@ const BasicSelect = ({
 }) => {
   const classes = useStyles;
   let options = [];
-  Object.keys(values).forEach((key) => {
-    options.push(<MenuItem value={values[key]}>{key}</MenuItem>);
-  });
+  Object.keys(values)
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((key) => {
+      options.push(
+        <MenuItem value={values[key]} style={{ paddingTop: 0 }}>
+          {key}
+        </MenuItem>
+      );
+    });
   return (
     <FormControl className={classes.formControl}>
       {label && <InputLabel id={`${id}-label`}>{label}</InputLabel>}

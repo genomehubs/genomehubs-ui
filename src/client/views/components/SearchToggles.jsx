@@ -5,6 +5,7 @@ import BasicComplete from "./BasicComplete";
 import BasicSelect from "./BasicSelect";
 import BasicTextField from "./BasicTextField";
 import Button from "@material-ui/core/Button";
+import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import DialogContent from "@material-ui/core/DialogContent";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -13,10 +14,9 @@ import Grid from "@material-ui/core/Grid";
 import HelpIcon from "@material-ui/icons/Help";
 import IconButton from "@material-ui/core/IconButton";
 import Modal from "@material-ui/core/Modal";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Paper from "@material-ui/core/Paper";
+import QueryBuilder from "./QueryBuilder";
 import SearchIcon from "@material-ui/icons/Search";
-import SearchOptions from "./SearchOptions";
 import SearchSettings from "./SearchSettings";
 import Switch from "@material-ui/core/Switch";
 import Terms from "./Terms";
@@ -146,7 +146,12 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
           arrow
           placement={"top"}
         >
-          <Grid item xs={2} onClick={() => setShowExamples(!showExamples)}>
+          <Grid
+            item
+            xs={2}
+            onClick={() => setShowExamples(!showExamples)}
+            style={{ cursor: "pointer" }}
+          >
             <FormControl
               className={classes.formControl}
               style={{ margin: "-8px 0 0", transform: "scale(0.75)" }}
@@ -171,7 +176,12 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
           </Grid>
         </Tooltip>
         <Tooltip title={`Click to set result columns`} arrow placement={"top"}>
-          <Grid item xs={2} onClick={() => setShowSettings(true)}>
+          <Grid
+            item
+            xs={2}
+            onClick={() => setShowSettings(true)}
+            style={{ cursor: "pointer" }}
+          >
             <FormControl
               className={classes.formControl}
               style={{ margin: "-8px 0 0", transform: "scale(0.75)" }}
@@ -195,23 +205,24 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
             </Modal>
           </Grid>
         </Tooltip>
-        <Tooltip
-          title={`Click to expand search options`}
-          arrow
-          placement={"top"}
-        >
-          <Grid item xs={2} onClick={() => setShowOptions(true)}>
+        <Tooltip title={`Click to show query builder`} arrow placement={"top"}>
+          <Grid
+            item
+            xs={2}
+            onClick={() => setShowOptions(true)}
+            style={{ cursor: "pointer" }}
+          >
             <FormControl
               className={classes.formControl}
               style={{ margin: "-8px 0 0", transform: "scale(0.75)" }}
             >
-              <FormHelperText>more options</FormHelperText>
+              <FormHelperText>query builder</FormHelperText>
               <IconButton
-                aria-label="expand search options"
+                aria-label="query builder"
                 size="small"
                 onClick={() => {}}
               >
-                <MoreHorizIcon />
+                <ControlPointIcon />
               </IconButton>
             </FormControl>
             <Modal
@@ -223,7 +234,7 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
               container={() => rootRef.current}
             >
               <DialogContent className={classes.paper}>
-                <SearchOptions />
+                <QueryBuilder />
               </DialogContent>
             </Modal>
           </Grid>

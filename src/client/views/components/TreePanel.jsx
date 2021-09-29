@@ -233,6 +233,7 @@ const TreePanel = ({
               fields={fields}
               operator={highlightParams.operator}
               value={highlightParams.value}
+              summary="value"
               handleVariableChange={(e) => handleHighlightChange(e, "field")}
               handleOperatorChange={(e) => handleHighlightChange(e, "operator")}
               handleValueChange={(e) => handleHighlightChange(e, "value")}
