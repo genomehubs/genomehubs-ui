@@ -410,7 +410,9 @@ const ResultTable = ({
                   <AggregationIcon method={field.aggregation_source} />
                 </Grid>
 
-                <Grid item>{value}</Grid>
+                <Grid item style={{ whiteSpace: "nowrap" }}>
+                  {value}
+                </Grid>
               </Grid>
             </TableCell>
           );

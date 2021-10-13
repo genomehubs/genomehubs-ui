@@ -12,7 +12,7 @@ export const resetNodes = createAction("RESET_NODES");
 
 const defaultState = () => ({
   isFetching: false,
-  byId: {},
+  treeNodes: {},
 });
 
 const nodes = handleActions(
@@ -26,14 +26,12 @@ const nodes = handleActions(
         isFetching: false,
       }),
     RECEIVE_NODES: (state, action) => {
-      let byId = {};
-      action.payload.results.forEach((obj) => {
-        byId[obj.result.taxon_id] = obj.result;
-      });
+      let tree = {};
+      tree = action.payload.report.report.tree.tree;
       return {
         isFetching: false,
         status: action.payload.status,
-        byId: { ...state.byId, ...byId },
+        ...tree,
       };
     },
     RESET_NODES: defaultState,
@@ -41,7 +39,7 @@ const nodes = handleActions(
   defaultState()
 );
 
-export const getNodes = (state) => state.nodes.byId;
+export const getNodes = (state) => state.nodes;
 
 export const setRootNode = createAction("SET_ROOT_NODE");
 export const rootNode = handleAction(

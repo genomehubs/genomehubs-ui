@@ -1,7 +1,7 @@
 import {
   fetchNodes,
+  getAPITreeNodes,
   getNewickString,
-  getTreeNodes,
   getTreeRings,
 } from "../selectors/tree";
 import {
@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 const withTree = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
     nodes: getNodes(state),
-    treeNodes: getTreeNodes(state),
+    treeNodes: getAPITreeNodes(state),
     treeRings: getTreeRings(state),
     rootNode: getRootNode(state),
     treeHighlight: getTreeHighlight(state),

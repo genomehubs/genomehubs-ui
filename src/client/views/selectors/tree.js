@@ -23,6 +23,12 @@ import { createSelector } from "reselect";
 import qs from "qs";
 import store from "../store";
 
+const uriEncode = (str) => {
+  return encodeURIComponent(str).replaceAll(/[!'()*]/g, (c) => {
+    return "%" + c.charCodeAt(0).toString(16);
+  });
+};
+
 export function fetchNodes(options) {
   return async function (dispatch) {
     if (!options.hasOwnProperty("query")) {
@@ -35,7 +41,12 @@ export function fetchNodes(options) {
     treeOptions.offset = 0;
     treeOptions.size = 10000;
     const queryString = qs.stringify(treeOptions);
-    let url = `${apiUrl}/search?${queryString}`;
+    let x = uriEncode(treeOptions.query);
+    let y = "";
+    if (treeOptions.y) {
+      y = `&y=${uriEncode(treeOptions.y)}`;
+    }
+    let url = `${apiUrl}/report?report=tree&x=${x}${y}&result=${treeOptions.result}&taxonomy=${treeOptions.taxonomy}&includeEstimates=${treeOptions.includeEstimates}`;
     try {
       let json;
       try {
@@ -240,9 +251,13 @@ const outerArc = ({ innerRadius, outerRadius, startAngle, endAngle }) => {
   return `M${arcAttrs[1]}A${arcAttrs[2]}`;
 };
 
-export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
+export const getAPITreeNodes = getNodes;
+
+export const getTreeRings = createSelector(getAPITreeNodes, (nodes) => {
   if (!nodes) return undefined;
-  let { treeNodes, rootNode, ancNode, maxDepth } = nodes;
+  let { treeNodes, lca } = nodes;
+  if (!lca) return undefined;
+  let { maxDepth, taxon_id: rootNode, parent: ancNode } = lca;
   if (!treeNodes || !rootNode) return undefined;
   let radius = 498;
   let rScale = scalePow()
@@ -259,7 +274,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let greens = schemeGreens[tonalRange];
   let oranges = schemeOranges[tonalRange];
   let scaleFont = false;
-  let charLen = 7;
+  let charLen = 8;
   let charHeight = charLen * 1.3;
   var radialLine = lineRadial()
     .angle((d) => d.a)
@@ -268,6 +283,7 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
   let labels = [];
 
   const drawArcs = ({ node, depth = 0, start = 0, recurse = true }) => {
+    let outer = depth + 1;
     if (!node) return {};
     let color = greys[baseTone + node.status];
     let highlightColor = greys[baseTone + 1 + node.status];
@@ -283,7 +299,6 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
         highlightColor = oranges[baseTone + 1 + node.status];
       }
     }
-    let outer = depth + 1;
     if (
       !node.hasOwnProperty("children") ||
       Object.keys(node.children).length == 0
@@ -296,8 +311,9 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
     let cStart = start;
     let cEnd = start + node.count;
     if (cEnd - cStart == cMax) {
-      cStart = cMax / 10000;
-      cEnd -= cStart;
+      cStart = cEnd * 0.0005;
+      // cEnd -= cStart;
+      cEnd *= 0.9995;
     }
     let startAngle = cScale(cStart);
     let endAngle = cScale(cEnd);
@@ -334,21 +350,23 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
       let midRadius = (innerRadius + outerRadius) / 2;
       let arcLen = (endAngle - startAngle) * midRadius;
       let radLen = outerRadius - innerRadius;
-      let labelScale = 1;
-      if (labelLen < arcLen) {
-        if (scaleFont) labelScale = arcLen / labelLen;
-        let labelArc = outerArc({
-          innerRadius: midRadius,
-          outerRadius: midRadius,
-          startAngle,
-          endAngle,
-        });
-        labels.push({
-          ...node,
-          scientific_name: label,
-          arc: labelArc,
-          labelScale,
-        });
+      let labelScale = 1.1;
+      if (arcLen > radLen) {
+        if (labelLen < arcLen) {
+          if (scaleFont) labelScale = arcLen / labelLen;
+          let labelArc = outerArc({
+            innerRadius: midRadius,
+            outerRadius: midRadius,
+            startAngle,
+            endAngle,
+          });
+          labels.push({
+            ...node,
+            scientific_name: label,
+            arc: labelArc,
+            labelScale,
+          });
+        }
       } else if (arcLen > charHeight && labelLen <= radLen) {
         if (scaleFont) labelScale = radLen / labelLen;
         labels.push({
@@ -387,27 +405,42 @@ export const getTreeRings = createSelector(getTreeNodes, (nodes) => {
         }
       }
     };
-    addlabel(node.scientific_name, {});
+    if (depth >= 0) {
+      addlabel(node.scientific_name, {});
+    }
 
     if (recurse && node.hasOwnProperty("children")) {
       let children = [];
       Object.keys(node.children).forEach((key) => {
         children.push(treeNodes[key]);
       });
-      children.sort((a, b) => a.count - b.count);
+      children.sort(
+        (a, b) =>
+          a.count - b.count ||
+          b.scientific_name.localeCompare(a.scientific_name)
+      );
       children.forEach((child) => {
         drawArcs({ node: child, depth: depth + 1, start });
         start += child.count;
       });
     }
   };
-  drawArcs({ node: treeNodes[ancNode], depth: -1, recurse: false });
+  drawArcs({
+    node: {
+      taxon_id: ancNode,
+      count: treeNodes[rootNode] ? treeNodes[rootNode].count : 1,
+      scientific_name: "root",
+    },
+    depth: -1,
+    recurse: false,
+  });
   drawArcs({ node: treeNodes[rootNode] });
   return { arcs, labels };
 });
 
-export const getNewickString = createSelector(getTreeNodes, (nodes) => {
+export const getNewickString = createSelector(getAPITreeNodes, (nodes) => {
   if (!nodes) return undefined;
+  return undefined;
   let { treeNodes, rootNode } = nodes;
   if (!treeNodes || !rootNode) return undefined;
   const writeNewickString = ({ node }) => {

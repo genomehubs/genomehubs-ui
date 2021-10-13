@@ -18,6 +18,8 @@ import withTypes from "../hocs/withTypes";
 
 const TreePanel = ({
   root_id,
+  rootNode,
+  setRootNode,
   types,
   treeRings,
   searchTerm,
@@ -31,8 +33,9 @@ const TreePanel = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [highlightParams, setHighlightParams] = useState(treeHighlight);
+
   let arcs, labels;
-  // console.log(newickString);
   if (treeRings) {
     arcs = treeRings.arcs;
     labels = treeRings.labels;
@@ -75,14 +78,30 @@ const TreePanel = ({
 
   const anchorRef = useRef(null);
 
-  const fetchTree = (root) => {
+  const fetchTree = (root, name) => {
     fetchNodes({});
     let query = searchTerm.query;
+    let y;
     if (root) {
-      query = query.replace(/tax_tree\(\w+?\)/, `tax_tree(${root})`);
+      if (query.match("tax_tree")) {
+        query = query.replace(/tax_tree\(\w+?\)/, `tax_tree(${root})`);
+      } else {
+        query += ` AND tax_tree(${root})`;
+      }
     }
-    setTreeQuery({ ...searchTerm, query });
-    fetchNodes({ ...searchTerm, query });
+    if (highlightParams && highlightParams.field) {
+      if (highlightParams.value && highlightParams.operator) {
+        y = `${highlightParams.field}${highlightParams.operator}${highlightParams.value}`;
+      } else {
+        y = highlightParams.field;
+      }
+    }
+    let includeEstimates = searchTerm.includeEstimates;
+    if (name == "root" && query.match("tax_depth")) {
+      includeEstimates = true;
+    }
+    setTreeQuery({ ...searchTerm, includeEstimates, query, y });
+    fetchNodes({ ...searchTerm, includeEstimates, query, y });
   };
 
   const highlightSegment = (segment) => {
@@ -127,8 +146,9 @@ const TreePanel = ({
             onPointerEnter={(e) => highlightSegment(segment)}
             onPointerLeave={(e) => highlightSegment()}
             onClick={(e) => {
+              setRootNode(segment.taxon_id);
               highlightSegment();
-              fetchTree(segment.taxon_id);
+              fetchTree(segment.taxon_id, segment.scientific_name);
               // setDimensions({
               //   x: 0,
               //   y: 0,
@@ -189,8 +209,6 @@ const TreePanel = ({
     });
   }
 
-  const [highlightParams, setHighlightParams] = useState(treeHighlight);
-
   const handleHighlightChange = (e, key) => {
     e.stopPropagation();
     setHighlightParams({ ...highlightParams, [key]: e.target.value });
@@ -198,10 +216,11 @@ const TreePanel = ({
 
   const handleHighlightUpdate = (e) => {
     e.stopPropagation();
-    if (!treeQuery) {
-      fetchTree();
-    }
     setTreeHighlight(highlightParams);
+    // if (!treeQuery) {
+    fetchTree(rootNode);
+    // }
+    //
   };
 
   const handleDismissTree = (e) => {
