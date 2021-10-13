@@ -1,6 +1,6 @@
 {
   "name": "goat-ui",
-  "version": "0.0.1",
+  "version": "2.2.0",
   "description": "Frontend for Genomes on a Tree",
   "main": "index.js",
   "scripts": {
