@@ -35,14 +35,11 @@ const TreePanel = ({
   const navigate = useNavigate();
   const [highlightParams, setHighlightParams] = useState(treeHighlight);
 
-  let arcs, labels;
-  if (treeRings) {
-    arcs = treeRings.arcs;
-    labels = treeRings.labels;
-  }
   if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
     return null;
   }
+  let { arcs, labels, maxDepth } = treeRings || {};
+
   let css = classnames(
     styles.infoPanel,
     styles[`infoPanel1Column`],
@@ -96,12 +93,17 @@ const TreePanel = ({
         y = highlightParams.field;
       }
     }
-    let includeEstimates = searchTerm.includeEstimates;
-    if (name == "root" && query.match("tax_depth")) {
-      includeEstimates = true;
+    if (
+      !searchTerm.includeEstimates ||
+      searchTerm.includeEstimates == "false"
+    ) {
+      if (name == "root" && query.match("tax_depth")) {
+        query = query.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
+        y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
+      }
     }
-    setTreeQuery({ ...searchTerm, includeEstimates, query, y });
-    fetchNodes({ ...searchTerm, includeEstimates, query, y });
+    setTreeQuery({ ...searchTerm, query, y });
+    fetchNodes({ ...searchTerm, query, y });
   };
 
   const highlightSegment = (segment) => {

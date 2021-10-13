@@ -435,7 +435,7 @@ export const getTreeRings = createSelector(getAPITreeNodes, (nodes) => {
     recurse: false,
   });
   drawArcs({ node: treeNodes[rootNode] });
-  return { arcs, labels };
+  return { arcs, labels, maxDepth };
 });
 
 export const getNewickString = createSelector(getAPITreeNodes, (nodes) => {
