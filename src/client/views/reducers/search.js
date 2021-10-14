@@ -174,8 +174,8 @@ export const getSearchNameClasses = createSelector(
 );
 
 const searchDefaultValues = {
-  includeDescendants: true,
-  includeEstimates: false,
+  includeDescendants: false,
+  includeEstimates: true,
 };
 
 export const setSearchDefaults = createAction("SET_SEARCH_DEFAULTS");

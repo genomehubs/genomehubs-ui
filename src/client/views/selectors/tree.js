@@ -279,10 +279,13 @@ export const getTreeRings = createSelector(getAPITreeNodes, (nodes) => {
   var radialLine = lineRadial()
     .angle((d) => d.a)
     .radius((d) => d.r);
+  let visited = {};
 
   let labels = [];
 
   const drawArcs = ({ node, depth = 0, start = 0, recurse = true }) => {
+    visited[node.taxon_id] = true;
+    console.log(node.taxon_id);
     let outer = depth + 1;
     if (!node) return {};
     let color = greys[baseTone + node.status];
@@ -420,8 +423,14 @@ export const getTreeRings = createSelector(getAPITreeNodes, (nodes) => {
           b.scientific_name.localeCompare(a.scientific_name)
       );
       children.forEach((child) => {
-        drawArcs({ node: child, depth: depth + 1, start });
-        start += child.count;
+        // test if node has been visited already - indicates problem with tree
+        if (!visited[child.taxon_id]) {
+          drawArcs({ node: child, depth: depth + 1, start });
+          start += child.count;
+        } else {
+          console.warn("Tree node already visited");
+          console.warn(node);
+        }
       });
     }
   };
