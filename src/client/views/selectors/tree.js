@@ -285,7 +285,6 @@ export const getTreeRings = createSelector(getAPITreeNodes, (nodes) => {
 
   const drawArcs = ({ node, depth = 0, start = 0, recurse = true }) => {
     visited[node.taxon_id] = true;
-    console.log(node.taxon_id);
     let outer = depth + 1;
     if (!node) return {};
     let color = greys[baseTone + node.status];
@@ -426,11 +425,11 @@ export const getTreeRings = createSelector(getAPITreeNodes, (nodes) => {
         // test if node has been visited already - indicates problem with tree
         if (!visited[child.taxon_id]) {
           drawArcs({ node: child, depth: depth + 1, start });
-          start += child.count;
         } else {
           console.warn("Tree node already visited");
           console.warn(node);
         }
+        start += child.count;
       });
     }
   };
