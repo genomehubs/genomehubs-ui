@@ -129,6 +129,7 @@ export const ReportFull = ({
         chartRef={chartRef}
         containerRef={containerRef}
         topLevel={topLevel}
+        permaLink={permaLink}
       />
     );
   }

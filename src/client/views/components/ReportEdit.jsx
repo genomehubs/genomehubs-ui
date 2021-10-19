@@ -42,11 +42,12 @@ export const queryPropList = {
     "yOpts",
     "scatterThreshold",
   ],
+  tree: ["report", "x", "y", "cat", "includeEstimates"],
   xInY: ["report", "x", "y", "rank"],
   xPerRank: ["report", "x", "rank"],
 };
 
-const reportTypes = ["histogram", "scatter", "xInY", "xPerRank"];
+const reportTypes = ["histogram", "scatter", "tree", "xInY", "xPerRank"];
 
 export const ReportEdit = ({
   reportId,
@@ -82,7 +83,8 @@ export const ReportEdit = ({
     e.stopPropagation();
     setValues({
       ...values,
-      [queryProp]: !values[queryProp],
+      [queryProp]:
+        values[queryProp] && values[queryProp] != "false" ? false : true,
     });
   };
 
@@ -93,6 +95,12 @@ export const ReportEdit = ({
       taxonomy,
       ...Object.fromEntries(Object.entries(values).filter(([_, v]) => v != "")),
     });
+    if (
+      values.hasOwnProperty("includeEstimates") &&
+      values.includeEstimates == ""
+    ) {
+      newQueryString += "&includeEstimates=false";
+    }
     if (modal) {
       fetchReport({ reportId, queryString: newQueryString, reload: true });
     } else {
@@ -140,7 +148,7 @@ export const ReportEdit = ({
           <FormControl key={queryProp}>
             <Switch
               id={`report-${queryProp}`}
-              checked={values[queryProp]}
+              checked={values[queryProp] && values[queryProp] != "false"}
               onClick={(e) => toggleSwitch(e, queryProp)}
               name={queryProp}
               color="default"

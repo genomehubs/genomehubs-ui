@@ -8,6 +8,7 @@ import {
 
 import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
+import { processTree } from "../selectors/tree";
 import store from "../store";
 
 export function fetchReport({ queryString, reportId, reload }) {
@@ -41,6 +42,18 @@ export function fetchReport({ queryString, reportId, reload }) {
 const processReport = (reports, reportId) => {
   let report = reports[reportId];
   if (!report) return {};
+  if (report.name == "tree") {
+    return {
+      ...report,
+      report: {
+        ...report.report,
+        tree: {
+          ...report.report.tree,
+          ...processTree(report.report.tree.tree),
+        },
+      },
+    };
+  }
   // if (report.name == "histogram") {
   //   return processHistogram(report);
   // }

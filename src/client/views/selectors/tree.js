@@ -468,3 +468,201 @@ export const getNewickString = createSelector(getAPITreeNodes, (nodes) => {
   let newick = writeNewickString({ node: treeNodes[rootNode] });
   return `${newick};`;
 });
+
+export const processTreeRings = (nodes) => {
+  if (!nodes) return undefined;
+  let { treeNodes, lca } = nodes;
+  if (!lca) return undefined;
+  let { maxDepth, taxon_id: rootNode, parent: ancNode } = lca;
+  if (!treeNodes || !rootNode) return undefined;
+  let radius = 498;
+  let rScale = scalePow()
+    .exponent(1)
+    .domain([-0.5, maxDepth + 1])
+    .range([0, radius]);
+  let cMax = treeNodes[rootNode] ? treeNodes[rootNode].count : 0;
+  let cScale = scaleLinear().domain([0, cMax]).range([-Math.PI, Math.PI]);
+  let arcs = [];
+  let tonalRange = 9;
+  let baseTone = 2;
+  let greys = schemeGreys[tonalRange];
+  let reds = schemeReds[tonalRange];
+  let greens = schemeGreens[tonalRange];
+  let oranges = schemeOranges[tonalRange];
+  let scaleFont = false;
+  let charLen = 8;
+  let charHeight = charLen * 1.3;
+  var radialLine = lineRadial()
+    .angle((d) => d.a)
+    .radius((d) => d.r);
+  let visited = {};
+
+  let labels = [];
+
+  const drawArcs = ({ node, depth = 0, start = 0, recurse = true }) => {
+    visited[node.taxon_id] = true;
+    let outer = depth + 1;
+    if (!node) return {};
+    let color = greys[baseTone + node.status];
+    let highlightColor = greys[baseTone + 1 + node.status];
+    if (!recurse) {
+      color = "white";
+      highlightColor = "white";
+    } else if (node) {
+      if (node.source == "direct") {
+        color = greens[baseTone + 1 + node.status];
+        highlightColor = greens[baseTone + 2 + node.status];
+      } else if (node.source == "descendant") {
+        color = oranges[baseTone + node.status];
+        highlightColor = oranges[baseTone + 1 + node.status];
+      }
+    }
+    if (
+      !node.hasOwnProperty("children") ||
+      Object.keys(node.children).length == 0
+    ) {
+      outer = maxDepth + 1;
+    }
+    let innerRadius = rScale(depth);
+    let outerRadius = rScale(outer);
+    let farOuterRadius = rScale(maxDepth + 1);
+    let cStart = start;
+    let cEnd = start + node.count;
+    if (cEnd - cStart == cMax) {
+      cStart = cEnd * 0.0005;
+      // cEnd -= cStart;
+      cEnd *= 0.9995;
+    }
+    let startAngle = cScale(cStart);
+    let endAngle = cScale(cEnd);
+    let midAngle = (startAngle + endAngle) / 2;
+
+    arcs.push({
+      ...node,
+      arc: arc()({
+        innerRadius,
+        outerRadius,
+        startAngle,
+        endAngle,
+      }),
+      highlight: arc()({
+        innerRadius,
+        outerRadius: farOuterRadius,
+        startAngle,
+        endAngle,
+      }),
+      start: start,
+      depth: depth,
+      color,
+      highlightColor,
+    });
+
+    const addlabel = (label, { truncate = false, stopIteration = false }) => {
+      let nextOpts = { truncate, stopIteration };
+      if (truncate) {
+        nextOpts.stopIteration = true;
+      } else {
+        nextOpts.truncate = true;
+      }
+      let labelLen = charLen * label.length;
+      let midRadius = (innerRadius + outerRadius) / 2;
+      let arcLen = (endAngle - startAngle) * midRadius;
+      let radLen = outerRadius - innerRadius;
+      let labelScale = 1.1;
+      if (arcLen > radLen) {
+        if (labelLen < arcLen) {
+          if (scaleFont) labelScale = arcLen / labelLen;
+          let labelArc = outerArc({
+            innerRadius: midRadius,
+            outerRadius: midRadius,
+            startAngle,
+            endAngle,
+          });
+          labels.push({
+            ...node,
+            scientific_name: label,
+            arc: labelArc,
+            labelScale,
+          });
+        }
+      } else if (arcLen > charHeight && labelLen <= radLen) {
+        if (scaleFont) labelScale = radLen / labelLen;
+        labels.push({
+          ...node,
+          scientific_name: label,
+          arc: radialLine([
+            { a: midAngle, r: innerRadius },
+            { a: midAngle, r: outerRadius },
+          ]),
+          labelScale,
+        });
+      } else if (!stopIteration) {
+        if (!truncate) {
+          if (node.taxon_rank == "species") {
+            let parts = label.split(" ");
+            if (parts.length == 2) {
+              addlabel(`${parts[0].charAt(0)}. ${parts[1]}`, nextOpts);
+            }
+          } else if (node.taxon_rank == "subspecies") {
+            let parts = label.split(" ");
+            if (parts.length == 3) {
+              addlabel(
+                `${parts[0].charAt(0)}. ${parts[1].charAt(0)}. ${parts[2]}`,
+                nextOpts
+              );
+            }
+          } else {
+            addlabel(label, nextOpts);
+          }
+        } else {
+          let maxLen = Math.max(arcLen, radLen) / charLen;
+          maxLen -= 3;
+          if (maxLen > 5) {
+            addlabel(`${label.substring(0, maxLen)}...`, nextOpts);
+          }
+        }
+      }
+    };
+    if (depth >= 0) {
+      addlabel(node.scientific_name, {});
+    }
+
+    if (recurse && node.hasOwnProperty("children")) {
+      let children = [];
+      Object.keys(node.children).forEach((key) => {
+        children.push(treeNodes[key]);
+      });
+      children.sort(
+        (a, b) =>
+          a.count - b.count ||
+          b.scientific_name.localeCompare(a.scientific_name)
+      );
+      children.forEach((child) => {
+        // test if node has been visited already - indicates problem with tree
+        if (!visited[child.taxon_id]) {
+          drawArcs({ node: child, depth: depth + 1, start });
+        } else {
+          console.warn("Tree node already visited");
+          console.warn(node);
+        }
+        start += child.count;
+      });
+    }
+  };
+  drawArcs({
+    node: {
+      taxon_id: ancNode,
+      count: treeNodes[rootNode] ? treeNodes[rootNode].count : 1,
+      scientific_name: "root",
+    },
+    depth: -1,
+    recurse: false,
+  });
+  drawArcs({ node: treeNodes[rootNode] });
+  return { arcs, labels, maxDepth };
+};
+
+export const processTree = (nodes, shape = "rings") => {
+  let func = processTreeRings;
+  return processTreeRings(nodes);
+};

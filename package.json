@@ -109,6 +109,7 @@
     "shallowequal": "^1.1.0",
     "unfetch": "^4.2.0",
     "unified": "^9.2.1",
-    "unist-util-visit": "^3.0.1"
+    "unist-util-visit": "^3.0.1",
+    "use-long-press": "^1.1.1"
   }
 }
