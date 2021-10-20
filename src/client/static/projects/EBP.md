@@ -1,5 +1,11 @@
 # Earth Biogenome 2021
 
+:::grid{container direction="column"}
+
+::item[![GoaT](/static/images/EBG.png)]{xs=22}
+
+:::
+
 :::grid{container direction="row" spacing="1"}
 
 ::report{report="xInY" x="assembly_span" rank="phylum,class,order,family,genus,species" item xs=12}
