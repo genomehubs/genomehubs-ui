@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { compose } from "recompose";
-import withReportById from "../hocs/withReportById";
+
 import JSONPretty from "react-json-pretty";
 import JSONPrettyMon from "react-json-pretty/dist/monikai";
+import { compose } from "recompose";
+import withReportById from "../hocs/withReportById";
 
 export const ReportCode = ({ reportId, reportById, report, queryString }) => {
   if (!reportById.report || !reportById.report.queryString) {
     return null;
   }
-
+  // TODO: filter processed data from report code
   return (
     <code style={{ textAlign: "left" }}>
       <JSONPretty

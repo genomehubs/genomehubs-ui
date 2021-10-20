@@ -9,11 +9,13 @@ import classnames from "classnames";
 import { compose } from "recompose";
 import equal from "deep-equal";
 import qs from "qs";
+import shallow from "shallowequal";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
+import withSearchDefaults from "../hocs/withSearchDefaults";
 import withSetLookup from "../hocs/withSetLookup";
 
 const SearchPage = ({
@@ -29,6 +31,8 @@ const SearchPage = ({
   previousSearchTerm,
   setPreviousSearchTerm,
   fetchSearchResults,
+  searchDefaults,
+  setSearchDefaults,
   setRecordId,
 }) => {
   let results = [];
@@ -40,6 +44,16 @@ const SearchPage = ({
   useEffect(() => {
     if (!isFetching) {
       if (options.query && !equal(options, searchTerm)) {
+        let newDefaults = {
+          includeEstimates: !(
+            options.hasOwnProperty("includeEstimates") &&
+            String(options.includeEstimates) == "false"
+          ),
+          includeDescendants: Boolean(options.query.match("tax_tree")),
+        };
+        if (!shallow(searchDefaults, newDefaults)) {
+          setSearchDefaults(newDefaults);
+        }
         if (preferSearchTerm) {
           if (!equal(searchTerm, previousSearchTerm)) {
             setPreviousSearchTerm(searchTerm);
@@ -109,4 +123,10 @@ const SearchPage = ({
   );
 };
 
-export default compose(memo, withSetLookup, withSearch, withRecord)(SearchPage);
+export default compose(
+  memo,
+  withSetLookup,
+  withSearch,
+  withSearchDefaults,
+  withRecord
+)(SearchPage);

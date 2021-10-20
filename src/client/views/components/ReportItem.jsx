@@ -5,6 +5,7 @@ import ReportHistogram from "./ReportHistogram";
 import ReportModal from "./ReportModal";
 import ReportScatter from "./ReportScatter";
 import ReportSources from "./ReportSources";
+import ReportTree from "./ReportTree";
 import ReportXInY from "./ReportXInY";
 import ReportXPerRank from "./ReportXPerRank";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -30,6 +31,7 @@ const ReportItem = ({
   caption,
   inModal,
   topLevel,
+  permaLink,
   chartRef,
   containerRef,
   ratio,
@@ -92,6 +94,19 @@ const ReportItem = ({
           sources={reportById}
           chartRef={chartRef}
           containerRef={containerRef}
+        />
+      );
+      break;
+    case "tree":
+      component = (
+        <ReportTree
+          reportId={reportId}
+          topLevel={topLevel}
+          permaLink={permaLink}
+          tree={reportById}
+          chartRef={chartRef}
+          containerRef={containerRef}
+          {...qs.parse(queryString)}
         />
       );
       break;

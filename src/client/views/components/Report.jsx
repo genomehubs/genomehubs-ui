@@ -13,6 +13,7 @@ export const queryPropList = [
   "cat",
   "rank",
   "taxonomy",
+  "includeEstimates",
 ];
 
 const Report = (props) => {
@@ -45,6 +46,7 @@ const Report = (props) => {
     reportProps.reportId = reportProps.queryString;
   }
   reportProps.inModal = props.inModal;
+  reportProps.permaLink = props.permaLink;
   reportProps.chartRef = props.chartRef;
   reportProps.delay = props.delay;
   reportProps.containerRef = props.containerRef;
