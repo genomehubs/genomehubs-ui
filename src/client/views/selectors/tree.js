@@ -473,7 +473,8 @@ export const processTreeRings = (nodes) => {
   if (!nodes) return undefined;
   let { treeNodes, lca } = nodes;
   if (!lca) return undefined;
-  let { maxDepth, taxon_id: rootNode, parent: ancNode } = lca;
+  let { maxDepth, taxDepth, taxon_id: rootNode, parent: ancNode } = lca;
+  maxDepth = taxDepth ? taxDepth : maxDepth;
   if (!treeNodes || !rootNode) return undefined;
   let radius = 498;
   let rScale = scalePow()
@@ -666,7 +667,8 @@ export const processTreePaths = (nodes) => {
   if (!nodes) return undefined;
   let { treeNodes, lca } = nodes;
   if (!lca) return undefined;
-  let { maxDepth, taxon_id: rootNode, parent: ancNode } = lca;
+  let { maxDepth, taxDepth, taxon_id: rootNode, parent: ancNode } = lca;
+  maxDepth = taxDepth ? taxDepth : maxDepth;
   if (!treeNodes || !rootNode) return undefined;
   let margin = 0;
   let width = 1000;
