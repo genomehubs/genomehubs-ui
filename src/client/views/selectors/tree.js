@@ -1,4 +1,4 @@
-import { arc, lineRadial } from "d3-shape";
+import { arc, line as d3line, lineRadial } from "d3-shape";
 import {
   cancelNodesRequest,
   getNodes,
@@ -662,7 +662,176 @@ export const processTreeRings = (nodes) => {
   return { arcs, labels, maxDepth };
 };
 
-export const processTree = (nodes, shape = "rings") => {
+export const processTreePaths = (nodes) => {
+  if (!nodes) return undefined;
+  let { treeNodes, lca } = nodes;
+  if (!lca) return undefined;
+  let { maxDepth, taxon_id: rootNode, parent: ancNode } = lca;
+  if (!treeNodes || !rootNode) return undefined;
+  let margin = 0;
+  let width = 1000;
+  let charLen = 9;
+  let charHeight = charLen * 1.6;
+  let xScale = scaleLinear()
+    .domain([-0.5, maxDepth + 3])
+    .range([0, width]);
+  let yMax = treeNodes[rootNode] ? treeNodes[rootNode].count : 0;
+  let yScale = scaleLinear()
+    .domain([0, yMax])
+    .range([charHeight * (yMax + 1), charHeight]);
+  let lines = [];
+  let tonalRange = 9;
+  let baseTone = 2;
+  let greys = schemeGreys[tonalRange];
+  let reds = schemeReds[tonalRange];
+  let greens = schemeGreens[tonalRange];
+  let oranges = schemeOranges[tonalRange];
+  let line = d3line();
+  let visited = {};
+
+  let labels = [];
+
+  let pathNodes = {};
+  let sortOrder = [];
+
+  const setXCoords = ({
+    node,
+    depth = 0,
+    recurse = true,
+    parent = ancNode,
+  }) => {
+    if (!node) return {};
+    let rightDepth = depth + 1;
+    let xStart = Math.max(0, xScale(depth));
+    let xEnd = xScale(rightDepth);
+    let pathNode = {
+      ...node,
+      depth,
+      xStart,
+      xEnd,
+      width: xEnd - xStart,
+      parent,
+      yCoords: [],
+    };
+    pathNodes[node.taxon_id] = pathNode;
+    sortOrder.unshift(node.taxon_id);
+    if (recurse && node.children && Object.keys(node.children).length > 0) {
+      let children = [];
+      Object.keys(node.children).forEach((key) => {
+        children.push(treeNodes[key]);
+      });
+      children.sort(
+        (a, b) =>
+          b.count - a.count ||
+          a.scientific_name.localeCompare(b.scientific_name)
+      );
+      children.forEach((child) => {
+        setXCoords({
+          node: treeNodes[child.taxon_id],
+          depth: depth + 1,
+          parent: node.taxon_id,
+        });
+      });
+    }
+  };
+  treeNodes[ancNode] = {
+    ...treeNodes[rootNode],
+    children: { [treeNodes[rootNode].taxon_id]: true },
+    taxon_id: ancNode,
+    count: treeNodes[rootNode].count,
+    scientific_name: "root",
+  };
+  setXCoords({ node: treeNodes[ancNode || rootNode], depth: ancNode ? -1 : 0 });
+  // setXCoords({
+  //   node: {
+  //     taxon_id: ancNode,
+  //     count: treeNodes[rootNode].count,
+  //     scientific_name: "root",
+  //   },
+  //   depth: -1,
+  //   parent: undefined,
+  // });
+
+  let y = 0;
+
+  sortOrder.forEach((nodeId) => {
+    let node = pathNodes[nodeId];
+    let rawY, minY, maxY, tip;
+    if (node.yCoords.length == 0) {
+      rawY = y;
+      minY = rawY - 0.5;
+      maxY = rawY + 0.5;
+      node.tip = true;
+      y++;
+    } else if (node.yCoords.length == 1 || node.scientific_name == "root") {
+      rawY = node.yCoords[0];
+      minY = rawY - 0.5;
+      maxY = rawY + 0.5;
+    } else {
+      node.yCoords = node.yCoords.sort((a, b) => a - b);
+      minY = node.yCoords[0];
+      maxY = node.yCoords[node.yCoords.length - 1];
+      rawY = (minY + maxY) / 2;
+    }
+    if (node.parent && pathNodes[node.parent]) {
+      pathNodes[node.parent].yCoords.push(rawY);
+    }
+    node.yStart = yScale(rawY);
+    node.yMin = yScale(maxY);
+    node.yMax = yScale(minY);
+    node.height = node.yMax - node.yMin;
+    let color = greys[baseTone + 1 + node.status * 2];
+    let highlightColor = greys[baseTone + 2 + node.status * 2];
+
+    if (node.source == "direct") {
+      color = greens[baseTone + 1 + node.status * 2];
+      highlightColor = greens[baseTone + 2 + node.status * 2];
+    } else if (node.source == "descendant") {
+      color = oranges[baseTone + node.status * 2];
+      highlightColor = oranges[baseTone + 1 + node.status * 2];
+    }
+
+    let label;
+    if (node.width > charLen * 5) {
+      label = node.scientific_name;
+      if (!node.tip && label.length * charLen - 2 > node.width) {
+        if (node.taxon_rank == "species") {
+          let parts = label.split(" ");
+          if (parts.length == 2) {
+            label = `${parts[0].charAt(0)}. ${parts[1]}`;
+          }
+        }
+        if (!node.tip && label.length * charLen - 2 > node.width) {
+          label = `${label.substring(0, Math.floor(node.width / charLen))}...`;
+        }
+      }
+    }
+
+    lines.push({
+      ...node,
+      hLine: d3line()([
+        [node.xStart, node.yStart],
+        [node.xEnd, node.yStart],
+      ]),
+      ...(node.yCoords.length > 1 &&
+        node.scientific_name != "root" && {
+          vLine: d3line()([
+            [node.xEnd, node.yMin],
+            [node.xEnd, node.yMax],
+          ]),
+        }),
+      label,
+      color,
+      highlightColor,
+    });
+  });
+  return { lines, maxDepth, plotHeight: yScale.range()[0] + charHeight };
+};
+
+export const processTree = (nodes, treeStyle = "ring") => {
   let func = processTreeRings;
+  if (treeStyle == "rect") {
+    return processTreePaths(nodes);
+  }
   return processTreeRings(nodes);
 };

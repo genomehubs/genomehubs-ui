@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import LaunchIcon from "@material-ui/icons/Launch";
+import ReportTreePaths from "./ReportTreePaths";
 import ReportTreeRings from "./ReportTreeRings";
 import Tooltip from "@material-ui/core/Tooltip";
 import { compose } from "recompose";
@@ -21,6 +22,7 @@ const ReportTree = ({
   fetchReport,
   topLevel,
   permaLink,
+  treeStyle,
 }) => {
   if (!tree.report) return null;
   const navigate = useNavigate();
@@ -37,14 +39,15 @@ const ReportTree = ({
         x += ` AND tax_tree(${root})`;
       }
     }
-    if (
-      name == "root" &&
-      x.match("tax_depth") &&
-      options.includeEstimates === false
-    ) {
-      x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
-      y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
-    } else if (depth && x.match("tax_depth")) {
+    // if (
+    //   name == "root" &&
+    //   x.match("tax_depth") &&
+    //   options.includeEstimates === false
+    // ) {
+    //   x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
+    //   y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
+    // } else
+    if (depth && x.match("tax_depth")) {
       x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth - depth})`);
       y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth - depth})`);
     }
@@ -90,8 +93,9 @@ const ReportTree = ({
     minDim /= ratio;
   }
 
-  return (
-    <Grid item xs ref={componentRef} style={{ height: "100%" }}>
+  let treeComponent;
+  if (treeStyle == "ring") {
+    treeComponent = (
       <ReportTreeRings
         width={width}
         height={minDim}
@@ -99,6 +103,22 @@ const ReportTree = ({
         handleNavigation={handleNavigation}
         handleSearch={handleSearch}
       />
+    );
+  } else if (treeStyle == "rect") {
+    treeComponent = (
+      <ReportTreePaths
+        width={width}
+        height={minDim}
+        {...tree.report.tree}
+        handleNavigation={handleNavigation}
+        handleSearch={handleSearch}
+      />
+    );
+  }
+
+  return (
+    <Grid item xs ref={componentRef} style={{ height: "100%" }}>
+      {treeComponent}
     </Grid>
   );
 };

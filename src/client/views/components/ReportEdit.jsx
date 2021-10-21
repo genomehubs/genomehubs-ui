@@ -42,7 +42,7 @@ export const queryPropList = {
     "yOpts",
     "scatterThreshold",
   ],
-  tree: ["report", "x", "y", "cat", "includeEstimates"],
+  tree: ["report", "x", "y", "cat", "includeEstimates", "treeStyle"],
   xInY: ["report", "x", "y", "rank"],
   xPerRank: ["report", "x", "rank"],
 };
@@ -63,6 +63,9 @@ export const ReportEdit = ({
     return null;
   }
   let query = qs.parse(reportById.report.queryString);
+  if (query.report == "tree" && !query.treeStyle) {
+    query.treeStyle = "ring";
+  }
   const defaultState = () => {
     let obj = {};
     queryPropList[report].forEach((queryProp) => {
@@ -133,6 +136,28 @@ export const ReportEdit = ({
             value={values["report"]}
             style={{ width: "95%" }}
             onChange={(e) => handleChange(e, "report")}
+          >
+            {items}
+          </Select>
+        </FormControl>
+      );
+    } else if (queryProp == "treeStyle") {
+      let items = ["ring", "rect"].map((shape) => {
+        return (
+          <MenuItem key={shape} value={shape}>
+            {shape}
+          </MenuItem>
+        );
+      });
+      input = (
+        <FormControl style={{ width: "95%" }}>
+          <InputLabel id="select-tree-style-label">treeStyle</InputLabel>
+          <Select
+            labelId="select-tree-style-label"
+            id="select-tree-style"
+            value={values["treeStyle"]}
+            style={{ width: "95%" }}
+            onChange={(e) => handleChange(e, "treeStyle")}
           >
             {items}
           </Select>

@@ -57,6 +57,7 @@ const Report = (props) => {
   reportProps.yScale = props.yScale || "linear";
   reportProps.zScale = props.yScale || "linear";
   reportProps.xOpts = props.xOpts;
+  reportProps.treeStyle = props.treeStyle || "ring";
   reportProps.yOpts = props.yOpts;
   reportProps.scatterThreshold = props.scatterThreshold;
 
