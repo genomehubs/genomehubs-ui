@@ -1,47 +1,25 @@
 import React, { useRef, useState } from "react";
+import { useLocation, useNavigate } from "@reach/router";
 
-import AddIcon from "@material-ui/icons/Add";
-import BasicComplete from "./BasicComplete";
-import BasicSelect from "./BasicSelect";
-import BasicTextField from "./BasicTextField";
-import Button from "@material-ui/core/Button";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import DialogContent from "@material-ui/core/DialogContent";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
 import HelpIcon from "@material-ui/icons/Help";
 import IconButton from "@material-ui/core/IconButton";
 import Modal from "@material-ui/core/Modal";
-import Paper from "@material-ui/core/Paper";
 import QueryBuilder from "./QueryBuilder";
-import SearchIcon from "@material-ui/icons/Search";
 import SearchSettings from "./SearchSettings";
 import Switch from "@material-ui/core/Switch";
 import Terms from "./Terms";
 import TocIcon from "@material-ui/icons/Toc";
 import Tooltip from "@material-ui/core/Tooltip";
-import Typography from "@material-ui/core/Typography";
-import VariableFilter from "./VariableFilter";
 import { compose } from "recompose";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "qs";
-import styles from "./Styles.scss";
-import { useNavigate } from "@reach/router";
-import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSearchDefaults from "../hocs/withSearchDefaults";
-import withTaxonomy from "../hocs/withTaxonomy";
-import withTypes from "../hocs/withTypes";
-
-function getModalStyle() {
-  return {
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-  };
-}
 
 export const useStyles = makeStyles((theme) => ({
   modal: {
@@ -66,12 +44,12 @@ export const useStyles = makeStyles((theme) => ({
 const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [showOptions, setShowOptions] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
   const rootRef = useRef(null);
-
+  let options = qs.parse(location.search.replace(/^\?/, ""));
   return (
     <>
       <Grid container direction="row" ref={rootRef}>
@@ -97,11 +75,27 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
               <Switch
                 id={"taxon-filter-filter"}
                 checked={searchDefaults.includeDescendants}
-                onChange={() =>
+                onChange={() => {
+                  let includeDescendants = !searchDefaults.includeDescendants;
                   setSearchDefaults({
-                    includeDescendants: !searchDefaults.includeDescendants,
-                  })
-                }
+                    includeDescendants,
+                  });
+                  let query = options.query;
+                  let hash = location.hash;
+                  if (includeDescendants) {
+                    query = query.replaceAll(/tax_(:?eq|name)/gi, "tax_tree");
+                    hash = hash.replaceAll(/tax_(:?eq|name)/gi, "tax_tree");
+                  } else {
+                    query = query.replaceAll(/tax_tree/gi, "tax_name");
+                    hash = hash.replaceAll(/tax_tree/gi, "tax_name");
+                  }
+                  navigate(
+                    `${location.pathname}?${qs.stringify({
+                      ...options,
+                      query,
+                    })}${hash}`
+                  );
+                }}
                 name="filter-type"
                 color="default"
               />
@@ -130,11 +124,18 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
               <Switch
                 id={"estimated-values-filter"}
                 checked={searchDefaults.includeEstimates}
-                onChange={() =>
+                onChange={() => {
+                  let includeEstimates = !searchDefaults.includeEstimates;
                   setSearchDefaults({
-                    includeEstimates: !searchDefaults.includeEstimates,
-                  })
-                }
+                    includeEstimates,
+                  });
+                  navigate(
+                    `${location.pathname}?${qs.stringify({
+                      ...options,
+                      includeEstimates,
+                    })}${location.hash}`
+                  );
+                }}
                 name="include-estimates"
                 color="default"
               />
@@ -161,18 +162,6 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
                 <HelpIcon />
               </IconButton>
             </FormControl>
-            {/* <Modal
-            open={showSettings}
-            onClose={() => setShowExamples(false)}
-            aria-labelledby="result-settings-modal-title"
-            aria-describedby="result-settings-modal-description"
-            className={classes.modal}
-            container={() => rootRef.current}
-          >
-            <DialogContent className={classes.paper}>
-              <SearchSettings />
-            </DialogContent>
-          </Modal> */}
           </Grid>
         </Tooltip>
         <Tooltip title={`Click to set result columns`} arrow placement={"top"}>
