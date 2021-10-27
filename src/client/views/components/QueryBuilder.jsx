@@ -141,6 +141,9 @@ const QueryBuilder = ({
 
   const buildQuery = () => {
     let query = "";
+    if (taxFilter.rank || taxFilter.depth) {
+      taxFilter.filter = "tax_tree";
+    }
     if (taxFilter.taxon) {
       query = `${taxFilter.filter}(${taxFilter.taxon})`;
       if (taxFilter.rank || taxFilter.depth) {
