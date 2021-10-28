@@ -695,7 +695,6 @@ export const processTreePaths = (nodes) => {
 
   let pathNodes = {};
   let sortOrder = [];
-
   const setXCoords = ({
     node,
     depth = 0,
@@ -703,6 +702,8 @@ export const processTreePaths = (nodes) => {
     parent = ancNode,
   }) => {
     if (!node) return {};
+    visited[node.taxon_id] = true;
+
     let rightDepth = depth + 1;
     let xStart = Math.max(0, xScale(depth));
     let xEnd = xScale(rightDepth);
@@ -723,27 +724,37 @@ export const processTreePaths = (nodes) => {
         children.push(treeNodes[key]);
       });
       children.sort(
-        (a, b) =>
+        (b, a) =>
           b.count - a.count ||
           a.scientific_name.localeCompare(b.scientific_name)
       );
-      children.forEach((child) => {
-        setXCoords({
-          node: treeNodes[child.taxon_id],
-          depth: depth + 1,
-          parent: node.taxon_id,
-        });
-      });
+      for (let child of children) {
+        if (!visited[child.taxon_id]) {
+          setXCoords({
+            node: treeNodes[child.taxon_id],
+            depth: depth + 1,
+            parent: node.taxon_id,
+          });
+        } else {
+          console.warn("Tree node already visited");
+          console.warn(node);
+        }
+      }
     }
   };
-  treeNodes[ancNode] = {
-    ...treeNodes[rootNode],
-    children: { [treeNodes[rootNode].taxon_id]: true },
-    taxon_id: ancNode,
-    count: treeNodes[rootNode].count,
-    scientific_name: "root",
-  };
-  setXCoords({ node: treeNodes[ancNode || rootNode], depth: ancNode ? -1 : 0 });
+  if (treeNodes[rootNode]) {
+    treeNodes[ancNode] = {
+      ...treeNodes[rootNode],
+      children: { [treeNodes[rootNode].taxon_id]: true },
+      taxon_id: ancNode,
+      count: treeNodes[rootNode].count,
+      scientific_name: "root",
+    };
+    setXCoords({
+      node: treeNodes[ancNode || rootNode],
+      depth: ancNode ? -1 : 0,
+    });
+  }
   // setXCoords({
   //   node: {
   //     taxon_id: ancNode,
@@ -830,10 +841,10 @@ export const processTreePaths = (nodes) => {
   return { lines, maxDepth, plotHeight: yScale.range()[0] + charHeight };
 };
 
-export const processTree = (nodes, treeStyle = "ring") => {
+export const processTree = (nodes, treeStyle = "rect") => {
   let func = processTreeRings;
-  if (treeStyle == "rect") {
-    return processTreePaths(nodes);
+  if (treeStyle == "ring") {
+    return processTreeRings(nodes);
   }
-  return processTreeRings(nodes);
+  return processTreePaths(nodes);
 };

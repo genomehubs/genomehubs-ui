@@ -19,6 +19,7 @@ const defaultState = () => ({
   isFetching: false,
   status: {},
   results: [],
+  fields: [],
 });
 
 const searchResults = handleActions(
@@ -36,6 +37,7 @@ const searchResults = handleActions(
       status: action.payload.status,
       results: action.payload.results,
       query: action.payload.query,
+      fields: action.payload.fields,
       lastUpdated: action.meta.receivedAt,
     }),
     RESET_SEARCH: defaultState,

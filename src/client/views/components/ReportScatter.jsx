@@ -349,7 +349,7 @@ const ReportScatter = ({
   if (scatter && scatter.status) {
     let chartData = [];
     let chart;
-    let heatmaps = scatter.report.histogram.histograms;
+    let heatmaps = scatter.report.scatter.histograms;
     if (!heatmaps) {
       return null;
     }
@@ -370,8 +370,8 @@ const ReportScatter = ({
     }
     if (heatmaps.byCat) {
       catSums = {};
-      cats = scatter.report.histogram.cats.map((cat) => cat.label);
-      scatter.report.histogram.cats.forEach((cat) => {
+      cats = scatter.report.scatter.cats.map((cat) => cat.label);
+      scatter.report.scatter.cats.forEach((cat) => {
         catSums[cat.label] = 0;
         let catData = [];
         heatmaps.buckets.forEach((bucket, i) => {

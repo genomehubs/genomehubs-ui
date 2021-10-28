@@ -37,6 +37,7 @@ export const ReportFull = ({
   topLevel,
   modalStyle = {},
   handleClose,
+  error = false,
 }) => {
   const navigate = useNavigate();
   const classes = useStyles();
@@ -130,6 +131,7 @@ export const ReportFull = ({
         containerRef={containerRef}
         topLevel={topLevel}
         permaLink={permaLink}
+        setEdit={setEdit}
       />
     );
   }

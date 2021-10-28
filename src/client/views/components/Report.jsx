@@ -14,6 +14,7 @@ export const queryPropList = [
   "rank",
   "taxonomy",
   "includeEstimates",
+  "treeStyle",
 ];
 
 const Report = (props) => {
@@ -48,6 +49,7 @@ const Report = (props) => {
   reportProps.inModal = props.inModal;
   reportProps.permaLink = props.permaLink;
   reportProps.chartRef = props.chartRef;
+  reportProps.setEdit = props.setEdit;
   reportProps.delay = props.delay;
   reportProps.containerRef = props.containerRef;
   reportProps.topLevel = props.topLevel;
@@ -57,7 +59,7 @@ const Report = (props) => {
   reportProps.yScale = props.yScale || "linear";
   reportProps.zScale = props.yScale || "linear";
   reportProps.xOpts = props.xOpts;
-  reportProps.treeStyle = props.treeStyle || "ring";
+  reportProps.treeStyle = props.treeStyle || "rect";
   reportProps.yOpts = props.yOpts;
   reportProps.scatterThreshold = props.scatterThreshold;
 

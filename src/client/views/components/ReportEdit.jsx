@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import Box from "@material-ui/core/Box";
 import FormControl from "@material-ui/core/FormControl";
@@ -18,12 +18,22 @@ import qs from "qs";
 import withReportById from "../hocs/withReportById";
 import withTaxonomy from "../hocs/withTaxonomy";
 
+const suggestedTerm = SUGGESTED_TERM || undefined;
+
+const xSettings = {
+  prop: "x",
+  label: `tax_tree(${suggestedTerm}) AND assembly_span`,
+  required: true,
+};
+const rankSettings = { prop: "rank", label: "family", required: true };
+const catSettings = { prop: "cat", label: "assembly_level" };
+
 export const queryPropList = {
   histogram: [
     "report",
-    "x",
-    "rank",
-    "cat",
+    xSettings,
+    rankSettings,
+    catSettings,
     "includeEstimates",
     "yScale",
     "xOpts",
@@ -32,19 +42,25 @@ export const queryPropList = {
   ],
   scatter: [
     "report",
-    "x",
-    "y",
-    "rank",
-    "cat",
+    xSettings,
+    { prop: "y", label: `c_value`, required: true },
+    rankSettings,
+    catSettings,
     "includeEstimates",
     "zScale",
     "xOpts",
     "yOpts",
     "scatterThreshold",
   ],
-  tree: ["report", "x", "y", "cat", "includeEstimates", "treeStyle"],
-  xInY: ["report", "x", "y", "rank"],
-  xPerRank: ["report", "x", "rank"],
+  tree: [
+    "report",
+    { ...xSettings, label: `tax_tree(${suggestedTerm})` },
+    { prop: "y", label: `c_value` },
+    "includeEstimates",
+    "treeStyle",
+  ],
+  xInY: ["report", ["x"], "y", rankSettings],
+  xPerRank: ["report", "x", rankSettings],
 };
 
 const reportTypes = ["histogram", "scatter", "tree", "xInY", "xPerRank"];
@@ -58,18 +74,27 @@ export const ReportEdit = ({
   permaLink,
   taxonomy,
 }) => {
+  const formRef = useRef();
   let fields = [];
   if (!reportById.report || !reportById.report.queryString) {
     return null;
   }
   let query = qs.parse(reportById.report.queryString);
   if (query.report == "tree" && !query.treeStyle) {
-    query.treeStyle = "ring";
+    query.treeStyle = "rect";
   }
   const defaultState = () => {
     let obj = {};
     queryPropList[report].forEach((queryProp) => {
-      obj[queryProp] = query.hasOwnProperty(queryProp) ? query[queryProp] : "";
+      let prop;
+      if (Array.isArray(queryProp)) {
+        prop = queryProp[0];
+      } else if (typeof queryProp === "object" && queryProp !== null) {
+        ({ prop } = queryProp);
+      } else {
+        prop = queryProp;
+      }
+      obj[prop] = query.hasOwnProperty(prop) ? query[prop] : "";
     });
     return obj;
   };
@@ -93,6 +118,9 @@ export const ReportEdit = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formRef.current.reportValidity()) {
+      return;
+    }
     let newQueryString = qs.stringify({
       result: "taxon",
       taxonomy,
@@ -119,6 +147,15 @@ export const ReportEdit = ({
 
   queryPropList[report].forEach((queryProp) => {
     let input;
+    let required;
+    let label;
+    if (Array.isArray(queryProp)) {
+      required = true;
+      queryProp = queryProp[0];
+    } else if (typeof queryProp === "object" && queryProp !== null) {
+      ({ prop: queryProp, label, required } = queryProp);
+    }
+
     if (queryProp == "report") {
       let items = reportTypes.map((rep) => {
         return (
@@ -142,7 +179,7 @@ export const ReportEdit = ({
         </FormControl>
       );
     } else if (queryProp == "treeStyle") {
-      let items = ["ring", "rect"].map((shape) => {
+      let items = ["rect", "ring"].map((shape) => {
         return (
           <MenuItem key={shape} value={shape}>
             {shape}
@@ -214,11 +251,18 @@ export const ReportEdit = ({
         </RadioGroup>
       );
     } else {
+      if (label && !values[queryProp]) {
+        label = `${queryProp} - e.g. ${label}`;
+      } else {
+        label = queryProp;
+      }
       input = (
         <TextField
           id={queryProp + Math.random()}
-          label={queryProp}
+          label={label}
           value={values[queryProp]}
+          required={required}
+          error={required && !values[queryProp]}
           style={{ width: "95%" }}
           onChange={(e) => handleChange(e, queryProp)}
         />
@@ -261,7 +305,7 @@ export const ReportEdit = ({
         overflowX: "none",
       }}
     >
-      {fields}
+      <form ref={formRef}>{fields}</form>
     </Box>
     // </Grid>
   );

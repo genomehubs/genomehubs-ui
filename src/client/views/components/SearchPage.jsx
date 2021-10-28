@@ -1,10 +1,10 @@
 import React, { memo, useEffect } from "react";
 
 import Page from "./Page";
+import ReportPanel from "./ReportPanel";
 import ResultTable from "./ResultTable";
 import SearchSummary from "./SearchSummary";
 import TextPanel from "./TextPanel";
-import TreePanel from "./TreePanel";
 import classnames from "classnames";
 import { compose } from "recompose";
 import equal from "deep-equal";
@@ -106,7 +106,7 @@ const SearchPage = ({
   }
   results = <ResultTable />;
 
-  let tree = <TreePanel></TreePanel>;
+  let report = <ReportPanel options={options} />;
   let text = <TextPanel pageId={"search.md"}></TextPanel>;
 
   return (
@@ -115,7 +115,7 @@ const SearchPage = ({
       panels={[
         // { panel: summary },
         { panel: results, maxWidth: "100%" },
-        { panel: tree },
+        { panel: report },
         { panel: text },
       ]}
       resultCount={resultCount}

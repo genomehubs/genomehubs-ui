@@ -19,7 +19,19 @@ import { format } from "d3-format";
 import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+// const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = [
+  "#1f78b4",
+  "#a6cee3",
+  "#33a02c",
+  "#b2df8a",
+  "#e31a1c",
+  "#fb9a99",
+  "#ff7f00",
+  "#fdbf6f",
+  "#6a3d9a",
+  "#cab2d6",
+];
 const pct = format(".0%");
 const pct1 = format(".1%");
 

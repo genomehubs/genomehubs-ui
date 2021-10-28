@@ -1,7 +1,10 @@
 import React, { Fragment, useEffect } from "react";
 
 import Grid from "@material-ui/core/Grid";
+import ReportEmpty from "./ReportEmpty";
+import ReportError from "./ReportError";
 import ReportHistogram from "./ReportHistogram";
+import ReportLoading from "./ReportLoading";
 import ReportModal from "./ReportModal";
 import ReportScatter from "./ReportScatter";
 import ReportSources from "./ReportSources";
@@ -13,6 +16,7 @@ import { compose } from "recompose";
 import loadable from "@loadable/component";
 import qs from "qs";
 import styles from "./Styles.scss";
+import { useNavigate } from "@reach/router";
 import withFetchReport from "../hocs/withFetchReport";
 import withReportById from "../hocs/withReportById";
 
@@ -43,6 +47,7 @@ const ReportItem = ({
   scatterThreshold,
   yScale,
   zScale,
+  setEdit,
   ...gridProps
 }) => {
   queryString = qs.stringify({
@@ -57,81 +62,115 @@ const ReportItem = ({
     }
   }, [reportId]);
   let component;
-  switch (report) {
-    case "histogram":
-      component = (
-        <ReportHistogram
-          histogram={reportById}
-          chartRef={chartRef}
-          containerRef={containerRef}
-          ratio={ratio}
-          stacked={stacked}
-          cumulative={cumulative}
-          xOpts={xOpts}
-          // yScale={yScale}
-          {...qs.parse(queryString)}
-        />
-      );
-      break;
-    case "scatter":
-      component = (
-        <ReportScatter
-          scatter={reportById}
-          chartRef={chartRef}
-          containerRef={containerRef}
-          ratio={ratio}
-          xOpts={xOpts}
-          yOpts={yOpts}
-          zScale={zScale}
-          scatterThreshold={scatterThreshold}
-          {...qs.parse(queryString)}
-        />
-      );
-      break;
-    case "sources":
-      component = (
-        <ReportSources
-          sources={reportById}
-          chartRef={chartRef}
-          containerRef={containerRef}
-        />
-      );
-      break;
-    case "tree":
-      component = (
-        <ReportTree
-          reportId={reportId}
-          topLevel={topLevel}
-          permaLink={permaLink}
-          tree={reportById}
-          chartRef={chartRef}
-          containerRef={containerRef}
-          {...qs.parse(queryString)}
-        />
-      );
-      break;
-    case "xPerRank":
-      component = (
-        <ReportXPerRank
-          perRank={reportById}
-          chartRef={chartRef}
-          containerRef={containerRef}
-        />
-      );
-      break;
-    case "xInY":
-      component = (
-        <ReportXInY
-          xInY={reportById}
-          chartRef={chartRef}
-          containerRef={containerRef}
-          ratio={ratio}
-        />
-      );
-      break;
-    default:
-      break;
+  if (Object.keys(reportById).length == 0) {
+    component = (
+      <ReportLoading
+        report={report}
+        chartRef={chartRef}
+        containerRef={containerRef}
+        ratio={ratio}
+      />
+    );
+  } else if (
+    reportById.report[report].status &&
+    reportById.report[report].status.success == false
+  ) {
+    setEdit(true);
+    component = (
+      <ReportError
+        report={report}
+        error={reportById.report[report].status.error}
+      />
+    );
+  } else if (reportById.report[report].x == 0) {
+    component = <ReportEmpty report={report} />;
+  } else {
+    switch (report) {
+      case "histogram":
+        component = (
+          <ReportHistogram
+            histogram={reportById}
+            chartRef={chartRef}
+            containerRef={containerRef}
+            ratio={ratio}
+            stacked={stacked}
+            cumulative={cumulative}
+            xOpts={xOpts}
+            // yScale={yScale}
+            {...qs.parse(queryString)}
+          />
+        );
+        break;
+      case "scatter":
+        component = (
+          <ReportScatter
+            scatter={reportById}
+            chartRef={chartRef}
+            containerRef={containerRef}
+            ratio={ratio}
+            xOpts={xOpts}
+            yOpts={yOpts}
+            zScale={zScale}
+            scatterThreshold={scatterThreshold}
+            {...qs.parse(queryString)}
+          />
+        );
+        break;
+      case "sources":
+        component = (
+          <ReportSources
+            sources={reportById}
+            chartRef={chartRef}
+            containerRef={containerRef}
+          />
+        );
+        break;
+      case "tree":
+        if (!permaLink) {
+          const navigate = useNavigate();
+          permaLink = (queryString, toggle) => {
+            let path = "report";
+            // TODO: include taxonomy
+            navigate(`/${path}?${queryString}`);
+          };
+        }
+        component = (
+          <ReportTree
+            reportId={reportId}
+            topLevel={topLevel}
+            permaLink={permaLink}
+            ratio={ratio}
+            tree={reportById}
+            chartRef={chartRef}
+            containerRef={containerRef}
+            {...qs.parse(queryString)}
+          />
+        );
+        break;
+      case "xPerRank":
+        component = (
+          <ReportXPerRank
+            perRank={reportById}
+            chartRef={chartRef}
+            containerRef={containerRef}
+          />
+        );
+        break;
+      case "xInY":
+        component = (
+          <ReportXInY
+            xInY={reportById}
+            chartRef={chartRef}
+            containerRef={containerRef}
+            ratio={ratio}
+          />
+        );
+        break;
+      default:
+        break;
+    }
   }
+
   caption = reportById.report?.caption;
   let content = (
     <Grid
