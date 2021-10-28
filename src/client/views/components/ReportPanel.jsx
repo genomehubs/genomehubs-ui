@@ -1,32 +1,71 @@
+import React, { useState } from "react";
+
 import Grid from "@material-ui/core/Grid";
-import React from "react";
+import ReportFull from "./ReportFull";
 import Tooltip from "@material-ui/core/Tooltip";
 import classnames from "classnames";
 import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
+import qs from "qs";
 import styles from "./Styles.scss";
 import withPanes from "../hocs/withPanes";
+import withReportDefaults from "../hocs/withReportDefaults";
 
-const ReportPanel = ({ title, text, children }) => {
+const reportTypes = {
+  histogram: { name: "Histogram" },
+  scatter: { name: "Scatter" },
+  tree: { name: "Tree" },
+  xInY: { name: "xInY" },
+};
+
+const ReportPanel = ({ options, reportDefaults }) => {
   let css = classnames(
     styles.infoPanel,
     styles[`infoPanel1Column`],
     styles.textPanel
   );
+  let { query, ...treeOptions } = options;
+  let [report, setReport] = useState(options.report);
+  // console.log(reportDefaults);
+  let queryString = qs.stringify({
+    ...treeOptions,
+    ...reportDefaults[report],
+    report,
+  });
   // TODO: use mui-grid
   return (
     <div className={css}>
-      <div className={styles.header}>
+      {/* <div className={styles.header}>
         <span className={styles.title}>{title}</span>
-      </div>
+      </div> */}
 
-      {text && <div>{text}</div>}
+      {/* {text && <div>{text}</div>} */}
+      <Grid container spacing={1} direction="row" style={{ width: "100%" }}>
+        {Object.keys(reportTypes).map((key) => {
+          let obj = reportTypes[key];
+          return (
+            <Grid
+              item
+              style={{ cursor: "pointer" }}
+              onClick={() => setReport(key)}
+            >
+              {obj.name}
+            </Grid>
+          );
+        })}
+      </Grid>
 
       <Grid container spacing={1} direction="row">
-        {children}
+        <ReportFull
+          reportId={queryString}
+          report={report}
+          queryString={queryString}
+          topLevel={false}
+          inModal={false}
+        />
       </Grid>
     </div>
   );
 };
 
-export default compose()(ReportPanel);
+export default compose(withReportDefaults)(ReportPanel);

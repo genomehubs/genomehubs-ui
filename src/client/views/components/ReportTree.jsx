@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import LaunchIcon from "@material-ui/icons/Launch";
@@ -27,7 +27,6 @@ const ReportTree = ({
   if (!tree.report) return null;
   const navigate = useNavigate();
   let maxDepth = tree.report.tree.maxDepth;
-
   const updateQuery = ({ root, name, depth }) => {
     let { query: x, ...options } = tree.report.xQuery;
     let queryObj = qs.parse(tree.report.queryString);
@@ -47,12 +46,21 @@ const ReportTree = ({
     //   x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
     //   y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
     // } else
-    if (depth && x.match("tax_depth")) {
-      x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth - depth})`);
-      y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth - depth})`);
+    if (x.match("tax_depth")) {
+      if (maxDepth > tree.report.tree.maxDepth) {
+        maxDepth = tree.report.tree.maxDepth;
+      }
+      if (depth) {
+        maxDepth -= 1;
+      }
+      x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth})`);
+      if (y) {
+        y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth})`);
+      }
     }
+    let fields = tree.report.tree.xQuery.fields;
 
-    return { ...queryObj, x, y, options };
+    return { ...queryObj, fields, x, y, options };
   };
 
   const handleNavigation = ({ root, name }) => {
@@ -67,17 +75,20 @@ const ReportTree = ({
 
   const handleSearch = ({ root, name, depth }) => {
     if (name == "root") return;
-    let { options, y, report, x: query, ...moreOptions } = updateQuery({
+    let { options, y, report, x: query, fields, ...moreOptions } = updateQuery({
       root,
       name,
       depth,
     });
+
     navigate(
       `/search?${qs.stringify({
         ...options,
         ...moreOptions,
         query,
-        fields: y,
+        fields,
+        report: "tree",
+        y,
       })}#${encodeURIComponent(query)}`
     );
   };
@@ -104,7 +115,7 @@ const ReportTree = ({
         handleSearch={handleSearch}
       />
     );
-  } else if (treeStyle == "rect") {
+  } else {
     treeComponent = (
       <ReportTreePaths
         width={width}

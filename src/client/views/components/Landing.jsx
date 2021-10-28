@@ -1,16 +1,16 @@
 import React, { Fragment, memo, useRef } from "react";
 
 import Page from "./Page";
+// import InfoPanel from "./InfoPanel";
+// import ReportPanel from "./ReportPanel";
+// import ReportItem from "./ReportItem";
+import TextPanel from "./TextPanel";
 // import classnames from "classnames";
 import { compose } from "recompose";
-import loadable from "@loadable/component";
+// import loadable from "@loadable/component";
 // import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";
 import withPanes from "../hocs/withPanes";
-import InfoPanel from "./InfoPanel";
-import ReportPanel from "./ReportPanel";
-import ReportItem from "./ReportItem";
-import TextPanel from "./TextPanel";
 
 // const InfoPanel = loadable(() => import("./InfoPanel"));
 // const ReportPanel = loadable(() => import("./ReportPanel"));

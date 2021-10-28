@@ -76,6 +76,7 @@ const ReportTreePaths = ({
   });
 
   let divHeight = height;
+  let divWidth = width;
   height = plotHeight;
   width = 1000;
   const [dimensions, setDimensions] = useState({
@@ -322,20 +323,27 @@ const ReportTreePaths = ({
   //   fields[key] = key;
   // });
   css = undefined;
+  let svgHeight = treeDimensions.width
+    ? divWidth < treeDimensions.width
+      ? (treeDimensions.height * divWidth) / treeDimensions.width
+      : treeDimensions.height
+    : 0;
+  let svgWidth = divWidth ? divWidth - 20 : 0;
   return (
     <div
       style={{
         height: Math.min(plotHeight + 20, divHeight),
         overflowY: "auto",
         overflowX: "hidden",
+        width: { divWidth },
       }}
     >
       <svg
         // preserveAspectRatio="xMinYMin"
         preserveAspectRatio="xMinYMin meet"
         ref={anchorRef}
-        height={treeDimensions.height}
-        width={treeDimensions.width}
+        height={svgHeight}
+        width={svgWidth}
         viewBox={`${treeDimensions.x} ${treeDimensions.y} ${treeDimensions.width} ${treeDimensions.height}`}
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"

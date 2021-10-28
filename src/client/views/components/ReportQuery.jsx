@@ -23,6 +23,7 @@ export const ReportQuery = ({
   }
 
   const handleSearch = (searchTerm) => {
+    console.log(searchTerm);
     let options = {
       ...searchTerm,
       summaryValues: "count",
@@ -36,7 +37,9 @@ export const ReportQuery = ({
     // delete options.excludeMissing;
     // setPreferSearchTerm(true);
     // setSearchTerm(options);
-    navigate(`/search?${qs.stringify(options)}${location.hash}`);
+    navigate(
+      `/search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
+    );
   };
 
   let params = ["x", "y"];

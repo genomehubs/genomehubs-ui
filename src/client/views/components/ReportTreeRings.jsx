@@ -38,6 +38,7 @@ const ReportTreeRings = ({
   handleSearch,
   width,
   height,
+  plotHeight,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ const ReportTreeRings = ({
     y: undefined,
   });
 
+  let divHeight = height;
   height = Math.min(isNaN(height) ? 100 : height, isNaN(width) ? 100 : width);
   width = height;
   const [dimensions, setDimensions] = useState({
@@ -234,29 +236,36 @@ const ReportTreeRings = ({
   // });
   css = undefined;
   return (
-    <svg
-      preserveAspectRatio="xMinYMin"
-      ref={anchorRef}
-      height={height}
-      width={width}
-      viewBox={`${dimensions.x} ${dimensions.y} ${dimensions.width} ${dimensions.height}`}
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
+    <div
+      style={{
+        height: divHeight,
+        overflow: "visible",
+      }}
     >
-      <defs>{defs}</defs>
-      <g
-        transform="translate(500, 500)"
-        style={{
-          fontFamily:
-            '"Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif',
-          fontSize: "10pt",
-        }}
+      <svg
+        preserveAspectRatio="xMinYMin"
+        ref={anchorRef}
+        height={height}
+        width={width}
+        viewBox={`${dimensions.x} ${dimensions.y} ${dimensions.width} ${dimensions.height}`}
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
       >
-        {paths}
-        {text}
-        {highlightPath}
-      </g>
-    </svg>
+        <defs>{defs}</defs>
+        <g
+          transform="translate(500, 500)"
+          style={{
+            fontFamily:
+              '"Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif',
+            fontSize: "10pt",
+          }}
+        >
+          {paths}
+          {text}
+          {highlightPath}
+        </g>
+      </svg>
+    </div>
   );
 };
 
