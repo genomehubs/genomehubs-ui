@@ -805,17 +805,22 @@ export const processTreePaths = (nodes) => {
     }
 
     let label;
-    if (node.width > charLen * 5) {
+    if (node.tip) {
       label = node.scientific_name;
-      if (!node.tip && label.length * charLen - 2 > node.width) {
+    } else if (node.width > charLen * 5) {
+      label = node.scientific_name;
+      if (label.length * charLen - 2 > node.width) {
         if (node.taxon_rank == "species") {
           let parts = label.split(" ");
           if (parts.length == 2) {
             label = `${parts[0].charAt(0)}. ${parts[1]}`;
           }
         }
-        if (!node.tip && label.length * charLen - 2 > node.width) {
-          label = `${label.substring(0, Math.floor(node.width / charLen))}...`;
+        if (label.length * charLen - 2 > node.width) {
+          label = `${label.substring(
+            0,
+            Math.floor(node.width / charLen) - 1
+          )}...`;
         }
       }
     }
