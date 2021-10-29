@@ -47,6 +47,92 @@ export function fetchReport({ queryString, reportId, reload }) {
   };
 }
 
+const processScatter = (scatter) => {
+  if (!scatter) {
+    return {};
+  }
+  let chartData = [];
+  let heatmaps = scatter.histograms;
+  if (!heatmaps) {
+    return {};
+  }
+  let valueType = heatmaps.valueType;
+  let cats;
+  let lastIndex = heatmaps.buckets.length - 2;
+  let h = heatmaps.yBuckets[1] - heatmaps.yBuckets[0];
+  let w = heatmaps.buckets[1] - heatmaps.buckets[0];
+  let catSums;
+  let pointData;
+  let hasRawData = heatmaps.rawData ? true : false;
+  if (hasRawData) {
+    pointData = [];
+  }
+  if (heatmaps.byCat) {
+    catSums = {};
+    cats = scatter.cats.map((cat) => cat.label);
+    scatter.cats.forEach((cat) => {
+      catSums[cat.label] = 0;
+      let catData = [];
+      heatmaps.buckets.forEach((bucket, i) => {
+        if (i < heatmaps.buckets.length - 1) {
+          heatmaps.yBuckets.forEach((yBucket, j) => {
+            if (j < heatmaps.yBuckets.length - 1) {
+              let z = heatmaps.yValuesByCat[cat.key][i][j];
+              if (z > 0) {
+                catData.push({
+                  h,
+                  w,
+                  x: bucket,
+                  y: yBucket,
+                  xBound: heatmaps.buckets[i + 1],
+                  yBound: heatmaps.yBuckets[j + 1],
+                  z,
+                  count: heatmaps.allYValues[i][j],
+                });
+                catSums[cat.label] += z;
+              }
+            }
+          });
+        }
+      });
+      chartData.push(catData);
+      if (hasRawData) {
+        pointData.push(heatmaps.rawData[cat.key]);
+      }
+    });
+  } else {
+    cats = ["all taxa"];
+    let catData = [];
+    heatmaps.buckets.forEach((bucket, i) => {
+      if (i < heatmaps.buckets.length - 1) {
+        heatmaps.yBuckets.forEach((yBucket, j) => {
+          if (j < heatmaps.yBuckets.length - 1) {
+            let z = heatmaps.allYValues[i][j];
+            if (z > 0) {
+              catData.push({
+                h,
+                w,
+                x: bucket,
+                y: yBucket,
+                xBound: heatmaps.buckets[i + 1],
+                yBound: heatmaps.yBuckets[j + 1],
+                z,
+                count: z,
+              });
+            }
+          }
+        });
+      }
+    });
+    chartData.push(catData);
+    if (hasRawData) {
+      pointData.push(heatmaps.rawData);
+    }
+  }
+  console.log({ chartData, pointData });
+  return { chartData, pointData, cats, catSums };
+};
+
 const processReport = (reports, reportId) => {
   let report = reports[reportId];
   if (!report) return {};
@@ -59,6 +145,17 @@ const processReport = (reports, reportId) => {
         tree: {
           ...report.report.tree,
           ...processTree(report.report.tree.tree, treeStyle),
+        },
+      },
+    };
+  } else if (report.name == "scatter") {
+    return {
+      ...report,
+      report: {
+        ...report.report,
+        scatter: {
+          ...report.report.scatter,
+          ...processScatter(report.report.scatter),
         },
       },
     };

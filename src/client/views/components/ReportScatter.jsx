@@ -18,6 +18,7 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import { format } from "d3-format";
 import formats from "../functions/formats";
+import { point } from "leaflet";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
@@ -347,89 +348,24 @@ const ReportScatter = ({
     minDim /= ratio;
   }
   if (scatter && scatter.status) {
-    let chartData = [];
     let chart;
-    let heatmaps = scatter.report.scatter.histograms;
+    let {
+      cats,
+      catSums,
+      chartData,
+      histograms: heatmaps,
+      pointData,
+    } = scatter.report.scatter;
     if (!heatmaps) {
       return null;
     }
+    let hasRawData = pointData && pointData.length > 0;
     let xLabel = scatter.report.xLabel;
     let yLabel = scatter.report.yLabel;
     let valueType = heatmaps.valueType;
     let yValueType = heatmaps.yValueType || "integer";
-    let cats;
     let lastIndex = heatmaps.buckets.length - 2;
     let endLabel = formats(heatmaps.buckets[lastIndex + 1], valueType);
-    let h = heatmaps.yBuckets[1] - heatmaps.yBuckets[0];
-    let w = heatmaps.buckets[1] - heatmaps.buckets[0];
-    let catSums;
-    let pointData;
-    let hasRawData = heatmaps.rawData ? true : false;
-    if (hasRawData) {
-      pointData = [];
-    }
-    if (heatmaps.byCat) {
-      catSums = {};
-      cats = scatter.report.scatter.cats.map((cat) => cat.label);
-      scatter.report.scatter.cats.forEach((cat) => {
-        catSums[cat.label] = 0;
-        let catData = [];
-        heatmaps.buckets.forEach((bucket, i) => {
-          if (i < heatmaps.buckets.length - 1) {
-            heatmaps.yBuckets.forEach((yBucket, j) => {
-              if (j < heatmaps.yBuckets.length - 1) {
-                let z = heatmaps.yValuesByCat[cat.key][i][j];
-                if (z > 0) {
-                  catData.push({
-                    h,
-                    w,
-                    x: bucket,
-                    y: yBucket,
-                    xBound: heatmaps.buckets[i + 1],
-                    yBound: heatmaps.yBuckets[j + 1],
-                    z,
-                    count: heatmaps.allYValues[i][j],
-                  });
-                  catSums[cat.label] += z;
-                }
-              }
-            });
-          }
-        });
-        chartData.push(catData);
-        if (hasRawData) {
-          pointData.push(heatmaps.rawData[cat.key]);
-        }
-      });
-    } else {
-      cats = ["all taxa"];
-      let catData = [];
-      heatmaps.buckets.forEach((bucket, i) => {
-        if (i < heatmaps.buckets.length - 1) {
-          heatmaps.yBuckets.forEach((yBucket, j) => {
-            if (j < heatmaps.yBuckets.length - 1) {
-              let z = heatmaps.allYValues[i][j];
-              if (z > 0) {
-                catData.push({
-                  h,
-                  w,
-                  x: bucket,
-                  y: yBucket,
-                  xBound: heatmaps.buckets[i + 1],
-                  yBound: heatmaps.yBuckets[j + 1],
-                  z,
-                  count: z,
-                });
-              }
-            }
-          });
-        }
-      });
-      chartData.push(catData);
-      if (hasRawData) {
-        pointData.push(heatmaps.rawData);
-      }
-    }
     chart = (
       <Heatmap
         data={chartData}
