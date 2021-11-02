@@ -72,6 +72,7 @@ export const ReportEdit = ({
   fetchReport,
   modal,
   permaLink,
+  handleUpdate,
   taxonomy,
 }) => {
   const formRef = useRef();
@@ -121,21 +122,35 @@ export const ReportEdit = ({
     if (!formRef.current.reportValidity()) {
       return;
     }
+    let queryObj = Object.fromEntries(
+      Object.entries(values).filter(([_, v]) => v != "")
+    );
+    console.log(values);
+    if (
+      !values.hasOwnProperty("includeEstimates") ||
+      values.includeEstimates == "" ||
+      values.includeEstimates == "false" ||
+      values.includeEstimates == false
+    ) {
+      queryObj.includeEstimates = false;
+    } else {
+      queryObj.includeEstimates = true;
+    }
+    if (!location.pathname.startsWith("/report")) {
+      queryObj.query = queryObj.query || queryObj.x;
+      if (queryObj.x) delete queryObj.x;
+    }
+    let hash = queryObj.query;
     let newQueryString = qs.stringify({
+      ...queryObj,
       result: "taxon",
       taxonomy,
-      ...Object.fromEntries(Object.entries(values).filter(([_, v]) => v != "")),
     });
-    if (
-      values.hasOwnProperty("includeEstimates") &&
-      values.includeEstimates == ""
-    ) {
-      newQueryString += "&includeEstimates=false";
-    }
+
     if (modal) {
       fetchReport({ reportId, queryString: newQueryString, reload: true });
     } else {
-      permaLink(newQueryString);
+      handleUpdate({ queryString: newQueryString, hash });
     }
   };
   const handleReset = (e) => {

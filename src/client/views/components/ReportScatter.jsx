@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import React, { useRef, useState } from "react";
 import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
+import { useLocation, useNavigate } from "@reach/router";
 
 import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
@@ -21,7 +22,6 @@ import formats from "../functions/formats";
 import { point } from "leaflet";
 import qs from "qs";
 import styles from "./Styles.scss";
-import { useNavigate } from "@reach/router";
 import useResize from "../hooks/useResize";
 
 const COLORS = [
@@ -64,11 +64,13 @@ const scales = {
 
 const searchByCell = ({
   xQuery,
+  yQuery,
   xLabel,
   yLabel,
   xBounds,
   yBounds,
   navigate,
+  location,
   fields,
   ranks,
   valueType,
@@ -95,9 +97,20 @@ const searchByCell = ({
   if (ranks) {
     ranks = ranks.join(",");
   }
-  let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
+  let options = qs.parse(location.search);
+  let queryString = qs.stringify({
+    ...xQuery,
+    ...options,
+    query,
+    y: yQuery.query,
+    fields,
+    report: "scatter",
+    ranks,
+  });
   // let hash = encodeURIComponent(query);
-  navigate(`/search?${queryString}`);
+  navigate(
+    `${location.pathname > "/" ? location.pathname : "/report"}?${queryString}`
+  );
 };
 
 const CustomShape = (props, chartProps) => {
@@ -337,6 +350,7 @@ const ReportScatter = ({
   zScale = "linear",
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
@@ -369,7 +383,7 @@ const ReportScatter = ({
     chart = (
       <Heatmap
         data={chartData}
-        pointData={pointData}
+        pointData={1 ? pointData : []}
         width={width}
         height={minDim}
         buckets={heatmaps.buckets}
@@ -387,6 +401,7 @@ const ReportScatter = ({
           zScale: zScale,
           catSums,
           xQuery: scatter.report.xQuery,
+          yQuery: scatter.report.yQuery,
           xLabel: scatter.report.xLabel,
           yLabel: scatter.report.yLabel,
           xFormat: (value) => formats(value, valueType),
@@ -397,6 +412,7 @@ const ReportScatter = ({
           yValueType,
           hasRawData,
           navigate,
+          location,
         }}
       />
     );

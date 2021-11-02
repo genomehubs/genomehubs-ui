@@ -1,5 +1,6 @@
 import React, { Fragment, useRef, useState } from "react";
 import { saveSvgAsPng, svgAsDataUri } from "save-svg-as-png";
+import { useLocation, useNavigate } from "@reach/router";
 
 import CloseIcon from "@material-ui/icons/Close";
 import CodeIcon from "@material-ui/icons/Code";
@@ -19,7 +20,6 @@ import { compose } from "recompose";
 import dispatchReport from "../hocs/dispatchReport";
 import loadable from "@loadable/component";
 import styles from "./Styles.scss";
-import { useNavigate } from "@reach/router";
 import { useStyles } from "./ReportModal";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import withApiUrl from "../hocs/withApiUrl";
@@ -40,6 +40,7 @@ export const ReportFull = ({
   error = false,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const classes = useStyles();
   const [code, setCode] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -108,6 +109,13 @@ export const ReportFull = ({
     navigate(`/${path}?${queryString}`);
   };
 
+  const handleUpdate = ({ queryString, hash }) => {
+    if (hash && !hash.startsWith("#")) {
+      hash = "#" + hash;
+    }
+    navigate(`${location.pathname}?${queryString}${hash}`);
+  };
+
   let reportComponent;
 
   if (code) {
@@ -131,6 +139,7 @@ export const ReportFull = ({
         containerRef={containerRef}
         topLevel={topLevel}
         permaLink={permaLink}
+        handleUpdate={handleUpdate}
         setEdit={setEdit}
       />
     );
@@ -168,6 +177,7 @@ export const ReportFull = ({
               fetchReport={fetchReport}
               modal={modal}
               permaLink={permaLink}
+              handleUpdate={handleUpdate}
             />
           </Grid>
         </Fragment>

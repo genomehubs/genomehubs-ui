@@ -48,6 +48,7 @@ const Report = (props) => {
   }
   reportProps.inModal = props.inModal;
   reportProps.permaLink = props.permaLink;
+  reportProps.handleUpdate = props.handleUpdate;
   reportProps.chartRef = props.chartRef;
   reportProps.setEdit = props.setEdit;
   reportProps.delay = props.delay;

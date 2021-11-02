@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "@reach/router";
 
 import Grid from "@material-ui/core/Grid";
 import LaunchIcon from "@material-ui/icons/Launch";
@@ -9,7 +10,6 @@ import { compose } from "recompose";
 import dispatchReport from "../hocs/dispatchReport";
 import qs from "qs";
 import styles from "./Styles.scss";
-import { useNavigate } from "@reach/router";
 import useResize from "../hooks/useResize";
 import withReportById from "../hocs/withReportById";
 
@@ -26,10 +26,17 @@ const ReportTree = ({
 }) => {
   if (!tree.report) return null;
   const navigate = useNavigate();
+  const location = useLocation();
   let maxDepth = tree.report.tree.maxDepth;
+  let queryObj = qs.parse(tree.report.queryString);
   const updateQuery = ({ root, name, depth }) => {
-    let { query: x, ...options } = tree.report.xQuery;
-    let queryObj = qs.parse(tree.report.queryString);
+    let { query, x, ...options } = tree.report.xQuery;
+    console.log(query);
+    console.log(x);
+    if (query && !x) {
+      x = query;
+    }
+    console.log(x);
     let y = queryObj.y;
     if (root) {
       if (x.match("tax_tree")) {
@@ -63,33 +70,64 @@ const ReportTree = ({
     return { ...queryObj, fields, x, y, options };
   };
 
-  const handleNavigation = ({ root, name }) => {
-    let newQuery = updateQuery({ root, name });
-    let newQueryString = qs.stringify(newQuery);
-    if (topLevel) {
-      fetchReport({ reportId, queryString: newQueryString, reload: true });
-    } else {
-      permaLink(newQueryString);
-    }
-  };
+  // const handleNavigation = ({ root, name }) => {
+  //   let newQuery = updateQuery({ root, name });
+  //   let newQueryString = qs.stringify(newQuery);
+  //   if (topLevel) {
+  //     fetchReport({ reportId, queryString: newQueryString, reload: true });
+  //   } else {
+  //     permaLink(newQueryString);
+  //   }
+  // };
 
   const handleSearch = ({ root, name, depth }) => {
-    if (name == "root") return;
-    let { options, y, report, x: query, fields, ...moreOptions } = updateQuery({
+    let { options, y, report, x, fields, ...moreOptions } = updateQuery({
       root,
       name,
       depth,
     });
+    let query;
+    let hash;
+    if (location.pathname == "/report") {
+      hash = x;
+    } else {
+      query = x;
+      hash = query;
+      x = undefined;
+    }
+
+    if (name != "root") {
+      hash = hash.replace(new RegExp("\\(" + root + "\\)"), `(${name})`);
+    }
 
     navigate(
-      `/search?${qs.stringify({
+      `${
+        location.pathname > "/" ? location.pathname : "/search"
+      }?${qs.stringify({
         ...options,
         ...moreOptions,
         query,
         fields,
         report: "tree",
+        x,
         y,
-      })}#${encodeURIComponent(query)}`
+      })}#${encodeURIComponent(hash)}`
+    );
+  };
+
+  const handleNavigation = ({ root, name, depth }) => {
+    if (name == "root") {
+      handleSearch({ root, name, depth });
+      return;
+    }
+    let { result, taxonomy } = queryObj;
+
+    navigate(
+      `/records?${qs.stringify({
+        record_id: root,
+        taxonomy,
+        result,
+      })}#${encodeURIComponent(name)}`
     );
   };
 

@@ -32,7 +32,7 @@ The drop down terms in the "query builder" icon can be also used to refine your 
 Tap tree nodes to browse taxa or long-press to search:
 
 :::grid{container direction=row}
-::report{report="tree" x="tax_tree(Passeroidea) AND tax_depth(3) AND assembly_span" y="assembly_date>=2021" treeStyle="ring" taxonomy="ncbi" includeEstimates="true" ratio=1 disableModal="true" item xs=3}
+::report{report="tree" x="tax_tree(Passeroidea) AND tax_depth(3) AND assembly_span" y="assembly_date>=2021" treeStyle="ring" taxonomy="ncbi" includeEstimates="false" ratio=1 disableModal="true" item xs=3}
 ::report{report="tree" x="tax_tree(Eukaryota) AND tax_depth(3)" treeStyle="rect" taxonomy="ncbi" includeEstimates="true" ratio=3 disableModal="true" item xs=9}
 
 # Data summary

@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import React, { Fragment, useRef } from "react";
+import { useLocation, useNavigate } from "@reach/router";
 
 import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
@@ -17,20 +18,31 @@ import Tooltip from "@material-ui/core/Tooltip";
 import formats from "../functions/formats";
 import qs from "qs";
 import styles from "./Styles.scss";
-import { useNavigate } from "@reach/router";
 import useResize from "../hooks/useResize";
 
+// const COLORS = [
+//   "#a6cee3",
+//   "#b2df8a",
+//   "#fb9a99",
+//   "#fdbf6f",
+//   "#cab2d6",
+//   "#1f78b4",
+//   "#33a02c",
+//   "#e31a1c",
+//   "#ff7f00",
+//   "#6a3d9a",
+// ];
 const COLORS = [
-  "#a6cee3",
-  "#b2df8a",
-  "#fb9a99",
-  "#fdbf6f",
-  "#cab2d6",
   "#1f78b4",
+  "#a6cee3",
   "#33a02c",
+  "#b2df8a",
   "#e31a1c",
+  "#fb9a99",
   "#ff7f00",
+  "#fdbf6f",
   "#6a3d9a",
+  "#cab2d6",
 ];
 
 const renderXTick = (tickProps) => {
@@ -80,7 +92,15 @@ const renderXTick = (tickProps) => {
   // return null;
 };
 
-const searchByCell = ({ xQuery, xLabel, xBounds, navigate, fields, ranks }) => {
+const searchByCell = ({
+  xQuery,
+  xLabel,
+  xBounds,
+  location,
+  navigate,
+  fields,
+  ranks,
+}) => {
   let query = xQuery.query;
   query += ` AND ${xLabel} >= ${xBounds[0]} AND ${xLabel} < ${xBounds[1]}`;
   // let fields = `${xLabel},${yLabel}`;
@@ -88,9 +108,20 @@ const searchByCell = ({ xQuery, xLabel, xBounds, navigate, fields, ranks }) => {
   if (ranks) {
     ranks = ranks.join(",");
   }
-  let queryString = qs.stringify({ ...xQuery, query, fields, ranks });
+  let options = qs.parse(location.search);
+
+  let queryString = qs.stringify({
+    ...xQuery,
+    ...options,
+    query,
+    fields,
+    report: "histogram",
+    ranks,
+  });
   // let hash = encodeURIComponent(query);
-  navigate(`/search?${queryString}`);
+  navigate(
+    `${location.pathname > "/" ? location.pathname : "/report"}?${queryString}`
+  );
 };
 
 const CustomBackground = ({ chartProps, ...props }) => {
@@ -376,6 +407,7 @@ const ReportHistogram = ({
           buckets: histograms.buckets,
           xFormat: (value) => formats(value, valueType),
           navigate,
+          location,
         }}
       />
     );

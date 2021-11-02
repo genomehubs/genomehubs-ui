@@ -134,6 +134,7 @@ const ReportTreePaths = ({
           handleNavigation({
             root: segment.taxon_id,
             name: segment.scientific_name,
+            depth: segment.depth,
           });
         },
         captureEvent: true,
