@@ -31,12 +31,9 @@ const ReportTree = ({
   let queryObj = qs.parse(tree.report.queryString);
   const updateQuery = ({ root, name, depth }) => {
     let { query, x, ...options } = tree.report.xQuery;
-    console.log(query);
-    console.log(x);
     if (query && !x) {
       x = query;
     }
-    console.log(x);
     let y = queryObj.y;
     if (root) {
       if (x.match("tax_tree")) {
@@ -57,9 +54,9 @@ const ReportTree = ({
       if (maxDepth > tree.report.tree.maxDepth) {
         maxDepth = tree.report.tree.maxDepth;
       }
-      if (depth) {
-        maxDepth -= 1;
-      }
+      // if (depth) {
+      //   maxDepth -= 1;
+      // }
       x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth})`);
       if (y) {
         y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth})`);
