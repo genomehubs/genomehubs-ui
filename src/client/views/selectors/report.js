@@ -182,7 +182,7 @@ export const getReportFields = createSelector(
   (searchIndex, displayTypes, searchResults) => {
     let fields = [];
     for (let field of searchResults.fields) {
-      if (displayTypes[searchIndex][field]) {
+      if (displayTypes[searchIndex] && displayTypes[searchIndex][field]) {
         fields.push(displayTypes[searchIndex][field]);
       }
     }
