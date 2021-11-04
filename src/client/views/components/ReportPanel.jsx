@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLocation, useNavigate } from "@reach/router";
 
 import Grid from "@material-ui/core/Grid";
 import ReportFull from "./ReportFull";
@@ -24,8 +25,17 @@ const ReportPanel = ({ options, reportDefaults }) => {
     styles[`infoPanel1Column`],
     styles.textPanel
   );
+  const location = useLocation();
+  const navigate = useNavigate();
+  const setReport = (report) => {
+    navigate(
+      `${location.pathname}?${qs.stringify({ ...options, report })}${
+        location.hash
+      }`
+    );
+  };
   let { query, ...treeOptions } = options;
-  let [report, setReport] = useState(options.report);
+  let report = options.report;
   // console.log(reportDefaults);
   let queryString = qs.stringify({
     ...treeOptions,

@@ -7,7 +7,7 @@ import CodeIcon from "@material-ui/icons/Code";
 import EditIcon from "@material-ui/icons/Edit";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import Grid from "@material-ui/core/Grid";
-import InfoIcon from "@material-ui/icons/Info";
+import HelpIcon from "@material-ui/icons/HelpOutline";
 import LinkIcon from "@material-ui/icons/Link";
 import Report from "./Report";
 import ReportCode from "./ReportCode";
@@ -240,7 +240,7 @@ export const ReportFull = ({
             </Grid>
           )}
           <Grid item align="right">
-            <InfoIcon
+            <HelpIcon
               onClick={() => {
                 setInfo(!info);
                 setEdit(false);

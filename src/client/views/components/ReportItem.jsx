@@ -24,6 +24,12 @@ import withReportById from "../hocs/withReportById";
 // const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
 // const ReportXInY = loadable(() => import("./ReportXInY"));
 
+const headings = {
+  tree: "Tap tree nodes to browse taxa or long-press to search",
+  histogram: "Tap bins to search",
+  scatter: "Tap bins to search",
+};
+
 const ReportItem = ({
   reportId,
   report,
@@ -61,7 +67,7 @@ const ReportItem = ({
       setTimeout(() => fetchReport({ reportId, queryString }), delay);
     }
   }, [reportId]);
-  let component;
+  let component, error;
   if (Object.keys(reportById).length == 0) {
     component = (
       <ReportLoading
@@ -76,12 +82,8 @@ const ReportItem = ({
     reportById.report[report].status.success == false
   ) {
     setEdit(true);
-    component = (
-      <ReportError
-        report={report}
-        error={reportById.report[report].status.error}
-      />
-    );
+    error = reportById.report[report].status.error;
+    component = <ReportError report={report} error={error} />;
   } else if (reportById.report[report].x == 0) {
     component = <ReportEmpty report={report} />;
   } else {
@@ -170,7 +172,7 @@ const ReportItem = ({
         break;
     }
   }
-
+  heading = heading || headings[report];
   caption = reportById.report?.caption;
   let content = (
     <Grid
@@ -179,15 +181,15 @@ const ReportItem = ({
       spacing={1}
       style={{ flexGrow: "1", width: "100%" }}
     >
-      {heading && (
+      {!error && heading && (inModal || topLevel) && (
         <Grid item xs>
           <span className={styles.reportHeading}>{heading}</span>
         </Grid>
       )}
-      <Grid item xs style={{ height: "100%", width: "100%" }}>
+      <Grid item xs style={{ width: "100%" }}>
         {component}
       </Grid>
-      {caption && !inModal && !topLevel && (
+      {!error && caption && (
         <Grid item xs style={{ textAlign: "center" }}>
           <span className={styles.reportCaption}>{caption}</span>
         </Grid>
@@ -208,6 +210,16 @@ const ReportItem = ({
       </ReportModal>
     );
   }
+  // if (reportById.report) {
+  //   content = (
+  //     <Grid container direction="column" width="100%">
+  //       <Grid item>{content}</Grid>
+  //       <Grid item style={{ textAlign: "left" }}>
+  //         {reportById.report.caption}
+  //       </Grid>
+  //     </Grid>
+  //   );
+  // }
   return <Grid {...gridProps}>{content}</Grid>;
 };
 
