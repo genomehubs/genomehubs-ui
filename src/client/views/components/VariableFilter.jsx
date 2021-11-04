@@ -35,6 +35,10 @@ const VariableFilter = ({
     "==": "==",
     contains: "contains",
   };
+  operator = operator == "undefined" ? "" : operator;
+  field = field == "undefined" ? "" : field;
+  summary = summary == "undefined" ? "" : summary;
+  value = value == "undefined" ? "" : value;
   return (
     <Grid container alignItems="center" direction="row" spacing={2}>
       {bool && (

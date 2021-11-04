@@ -125,7 +125,6 @@ export const ReportEdit = ({
     let queryObj = Object.fromEntries(
       Object.entries(values).filter(([_, v]) => v != "")
     );
-    console.log(values);
     if (
       !values.hasOwnProperty("includeEstimates") ||
       values.includeEstimates == "" ||
@@ -139,7 +138,11 @@ export const ReportEdit = ({
     if (!location.pathname.startsWith("/report")) {
       queryObj.query = queryObj.query || queryObj.x;
       if (queryObj.x) delete queryObj.x;
+      if (queryObj.rank && !queryObj.query.match("tax_rank")) {
+        queryObj.query += ` AND tax_rank(${queryObj.rank})`;
+      }
     }
+
     let hash = queryObj.query;
     let newQueryString = qs.stringify({
       ...queryObj,

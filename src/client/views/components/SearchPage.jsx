@@ -38,6 +38,9 @@ const SearchPage = ({
   let results = [];
   const navigate = useNavigate();
   let options = qs.parse(location.search.replace(/^\?/, ""));
+  if (options.ranks && Array.isArray(options.ranks)) {
+    options.ranks = options.ranks.join(",");
+  }
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
   let isFetching = searchResults.isFetching;
   let values = Object.values(options);

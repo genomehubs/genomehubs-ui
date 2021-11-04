@@ -163,12 +163,18 @@ const QueryBuilder = ({
     let newFilterArray = [];
     Object.keys(varFilters).forEach((key, i) => {
       Object.keys(varFilters[key]).forEach((operator) => {
-        if (varSummaries[key][operator] != "value") {
-          newFilterArray.push(
-            `${varSummaries[key][operator]}(${key})${operator}${varFilters[key][operator]}`
-          );
+        if (operator && varFilters[key][operator]) {
+          if (varSummaries[key][operator] != "value") {
+            newFilterArray.push(
+              `${varSummaries[key][operator]}(${key})${operator}${varFilters[key][operator]}`
+            );
+          } else {
+            newFilterArray.push(
+              `${key}${operator}${varFilters[key][operator]}`
+            );
+          }
         } else {
-          newFilterArray.push(`${key}${operator}${varFilters[key][operator]}`);
+          newFilterArray.push(key);
         }
       });
     });

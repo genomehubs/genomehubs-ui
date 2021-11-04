@@ -23,20 +23,16 @@ export const ReportQuery = ({
   }
 
   const handleSearch = (searchTerm) => {
-    console.log(searchTerm);
     let options = {
       ...searchTerm,
+      report,
       summaryValues: "count",
       offset: 0,
       taxonomy,
     };
-    // delete options.fields;
-    // delete options.excludeAncestral;
-    // delete options.excludeDescendant;
-    // delete options.excludeDirect;
-    // delete options.excludeMissing;
-    // setPreferSearchTerm(true);
-    // setSearchTerm(options);
+    if (options.ranks && Array.isArray(options.ranks)) {
+      options.ranks = options.ranks.join(",");
+    }
     navigate(
       `/search?${qs.stringify(options)}#${encodeURIComponent(options.query)}`
     );

@@ -102,6 +102,18 @@ const searchByCell = ({
   ranks,
 }) => {
   let query = xQuery.query;
+  query = query
+    .replaceAll(new RegExp("AND\\s+" + xLabel + "\\s+AND", "gi"), "AND")
+    .replaceAll(
+      new RegExp("AND\\s+" + xLabel + "\\s+>=\\s*[\\w\\d_]+", "gi"),
+      ""
+    )
+    .replaceAll(
+      new RegExp("AND\\s+" + xLabel + "\\s+<\\s*[\\w\\d_]+", "gi"),
+      ""
+    )
+    .replaceAll(/\s+/g, " ")
+    .replace(/\s+$/, "");
   query += ` AND ${xLabel} >= ${xBounds[0]} AND ${xLabel} < ${xBounds[1]}`;
   // let fields = `${xLabel},${yLabel}`;
   fields = fields.join(",");
@@ -119,9 +131,7 @@ const searchByCell = ({
     ranks,
   });
   // let hash = encodeURIComponent(query);
-  navigate(
-    `${location.pathname > "/" ? location.pathname : "/report"}?${queryString}`
-  );
+  navigate(`/search?${queryString}#${encodeURIComponent(query)}`);
 };
 
 const CustomBackground = ({ chartProps, ...props }) => {
@@ -165,12 +175,14 @@ const CustomBackground = ({ chartProps, ...props }) => {
           y={props.background.y}
           style={{ cursor: "pointer" }}
           fill={"rgba(255,255,255,0)"}
-          onClick={() =>
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             searchByCell({
               ...chartProps,
               xBounds,
-            })
-          }
+            });
+          }}
         />
       </Tooltip>
     </>

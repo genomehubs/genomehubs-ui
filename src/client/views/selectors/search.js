@@ -27,6 +27,7 @@ export function fetchSearchResults(options, navigate) {
     const searchHistory = getSearchHistory(state);
     const taxonomy = getCurrentTaxonomy(state);
     const searchDefaults = getSearchDefaults(state);
+
     dispatch(setSearchHistory(options));
 
     let searchTerm = options.query;

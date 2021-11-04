@@ -297,6 +297,15 @@ export const getReportDefaults = createSelector(
           reportDefaults[reportName][param] = obj.value;
         }
       });
+      if (
+        reportDefaults[reportName].rank &&
+        reportDefaults[reportName].x.match("tax_rank")
+      ) {
+        reportDefaults[reportName].x = reportDefaults[reportName].x
+          .replace(/tax_rank\(\w+\)/, "")
+          .replace(/and\s+and/gi, "AND")
+          .replace(/\s*and\s*$/i, "");
+      }
     });
     return reportDefaults;
   }

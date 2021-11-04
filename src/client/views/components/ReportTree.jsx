@@ -77,22 +77,20 @@ const ReportTree = ({
     });
     let query;
     let hash;
-    if (location.pathname == "/report") {
-      hash = x;
-    } else {
-      query = x;
-      hash = query;
-      x = undefined;
-    }
+    // if (location.pathname == "/report") {
+    //   hash = x;
+    // } else {
+    query = x;
+    hash = query;
+    x = undefined;
+    // }
 
     if (name != "parent") {
       hash = hash.replace(new RegExp("\\(" + root + "\\)"), `(${name})`);
     }
 
     navigate(
-      `${
-        location.pathname > "/" ? location.pathname : "/search"
-      }?${qs.stringify({
+      `/search?${qs.stringify({
         ...options,
         ...moreOptions,
         query,

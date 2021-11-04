@@ -159,7 +159,9 @@ export const getSearchFields = createSelector(getSearchTerm, (searchTerm) => {
 export const getSearchRanks = createSelector(getSearchTerm, (searchTerm) => {
   let ranks = [];
   if (searchTerm.ranks) {
-    ranks = searchTerm.ranks.split(/\s*,\s*/);
+    ranks = Array.isArray(searchTerm.ranks)
+      ? searchTerm.ranks
+      : searchTerm.ranks.split(/\s*,\s*/);
   }
   return ranks;
 });

@@ -77,6 +77,18 @@ const searchByCell = ({
   yValueType,
 }) => {
   let query = xQuery.query;
+  query = query
+    .replaceAll(new RegExp("AND\\s+" + xLabel + "\\s+AND", "gi"), "AND")
+    .replaceAll(
+      new RegExp("AND\\s+" + xLabel + "\\s+>=\\s*[\\w\\d_]+", "gi"),
+      ""
+    )
+    .replaceAll(
+      new RegExp("AND\\s+" + xLabel + "\\s+<\\s*[\\w\\d_]+", "gi"),
+      ""
+    )
+    .replaceAll(/\s+/g, " ")
+    .replace(/\s+$/, "");
   if (valueType == "date") {
     query += ` AND ${xLabel} >= ${new Date(
       xBounds[0]
@@ -108,9 +120,7 @@ const searchByCell = ({
     ranks,
   });
   // let hash = encodeURIComponent(query);
-  navigate(
-    `${location.pathname > "/" ? location.pathname : "/report"}?${queryString}`
-  );
+  navigate(`/search?${queryString}#${encodeURIComponent(query)}`);
 };
 
 const CustomShape = (props, chartProps) => {
