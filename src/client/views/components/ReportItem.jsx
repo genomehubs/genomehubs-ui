@@ -67,7 +67,7 @@ const ReportItem = ({
       setTimeout(() => fetchReport({ reportId, queryString }), delay);
     }
   }, [reportId]);
-  let component, error;
+  let component, error, loading;
   if (Object.keys(reportById).length == 0) {
     component = (
       <ReportLoading
@@ -77,6 +77,7 @@ const ReportItem = ({
         ratio={ratio}
       />
     );
+    loading = true;
   } else if (
     reportById.report[report].status &&
     reportById.report[report].status.success == false
@@ -181,7 +182,7 @@ const ReportItem = ({
       spacing={1}
       style={{ flexGrow: "1", width: "100%" }}
     >
-      {!error && heading && (inModal || topLevel) && (
+      {!loading && !error && heading && (inModal || topLevel) && (
         <Grid item xs>
           <span className={styles.reportHeading}>{heading}</span>
         </Grid>
@@ -189,7 +190,7 @@ const ReportItem = ({
       <Grid item xs style={{ width: "100%" }}>
         {component}
       </Grid>
-      {!error && caption && (
+      {!loading && !error && caption && (
         <Grid item xs style={{ textAlign: "center" }}>
           <span className={styles.reportCaption}>{caption}</span>
         </Grid>
