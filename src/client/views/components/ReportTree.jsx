@@ -42,14 +42,6 @@ const ReportTree = ({
         x += ` AND tax_tree(${root})`;
       }
     }
-    // if (
-    //   name == "root" &&
-    //   x.match("tax_depth") &&
-    //   options.includeEstimates === false
-    // ) {
-    //   x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
-    //   y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
-    // } else
     if (x.match("tax_depth")) {
       if (maxDepth > tree.report.tree.maxDepth) {
         maxDepth = tree.report.tree.maxDepth;
@@ -93,7 +85,7 @@ const ReportTree = ({
       x = undefined;
     }
 
-    if (name != "root") {
+    if (name != "parent") {
       hash = hash.replace(new RegExp("\\(" + root + "\\)"), `(${name})`);
     }
 
@@ -113,7 +105,7 @@ const ReportTree = ({
   };
 
   const handleNavigation = ({ root, name, depth }) => {
-    if (name == "root") {
+    if (name == "parent") {
       handleSearch({ root, name, depth });
       return;
     }

@@ -437,7 +437,7 @@ export const getTreeRings = createSelector(getAPITreeNodes, (nodes) => {
     node: {
       taxon_id: ancNode,
       count: treeNodes[rootNode] ? treeNodes[rootNode].count : 1,
-      scientific_name: "root",
+      scientific_name: "parent",
     },
     depth: -1,
     recurse: false,
@@ -654,7 +654,7 @@ export const processTreeRings = (nodes) => {
     node: {
       taxon_id: ancNode,
       count: treeNodes[rootNode] ? treeNodes[rootNode].count : 1,
-      scientific_name: "root",
+      scientific_name: "parent",
     },
     depth: -1,
     recurse: false,
@@ -748,23 +748,13 @@ export const processTreePaths = (nodes) => {
       children: { [treeNodes[rootNode].taxon_id]: true },
       taxon_id: ancNode,
       count: treeNodes[rootNode].count,
-      scientific_name: "root",
+      scientific_name: "parent",
     };
     setXCoords({
       node: treeNodes[ancNode || rootNode],
       depth: ancNode ? -1 : 0,
     });
   }
-  // setXCoords({
-  //   node: {
-  //     taxon_id: ancNode,
-  //     count: treeNodes[rootNode].count,
-  //     scientific_name: "root",
-  //   },
-  //   depth: -1,
-  //   parent: undefined,
-  // });
-
   let y = 0;
 
   sortOrder.forEach((nodeId) => {
@@ -776,7 +766,7 @@ export const processTreePaths = (nodes) => {
       maxY = rawY + 0.5;
       node.tip = true;
       y++;
-    } else if (node.yCoords.length == 1 || node.scientific_name == "root") {
+    } else if (node.yCoords.length == 1 || node.scientific_name == "parent") {
       rawY = node.yCoords[0];
       minY = rawY - 0.5;
       maxY = rawY + 0.5;
@@ -807,7 +797,7 @@ export const processTreePaths = (nodes) => {
     let label;
     if (node.tip) {
       label = node.scientific_name;
-    } else if (node.width > charLen * 5) {
+    } else if (node.scientific_name != "parent" && node.width > charLen * 5) {
       label = node.scientific_name;
       if (label.length * charLen - 2 > node.width) {
         if (node.taxon_rank == "species") {
@@ -832,12 +822,20 @@ export const processTreePaths = (nodes) => {
         [node.xEnd, node.yStart],
       ]),
       ...(node.yCoords.length > 1 &&
-        node.scientific_name != "root" && {
-          vLine: d3line()([
-            [node.xEnd, node.yMin],
-            [node.xEnd, node.yMax],
-          ]),
-        }),
+        (node.scientific_name == "parent"
+          ? {
+              vLine: d3line()([
+                [node.xStart + charHeight / 1.5, node.yMin],
+                [node.xStart, node.yStart],
+                [node.xStart + charHeight / 1.5, node.yMax],
+              ]),
+            }
+          : {
+              vLine: d3line()([
+                [node.xEnd, node.yMin],
+                [node.xEnd, node.yMax],
+              ]),
+            })),
       label,
       color,
       highlightColor,

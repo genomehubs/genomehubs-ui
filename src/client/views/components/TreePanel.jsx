@@ -97,7 +97,7 @@ const TreePanel = ({
       !searchTerm.includeEstimates ||
       searchTerm.includeEstimates == "false"
     ) {
-      if (name == "root" && query.match("tax_depth")) {
+      if (name == "parent" && query.match("tax_depth")) {
         query = query.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
         y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth + 1})`);
       }
