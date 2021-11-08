@@ -183,6 +183,13 @@ const SearchBox = ({
   };
 
   const doSearch = (query, result, term) => {
+    if (searchDefaults.includeDescendants) {
+      options.query = query.startsWith("tax_") ? query : `tax_tree(${query})`;
+      term = term.startsWith("tax_") ? term : `tax_tree(${term})`;
+    } else {
+      query = query.startsWith("tax_") ? query : `tax_eq(${query})`;
+      term = term.startsWith("tax_") ? term : `tax_name(${term})`;
+    }
     setSearchIndex(result);
     dispatchSearch({ query, result, fields }, term);
     resetLookup();

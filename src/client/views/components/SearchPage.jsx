@@ -34,6 +34,7 @@ const SearchPage = ({
   searchDefaults,
   setSearchDefaults,
   setRecordId,
+  topLevel,
 }) => {
   let results = [];
   const navigate = useNavigate();
@@ -108,6 +109,9 @@ const SearchPage = ({
     // summary = <SearchSummary />;
   }
   results = <ResultTable />;
+  if (topLevel) {
+    return <Page panels={[{ panel: results, maxWidth: "100%" }]} />;
+  }
 
   let report = <ReportPanel options={options} />;
   let text = <TextPanel pageId={"search.md"}></TextPanel>;
