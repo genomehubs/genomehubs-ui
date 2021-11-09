@@ -24,6 +24,7 @@ import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSearchDefaults from "../hocs/withSearchDefaults";
 import withTaxonomy from "../hocs/withTaxonomy";
+import withTypes from "../hocs/withTypes";
 
 // const suggestions = [
 //   "assembly_span",
@@ -142,6 +143,7 @@ const SearchBox = ({
   searchTerm,
   setPreferSearchTerm,
   taxonomy,
+  types,
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
@@ -182,18 +184,32 @@ const SearchBox = ({
     navigate(`/search?${qs.stringify(options)}#${encodeURIComponent(term)}`);
   };
 
-  const doSearch = (query, result, term) => {
-    console.log(term);
-    if (searchDefaults.includeDescendants) {
-      options.query = query.startsWith("tax_") ? query : `tax_tree(${query})`;
-      term = term.startsWith("tax_") ? term : `tax_tree(${term})`;
-    } else {
-      query = query.startsWith("tax_") ? query : `tax_eq(${query})`;
-      term = term.startsWith("tax_") ? term : `tax_name(${term})`;
+  const wrap_term = ({ term, taxWrap, result }) => {
+    if (result && result == "taxon" && !term.match(/[\(\)<>=]/)) {
+      if (!types[term]) {
+        term = `${taxWrap}(${term})`;
+      }
     }
-    console.log(term);
+    return term;
+  };
+
+  const doSearch = (queryString, result, hashTerm) => {
+    let taxWrap = "tax_name";
+    if (searchDefaults.includeDescendants) {
+      taxWrap = "tax_tree";
+      // options.query = query.startsWith("tax_") ? query : `tax_tree(${query})`;
+      // term = term.startsWith("tax_") ? term : `tax_tree(${term})`;
+    }
+    let query = queryString
+      .split(/\s+and\s+/i)
+      .map((term) => wrap_term({ term, taxWrap, result }));
+    queryString = query.join(" AND ");
+    let hash = hashTerm
+      .split(/\s+and\s+/i)
+      .map((term) => wrap_term({ term, taxWrap, result }));
+    hashTerm = hash.join(" AND ");
     setSearchIndex(result);
-    dispatchSearch({ query, result, fields }, term);
+    dispatchSearch({ query: queryString, result, fields }, hashTerm);
     resetLookup();
   };
   const updateTerm = (value) => {
@@ -446,6 +462,7 @@ const SearchBox = ({
 export default compose(
   memo,
   withTaxonomy,
+  withTypes,
   withSearch,
   withSearchDefaults,
   withLookup
