@@ -18,6 +18,8 @@ const ReportTree = ({
   tree,
   chartRef,
   containerRef,
+  reportRef,
+  gridRef,
   ratio,
   fetchReport,
   topLevel,
@@ -148,6 +150,9 @@ const ReportTree = ({
         {...tree.report.tree}
         handleNavigation={handleNavigation}
         handleSearch={handleSearch}
+        containerRef={containerRef}
+        reportRef={reportRef}
+        gridRef={gridRef}
       />
     );
   }

@@ -41,6 +41,8 @@ const ReportTreePaths = ({
   width,
   height,
   plotHeight,
+  reportRef,
+  gridRef,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -99,7 +101,12 @@ const ReportTreePaths = ({
   const getDimensions = (myRef) => myRef.current.getBBox();
   useEffect(() => {
     if (treeRef.current) {
-      setTreeDimensions(getDimensions(treeRef));
+      let dimensions = getDimensions(treeRef);
+      setTreeDimensions(dimensions);
+      let container = reportRef.current;
+      container.style.height = `${dimensions.height + 40}px`;
+      let grid = gridRef.current;
+      grid.style.height = `${dimensions.height + 40}px`;
     }
   }, [treeRef]);
 

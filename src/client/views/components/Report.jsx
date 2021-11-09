@@ -19,7 +19,7 @@ export const queryPropList = [
 
 const Report = (props) => {
   const location = useLocation();
-  const reportRef = useRef();
+  // const reportRef = useRef();
   let options = qs.parse(location.search.replace(/^\?/, ""));
   let reportProps = { ...props };
   let queryProps = {};
@@ -53,6 +53,8 @@ const Report = (props) => {
   reportProps.setEdit = props.setEdit;
   reportProps.delay = props.delay;
   reportProps.containerRef = props.containerRef;
+  reportProps.reportRef = props.reportRef;
+  reportProps.gridRef = props.gridRef;
   reportProps.topLevel = props.topLevel;
   reportProps.ratio = props.ratio || 1;
   reportProps.stacked = props.stacked;

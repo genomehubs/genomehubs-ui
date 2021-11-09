@@ -44,6 +44,8 @@ const ReportItem = ({
   permaLink,
   chartRef,
   containerRef,
+  reportRef,
+  gridRef,
   ratio,
   delay = 0,
   stacked,
@@ -148,6 +150,8 @@ const ReportItem = ({
             tree={reportById}
             chartRef={chartRef}
             containerRef={containerRef}
+            reportRef={reportRef}
+            gridRef={gridRef}
             {...qs.parse(queryString)}
           />
         );

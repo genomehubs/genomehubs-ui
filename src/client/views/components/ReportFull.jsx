@@ -48,6 +48,8 @@ export const ReportFull = ({
   const [info, setInfo] = useState(false);
   const chartRef = useRef();
   const containerRef = useRef();
+  const reportRef = useRef(null);
+  const gridRef = useRef(null);
 
   const windowDimensions = useWindowDimensions();
   let height = windowDimensions.height;
@@ -137,6 +139,8 @@ export const ReportFull = ({
         inModal
         chartRef={chartRef}
         containerRef={containerRef}
+        reportRef={reportRef}
+        gridRef={gridRef}
         topLevel={topLevel}
         permaLink={permaLink}
         handleUpdate={handleUpdate}
@@ -151,6 +155,7 @@ export const ReportFull = ({
       direction="row"
       style={{ ...(modal && { ...modalStyle }), height, width, flexGrow: 1 }}
       className={classnames(classes.paper, styles.markdown)}
+      ref={gridRef}
     >
       <Grid item xs={1} />
       <Grid
@@ -158,7 +163,7 @@ export const ReportFull = ({
         xs={edit || query || info ? 5 : 10}
         align="center"
         ref={containerRef}
-        style={{ height: "100%", width: "100%" }}
+        style={{ width: "100%" }}
       >
         {reportComponent}
       </Grid>
@@ -289,6 +294,7 @@ export const ReportFull = ({
         e.preventDefault();
         e.stopPropagation();
       }}
+      ref={reportRef}
     >
       {content}
     </div>
