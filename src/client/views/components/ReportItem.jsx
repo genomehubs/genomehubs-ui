@@ -82,7 +82,9 @@ const ReportItem = ({
     reportById.report[report].status &&
     reportById.report[report].status.success == false
   ) {
-    setEdit(true);
+    if (setEdit) {
+      setEdit(true);
+    }
     error = reportById.report[report].status.error;
     component = <ReportError report={report} error={error} />;
   } else if (reportById.report[report].x == 0) {

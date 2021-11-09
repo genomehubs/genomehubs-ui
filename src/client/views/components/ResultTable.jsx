@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { useLocation, useNavigate } from "@reach/router";
 
@@ -12,6 +12,7 @@ import Grid from "@material-ui/core/Grid";
 import Grow from "@material-ui/core/Grow";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import LinkButton from "./LinkButton";
 import MuiTableCell from "@material-ui/core/TableCell";
 import SearchPagination from "./SearchPagination";
 import Skeleton from "@material-ui/lab/Skeleton";
@@ -220,6 +221,12 @@ const ResultTable = ({
   if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
     return null;
   }
+  const location = useLocation();
+  useEffect(() => {
+    if (!location.search.match("report=")) {
+      window.scrollTo(0, 0);
+    }
+  }, []);
   const navigate = useNavigate();
   const classes = useStyles();
   let sortBy = searchTerm.sortBy || "";
@@ -249,7 +256,6 @@ const ResultTable = ({
     }
     return obj;
   };
-  const location = useLocation();
   const handleTableSort = ({
     sortBy,
     sortOrder,
@@ -552,6 +558,9 @@ const ResultTable = ({
         spacing={1}
         className={classes.root}
       >
+        <Grid item>
+          <LinkButton options={["search", "searchurl"]} />
+        </Grid>
         <Grid item>
           <SearchPagination />
         </Grid>

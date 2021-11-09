@@ -68,11 +68,14 @@ import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 import withVersion from "../hocs/withVersion";
 
-const Footer = ({ version, fetchTypes, types, resetRecord }) => {
+const Footer = ({ version, fetchTypes, types, resetRecord, hidden }) => {
   let options = qs.parse(location.search.replace(/^\?/, ""));
   useEffect(() => {
     fetchTypes("multi", options.taxonomy);
   }, []);
+  if (hidden) {
+    return null;
+  }
   const navigate = useNavigate();
 
   let dataRelease;

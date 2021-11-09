@@ -1,4 +1,5 @@
 import React, { memo, useEffect } from "react";
+import { useLocation, useNavigate } from "@reach/router";
 
 import Page from "./Page";
 import ReportPanel from "./ReportPanel";
@@ -11,7 +12,6 @@ import equal from "deep-equal";
 import qs from "qs";
 import shallow from "shallowequal";
 import styles from "./Styles.scss";
-import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
@@ -38,6 +38,7 @@ const SearchPage = ({
 }) => {
   let results = [];
   const navigate = useNavigate();
+  const location = useLocation();
   let options = qs.parse(location.search.replace(/^\?/, ""));
   if (options.ranks && Array.isArray(options.ranks)) {
     options.ranks = options.ranks.join(",");
@@ -68,8 +69,11 @@ const SearchPage = ({
         } else {
           if (Object.keys(previousSearchTerm).length > 0) {
             let hashedNav = (path) => {
+              path = path.replace(/\/search\b/, `${location.pathname}`);
               let to = path;
-              let from = `/search?${qs.stringify(previousSearchTerm)}`;
+              let from = `${location.pathname}?${qs.stringify(
+                previousSearchTerm
+              )}`;
               if (to != from) {
                 // navigate(`${path}#${encodeURIComponent(hashTerm)}`);
               }
@@ -83,6 +87,7 @@ const SearchPage = ({
           } else {
             let hashedNav = (path) => {
               // TODO: include taxonomy
+              path = path.replace(/\/search\b/, `${location.pathname}`);
               navigate(`${path}#${encodeURIComponent(hashTerm)}`);
             };
             setPreviousSearchTerm(options);
@@ -97,20 +102,15 @@ const SearchPage = ({
         setSearchIndex("taxon");
         fetchSearchResults({});
       }
-      // if (hashTerm != lookupTerm) {
-      //   // setLookupTerm(hashTerm);
-      // }
     }
   }, [values, hashTerm, isFetching]);
-  let summary;
-  let resultCount;
-  if (searchResults.status && searchResults.status.hasOwnProperty("hits")) {
-    resultCount = searchResults.isFetching ? -1 : searchResults.status.hits;
-    // summary = <SearchSummary />;
-  }
   results = <ResultTable />;
   if (topLevel) {
     return <Page panels={[{ panel: results, maxWidth: "100%" }]} />;
+  }
+  let resultCount;
+  if (searchResults.status && searchResults.status.hasOwnProperty("hits")) {
+    resultCount = searchResults.isFetching ? -1 : searchResults.status.hits;
   }
 
   let report = <ReportPanel options={options} />;
@@ -120,7 +120,6 @@ const SearchPage = ({
     <Page
       searchBox
       panels={[
-        // { panel: summary },
         { panel: results, maxWidth: "100%" },
         { panel: report },
         { panel: text },

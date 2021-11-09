@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
 import Grid from "@material-ui/core/Grid";
@@ -25,6 +25,12 @@ const ReportPanel = ({ options, reportDefaults }) => {
     styles[`infoPanel1Column`],
     styles.textPanel
   );
+  const reportRef = useRef(null);
+
+  useEffect(() => {
+    reportRef.current.scrollIntoView();
+  }, []);
+
   const location = useLocation();
   const navigate = useNavigate();
   const setReport = (report) => {
@@ -44,7 +50,7 @@ const ReportPanel = ({ options, reportDefaults }) => {
   });
   // TODO: use mui-grid
   return (
-    <div className={css}>
+    <div className={css} ref={reportRef}>
       {/* <div className={styles.header}>
         <span className={styles.title}>{title}</span>
       </div> */}

@@ -6,6 +6,7 @@ import Header from "./Header";
 import Main from "./Main";
 import ReportPage from "./ReportPage";
 import { Router } from "@reach/router";
+import SearchPage from "./SearchPage";
 import classnames from "classnames";
 import { compose } from "recompose";
 import loadable from "@loadable/component";
@@ -59,8 +60,21 @@ const ReportLayout = (props) => {
   return <ReportPage topLevel {...props} />;
 };
 
+const SearchLayout = (props) => {
+  return (
+    <>
+      <SearchPage topLevel {...props} />
+      <Footer hidden />
+    </>
+  );
+};
+
 const Layout = () => {
-  let paths = [<DefaultLayout path="/*" />, <ReportLayout path="/reporturl" />];
+  let paths = [
+    <DefaultLayout path="/*" />,
+    <ReportLayout path="/reporturl" />,
+    <SearchLayout path="/searchurl" />,
+  ];
   return (
     <>
       <Router className={styles.fillParent} basepath={basename} primary={false}>
