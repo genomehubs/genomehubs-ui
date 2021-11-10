@@ -59,4 +59,5 @@ module.exports = {
   message: process.env.GH_MESSAGE || false,
   disableHostCheck: String(process.env.GH_DISABLE_HOST_CHECK) === "true",
   suggestedTerm: process.env.GH_SUGGESTED_TERM,
+  treeThreshold: process.env.GH_TREE_THRESHOLD || 2000,
 };

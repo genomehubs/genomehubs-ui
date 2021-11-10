@@ -18,6 +18,8 @@ import { processTree } from "./tree";
 import qs from "qs";
 import store from "../store";
 
+const treeThreshold = TREE_THRESHOLD;
+
 export function fetchReport({ queryString, reportId, reload }) {
   return async function (dispatch) {
     const state = store.getState();
@@ -30,6 +32,9 @@ export function fetchReport({ queryString, reportId, reload }) {
     }
     dispatch(requestReport(reportId));
     // TODO: use terms
+    if (queryString.match("report=tree")) {
+      queryString += `&treeThreshold=${treeThreshold}`;
+    }
     let url = `${apiUrl}/report?${queryString}`;
     try {
       let json;

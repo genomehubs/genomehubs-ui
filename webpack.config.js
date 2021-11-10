@@ -86,6 +86,7 @@ const config = {
       SITENAME: JSON.stringify(main.siteName),
       VERSION: JSON.stringify(main.version),
       SUGGESTED_TERM: JSON.stringify(main.suggestedTerm),
+      TREE_THRESHOLD: JSON.stringify(main.treeThreshold),
     }),
     new HtmlWebpackPlugin({
       hash: true,

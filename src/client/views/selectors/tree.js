@@ -737,7 +737,7 @@ export const processTreePaths = (nodes) => {
           });
         } else {
           console.warn("Tree node already visited");
-          console.warn(node);
+          console.warn(child);
         }
       }
     }
