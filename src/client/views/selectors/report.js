@@ -39,7 +39,9 @@ export function fetchReport({ queryString, reportId, reload }) {
       } catch (error) {
         json = console.log("An error occured.", error);
       }
-      json.report.report.queryString = queryString;
+      if (json.report && json.report.report) {
+        json.report.report.queryString = queryString;
+      }
       dispatch(receiveReport({ json, reportId }));
     } catch (err) {
       return dispatch(setApiStatus(false));
@@ -129,7 +131,6 @@ const processScatter = (scatter) => {
       pointData.push(heatmaps.rawData);
     }
   }
-  console.log({ chartData, pointData });
   return { chartData, pointData, cats, catSums };
 };
 

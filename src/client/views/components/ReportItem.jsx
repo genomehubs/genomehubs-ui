@@ -126,7 +126,7 @@ const ReportItem = ({
       case "sources":
         component = (
           <ReportSources
-            sources={reportById}
+            sources={reportById.report.sources}
             chartRef={chartRef}
             containerRef={containerRef}
           />

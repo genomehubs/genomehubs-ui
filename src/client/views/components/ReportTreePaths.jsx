@@ -104,10 +104,12 @@ const ReportTreePaths = ({
       let dimensions = getDimensions(treeRef);
       setTreeDimensions(dimensions);
       if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
-      let container = reportRef.current;
-      container.style.height = `${Math.max(dimensions.height + 40, 350)}px`;
-      let grid = gridRef.current;
-      grid.style.height = `${Math.max(dimensions.height + 40, 350)}px`;
+      if (reportRef) {
+        let container = reportRef.current;
+        container.style.height = `${Math.max(dimensions.height + 40, 350)}px`;
+        let grid = gridRef.current;
+        grid.style.height = `${Math.max(dimensions.height + 40, 350)}px`;
+      }
     }
   }, [treeRef]);
 
