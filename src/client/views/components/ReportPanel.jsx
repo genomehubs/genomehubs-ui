@@ -27,11 +27,13 @@ const ReportPanel = ({ options, reportDefaults }) => {
   );
   const reportRef = useRef(null);
 
+  const location = useLocation();
   useEffect(() => {
-    reportRef.current.scrollIntoView();
+    if (location.search.match("report=")) {
+      reportRef.current.scrollIntoView();
+    }
   }, []);
 
-  const location = useLocation();
   const navigate = useNavigate();
   const setReport = (report) => {
     navigate(
@@ -50,7 +52,7 @@ const ReportPanel = ({ options, reportDefaults }) => {
   });
   // TODO: use mui-grid
   return (
-    <div className={css} ref={reportRef}>
+    <div className={css} ref={reportRef} style={{ maxHeight: "100%" }}>
       {/* <div className={styles.header}>
         <span className={styles.title}>{title}</span>
       </div> */}

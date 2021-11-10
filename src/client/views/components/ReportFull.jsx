@@ -1,5 +1,4 @@
 import React, { Fragment, useRef, useState } from "react";
-import { saveSvgAsPng, svgAsDataUri } from "save-svg-as-png";
 import { useLocation, useNavigate } from "@reach/router";
 
 import CloseIcon from "@material-ui/icons/Close";
@@ -11,6 +10,7 @@ import HelpIcon from "@material-ui/icons/HelpOutline";
 import LinkIcon from "@material-ui/icons/Link";
 import Report from "./Report";
 import ReportCode from "./ReportCode";
+import ReportDownload from "./ReportDownload";
 import ReportEdit from "./ReportEdit";
 import ReportInfo from "./ReportInfo";
 import ReportQuery from "./ReportQuery";
@@ -22,7 +22,6 @@ import loadable from "@loadable/component";
 import styles from "./Styles.scss";
 import { useStyles } from "./ReportModal";
 import useWindowDimensions from "../hooks/useWindowDimensions";
-import withApiUrl from "../hocs/withApiUrl";
 
 // const ReportCode = loadable(() => import("./ReportCode"));
 // const ReportEdit = loadable(() => import("./ReportEdit"));
@@ -32,7 +31,6 @@ export const ReportFull = ({
   reportId,
   report,
   queryString,
-  apiUrl,
   fetchReport,
   topLevel,
   modalStyle = {},
@@ -45,6 +43,7 @@ export const ReportFull = ({
   const [code, setCode] = useState(false);
   const [edit, setEdit] = useState(false);
   const [query, setQuery] = useState(false);
+  const [download, setDownload] = useState(false);
   const [info, setInfo] = useState(false);
   const chartRef = useRef();
   const containerRef = useRef();
@@ -76,33 +75,6 @@ export const ReportFull = ({
     document.body.appendChild(link);
     link.click();
     link.parentNode.removeChild(link);
-  };
-
-  const exportChart = (e, format = "png", filename = "report") => {
-    let chartSVG;
-    if (format == "json") {
-      let link = `${apiUrl}/report?${queryString}`;
-      window.open(link, "_blank");
-      return;
-    }
-    if (chartRef.current && chartRef.current.children) {
-      chartSVG = chartRef.current.childNodes[0].childNodes[0];
-    } else {
-      return;
-    }
-    chartSVG = React.Children.only(chartSVG);
-    let opts = {
-      excludeCss: true,
-      scale: 2,
-      backgroundColor: "white",
-    };
-    if (format == "png") {
-      saveSvgAsPng(chartSVG, `${filename}.png`, opts);
-    } else if (format == "svg") {
-      svgAsDataUri(chartSVG, opts).then((uri) => {
-        downloadLink(uri, `${filename}.svg`);
-      });
-    }
   };
 
   const permaLink = (queryString, toggle) => {
@@ -153,17 +125,23 @@ export const ReportFull = ({
     <Grid
       container
       direction="row"
-      style={{ ...(modal && { ...modalStyle }), height, width, flexGrow: 1 }}
+      style={{
+        ...(modal && { ...modalStyle }),
+        height,
+        width,
+        flexGrow: 1,
+        maxHeight: "100%",
+      }}
       className={classnames(classes.paper, styles.markdown)}
       ref={gridRef}
     >
       <Grid item xs={1} />
       <Grid
         item
-        xs={edit || query || info ? 5 : 10}
+        xs={edit || query || info || download ? 5 : 10}
         align="center"
         ref={containerRef}
-        style={{ width: "100%" }}
+        style={{ width: "100%", height: "100%" }}
       >
         {reportComponent}
       </Grid>
@@ -213,6 +191,25 @@ export const ReportFull = ({
           </Grid>
         </Fragment>
       )}
+      {download && (
+        <Fragment>
+          <Grid item xs={1} />
+          <Grid
+            item
+            xs={4}
+            align="center"
+            style={{ height: "100%", width: "100%" }}
+          >
+            <ReportDownload
+              reportId={reportId}
+              report={report}
+              chartRef={chartRef}
+              code={code}
+              queryString={queryString}
+            />
+          </Grid>
+        </Fragment>
+      )}
       <Grid item xs={1}>
         <Grid container direction="column">
           <Grid item align="right">
@@ -226,6 +223,7 @@ export const ReportFull = ({
                 onClick={() => {
                   setInfo(false);
                   setQuery(false);
+                  setDownload(false);
                   setEdit(!edit);
                 }}
                 style={{ cursor: "pointer" }}
@@ -238,6 +236,7 @@ export const ReportFull = ({
                 onClick={() => {
                   setInfo(false);
                   setEdit(false);
+                  setDownload(false);
                   setQuery(!query);
                 }}
                 style={{ cursor: "pointer" }}
@@ -249,6 +248,7 @@ export const ReportFull = ({
               onClick={() => {
                 setInfo(!info);
                 setEdit(false);
+                setDownload(false);
                 setQuery(false);
               }}
               style={{ cursor: "pointer" }}
@@ -271,7 +271,7 @@ export const ReportFull = ({
               style={{ cursor: "pointer" }}
             />
           </Grid>
-          <Grid item align="right">
+          {/* <Grid item align="right">
             <GetAppIcon
               onClick={(e) => {
                 if (code) {
@@ -282,6 +282,17 @@ export const ReportFull = ({
               }}
               style={{ cursor: "pointer" }}
             />
+          </Grid> */}
+          <Grid item align="right">
+            <GetAppIcon
+              onClick={() => {
+                setInfo(false);
+                setEdit(false);
+                setDownload(!download);
+                setQuery(false);
+              }}
+              style={{ cursor: "pointer" }}
+            />
           </Grid>
         </Grid>
       </Grid>
@@ -289,7 +300,7 @@ export const ReportFull = ({
   );
   return (
     <div
-      style={{ marginLeft, height, width }}
+      style={{ marginLeft, height, width, maxHeight: "100%" }}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -301,4 +312,4 @@ export const ReportFull = ({
   );
 };
 
-export default compose(withApiUrl, dispatchReport)(ReportFull);
+export default compose(dispatchReport)(ReportFull);

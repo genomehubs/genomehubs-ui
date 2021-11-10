@@ -1,13 +1,13 @@
-import React from "react";
-import { withStyles } from "@material-ui/core/styles";
-import GetAppIcon from "@material-ui/icons/GetApp";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import Paper from "@material-ui/core/Paper";
+import GetAppIcon from "@material-ui/icons/GetApp";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
+import Paper from "@material-ui/core/Paper";
+import React from "react";
+import { withStyles } from "@material-ui/core/styles";
 
 const ColorButtonGroup = withStyles((theme) => ({
   root: {
@@ -19,26 +19,31 @@ const ColorButtonGroup = withStyles((theme) => ({
   },
 }))(ButtonGroup);
 
-const DownloadButton = ({ onButtonClick, searchTerm }) => {
-  const options = {
-    CSV: { format: "csv" },
-    TSV: { format: "tsv" },
-    JSON: { format: "json" },
-    "Tidy Data": { format: "tsv", tidyData: true },
-    "Raw Values": {
-      format: "tsv",
-      tidyData: true,
-      includeRawValues: true,
-    },
-  };
+const defaultOptions = {
+  TSV: { format: "tsv" },
+  CSV: { format: "csv" },
+  JSON: { format: "json" },
+  "Tidy Data": { format: "tsv", tidyData: true },
+  "Raw Values": {
+    format: "tsv",
+    tidyData: true,
+    includeRawValues: true,
+  },
+};
 
+const DownloadButton = ({
+  onButtonClick,
+  searchTerm,
+  options = defaultOptions,
+}) => {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const handleClick = () => {
     let key = Object.keys(options)[selectedIndex];
     let format = options[key].format;
+    let image = options[key].image;
     let fullOptions = {
       ...searchTerm,
       ...options[key],
@@ -46,7 +51,8 @@ const DownloadButton = ({ onButtonClick, searchTerm }) => {
       size: 10000,
     };
     delete fullOptions.format;
-    onButtonClick(fullOptions, format);
+    delete fullOptions.image;
+    onButtonClick(fullOptions, format, image);
   };
 
   const handleMenuItemClick = (event, index) => {
