@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const useResize = (myRef) => {
   const getDimensions = () => ({
-    width: myRef.current.offsetWidth,
-    height: myRef.current.offsetHeight,
+    width: myRef.current?.offsetWidth || 0,
+    height: myRef.current?.offsetHeight || 0,
   });
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });

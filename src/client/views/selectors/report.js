@@ -336,3 +336,32 @@ export const getReportDefaults = createSelector(
     return reportDefaults;
   }
 );
+
+export const saveReport = (options, format = "json") => {
+  const filename = `report.${format}`;
+  options.filename = filename;
+  const queryString = qs.stringify(options);
+  const formats = {
+    json: "application/json",
+    nwk: "text/x-nh",
+    xml: "application/xml",
+    zip: "application/zip",
+  };
+  let url = `${apiUrl}/report?${queryString}`;
+  fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: formats[format],
+    },
+  })
+    .then((response) => response.blob())
+    .then((blob) => {
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    });
+};

@@ -1,3 +1,4 @@
+import { downloadReport, saveReport } from "../selectors/report";
 import { saveSvgAsPng, svgAsDataUri } from "save-svg-as-png";
 
 import DownloadButton from "./DownloadButton";
@@ -21,7 +22,16 @@ export const ReportDownload = ({
     return null;
   }
 
-  const exportChart = ({ format, filename = "report" }) => {
+  const exportChart = ({ options, format, filename = "report" }) => {
+    const downloadLink = (uri, filename) => {
+      const link = document.createElement("a");
+      link.href = uri;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    };
+
     let chartSVG;
     if (format == "png" || format == "svg") {
       if (chartRef.current && chartRef.current.children) {
@@ -30,7 +40,6 @@ export const ReportDownload = ({
         return;
       }
       chartSVG = React.Children.only(chartSVG);
-      console.log(chartSVG);
       let { x: left, y: top, height, width } = chartSVG.viewBox.baseVal;
       let opts = {
         excludeCss: true,
@@ -41,38 +50,34 @@ export const ReportDownload = ({
         height,
         width,
       };
-      if (image == "png") {
+      if (format == "png") {
         saveSvgAsPng(chartSVG, `${filename}.png`, opts);
-      } else if (image == "svg") {
+      } else if (format == "svg") {
         svgAsDataUri(chartSVG, opts).then((uri) => {
           downloadLink(uri, `${filename}.svg`);
         });
       }
       return;
     } else if (format) {
-      if (format == "json") {
-        let link = `${apiUrl}/report?${queryString}`;
-        window.open(link, "_blank");
-        return;
-      }
+      saveReport(options, format);
     }
   };
 
   const handleClick = (options, format) => {
-    console.log({ options, format });
     if (format) {
-      exportChart(format);
+      exportChart({ options, format });
     }
   };
 
   let options = {
-    PNG: { image: "png" },
-    SVG: { image: "svg" },
+    PNG: { format: "png" },
+    SVG: { format: "svg" },
     JSON: { format: "json" },
-    Newick: { format: "x-nh" },
-    PhyloXML: {
-      format: "xml",
-    },
+    ...(report == "tree" && {
+      Newick: { format: "nwk" },
+      PhyloXML: { format: "xml" },
+      ZIP: { format: "zip" },
+    }),
   };
 
   return (

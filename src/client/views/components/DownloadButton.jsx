@@ -43,7 +43,6 @@ const DownloadButton = ({
   const handleClick = () => {
     let key = Object.keys(options)[selectedIndex];
     let format = options[key].format;
-    let image = options[key].image;
     let fullOptions = {
       ...searchTerm,
       ...options[key],
@@ -52,7 +51,7 @@ const DownloadButton = ({
     };
     delete fullOptions.format;
     delete fullOptions.image;
-    onButtonClick(fullOptions, format, image);
+    onButtonClick(fullOptions, format);
   };
 
   const handleMenuItemClick = (event, index) => {
