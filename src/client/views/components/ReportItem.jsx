@@ -46,6 +46,8 @@ const ReportItem = ({
   containerRef,
   reportRef,
   gridRef,
+  componentRef,
+  minDim = 0,
   ratio,
   delay = 0,
   stacked,
@@ -65,12 +67,12 @@ const ReportItem = ({
     ...qs.parse(queryString),
   });
   useEffect(() => {
-    if (!reportById || Object.keys(reportById).length == 0) {
+    if (reportId && (!reportById || Object.keys(reportById).length == 0)) {
       setTimeout(() => fetchReport({ reportId, queryString }), delay);
     }
   }, [reportId]);
   let component, error, loading;
-  if (Object.keys(reportById).length == 0) {
+  if (!reportById || Object.keys(reportById).length == 0) {
     component = (
       <ReportLoading
         report={report}
@@ -180,7 +182,7 @@ const ReportItem = ({
     }
   }
   heading = heading || headings[report];
-  caption = reportById.report?.caption;
+  caption = reportById?.report?.caption;
   let content = (
     <Grid
       container
@@ -227,7 +229,11 @@ const ReportItem = ({
   //     </Grid>
   //   );
   // }
-  return <Grid {...gridProps}>{content}</Grid>;
+  return (
+    <Grid id="tmp" style={{ minHeight: minDim }} {...gridProps}>
+      {content}
+    </Grid>
+  );
 };
 
 export default compose(withFetchReport, withReportById)(ReportItem);

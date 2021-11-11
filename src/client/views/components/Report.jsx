@@ -3,6 +3,7 @@ import React, { Fragment, useEffect, useRef } from "react";
 import ReportItem from "./ReportItem";
 import qs from "qs";
 import { useLocation } from "@reach/router";
+import useResize from "../hooks/useResize";
 
 export const queryPropList = [
   "result",
@@ -66,7 +67,18 @@ const Report = (props) => {
   reportProps.yOpts = props.yOpts;
   reportProps.scatterThreshold = props.scatterThreshold;
 
-  return <ReportItem {...reportProps} />;
+  const componentRef = useRef();
+  const { width, height } = useResize(componentRef);
+  let minDim = Math.floor(width);
+  if (height) {
+    minDim = Math.floor(Math.min(width, height));
+  } else {
+    minDim /= reportProps.ratio;
+  }
+
+  return (
+    <ReportItem {...reportProps} componentRef={componentRef} height={minDim} />
+  );
 };
 
 export default Report;

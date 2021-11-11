@@ -11,6 +11,7 @@ import {
   getSearchTerm,
 } from "../reducers/search";
 
+import { byIdSelectorCreator } from "../reducers/selectorCreators";
 import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
 import { getTypes } from "../reducers/types";
@@ -142,9 +143,8 @@ const processScatter = (scatter) => {
   return { chartData, pointData, cats, catSums };
 };
 
-const processReport = (reports, reportId) => {
-  let report = reports[reportId];
-  if (!report) return {};
+const processReport = (report) => {
+  if (!report || !report.name) return {};
   if (report.name == "tree") {
     let { treeStyle } = qs.parse(report.report.queryString);
     return {
@@ -178,11 +178,28 @@ const processReport = (reports, reportId) => {
   return report;
 };
 
+const createSelectorForReportId = byIdSelectorCreator();
+const _getReportIdAsMemoKey = (state, _state, reportId) => {
+  return reportId;
+};
+
+const getReport = (state, reportId) => {
+  return state.reports.byId[reportId] || {};
+};
+
+export const cacheReportByReportId = createSelectorForReportId(
+  _getReportIdAsMemoKey,
+  getReport,
+  (report) => report
+);
+
 export const getReportByReportId = createCachedSelector(
-  getReports,
-  (reports, reportId) => reportId,
-  (reports, reportId) => processReport(reports, reportId)
-)((reports, reportId) => reportId);
+  (state, reportId) => getReport(state, reportId),
+  (_state, reportId) => reportId,
+  (report, reportId) => {
+    return processReport(report, reportId);
+  }
+)((_state, reportId) => reportId);
 
 export const getReportFields = createSelector(
   getSearchIndex,
