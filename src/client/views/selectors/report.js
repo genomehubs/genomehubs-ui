@@ -32,7 +32,10 @@ export function fetchReport({ queryString, reportId, reload }) {
     }
     dispatch(requestReport(reportId));
     // TODO: use terms
-    if (queryString.match("report=tree")) {
+    if (
+      queryString.match("report=tree") &&
+      !queryString.match("treeThreshold")
+    ) {
       queryString += `&treeThreshold=${treeThreshold}`;
     }
     let url = `${apiUrl}/report?${queryString}`;
