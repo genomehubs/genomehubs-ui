@@ -18,8 +18,7 @@ import { getTypes } from "../reducers/types";
 import { processTree } from "./tree";
 import qs from "qs";
 import store from "../store";
-
-const treeThreshold = TREE_THRESHOLD;
+import { treeThreshold } from "../reducers/tree";
 
 export function fetchReport({ queryString, reportId, reload }) {
   return async function (dispatch) {
@@ -337,7 +336,7 @@ export const getReportDefaults = createSelector(
   }
 );
 
-export const saveReport = (options, format = "json") => {
+export const saveReport = async (options, format = "json") => {
   const filename = `report.${format}`;
   options.filename = filename;
   const queryString = qs.stringify(options);
@@ -347,21 +346,25 @@ export const saveReport = (options, format = "json") => {
     xml: "application/xml",
     zip: "application/zip",
   };
-  let url = `${apiUrl}/report?${queryString}`;
-  fetch(url, {
-    method: "GET",
-    headers: {
-      Accept: formats[format],
-    },
-  })
-    .then((response) => response.blob())
-    .then((blob) => {
-      const url = window.URL.createObjectURL(new Blob([blob]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
+  try {
+    let url = `${apiUrl}/report?${queryString}`;
+    let response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: formats[format],
+      },
     });
+    let blob = await response.blob();
+
+    const linkUrl = window.URL.createObjectURL(new Blob([blob]));
+    const link = document.createElement("a");
+    link.href = linkUrl;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+  } catch (err) {
+    return false;
+  }
+  return true;
 };

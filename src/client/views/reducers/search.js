@@ -77,7 +77,7 @@ export const getSearchResultById = createCachedSelector(
   }
 )((_state, searchId) => searchId);
 
-export const saveSearchResults = (options, format = "tsv") => {
+export const saveSearchResults = async (options, format = "tsv") => {
   const filename = `download.${format}`;
   options.filename = filename;
   const queryString = qs.stringify(options);
@@ -86,23 +86,27 @@ export const saveSearchResults = (options, format = "tsv") => {
     json: "application/json",
     tsv: "text/tab-separated-values",
   };
-  let url = `${apiUrl}/search?${queryString}`;
-  fetch(url, {
-    method: "GET",
-    headers: {
-      Accept: formats[format],
-    },
-  })
-    .then((response) => response.blob())
-    .then((blob) => {
-      const url = window.URL.createObjectURL(new Blob([blob]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
+  try {
+    let url = `${apiUrl}/search?${queryString}`;
+    let response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: formats[format],
+      },
     });
+    let blob = await response.blob();
+
+    const linkUrl = window.URL.createObjectURL(new Blob([blob]));
+    const link = document.createElement("a");
+    link.href = linkUrl;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+  } catch (err) {
+    return false;
+  }
+  return true;
 };
 
 export const setSearchTerm = createAction("SET_SEARCH_TERM");

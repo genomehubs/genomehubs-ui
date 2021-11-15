@@ -2,6 +2,7 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import DownloadMessage from "./DownloadMessage";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
@@ -37,21 +38,40 @@ const DownloadButton = ({
   options = defaultOptions,
 }) => {
   const [open, setOpen] = React.useState(false);
+  const [message, setMessage] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     let key = Object.keys(options)[selectedIndex];
+    setMessage({
+      message: `Downloading ${key} file`,
+      duration: 60000,
+      severity: "info",
+    });
     let format = options[key].format;
     let fullOptions = {
       ...searchTerm,
       ...options[key],
       offset: 0,
-      size: 10000,
+      size: 10000000,
     };
     delete fullOptions.format;
     delete fullOptions.image;
-    onButtonClick(fullOptions, format);
+    let success = await onButtonClick(fullOptions, format);
+    if (success) {
+      setMessage({
+        message: `${key} file downloaded`,
+        duration: 5000,
+        severity: "success",
+      });
+    } else {
+      setMessage({
+        message: `${key} file download failed`,
+        duration: 5000,
+        severity: "error",
+      });
+    }
   };
 
   const handleMenuItemClick = (event, index) => {
@@ -120,6 +140,7 @@ const DownloadButton = ({
           </MenuList>
         </ClickAwayListener>
       </Paper>
+      {message && <DownloadMessage {...message} />}
     </span>
   );
 };

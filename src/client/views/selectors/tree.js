@@ -8,6 +8,7 @@ import {
   requestNodes,
   resetNodes,
   setRootNode,
+  treeThreshold,
 } from "../reducers/tree";
 import { scaleLinear, scalePow } from "d3-scale";
 import {
@@ -39,7 +40,7 @@ export function fetchNodes(options) {
     let treeOptions = { ...options };
     delete treeOptions.ranks;
     treeOptions.offset = 0;
-    treeOptions.size = 10000;
+    treeOptions.size = treeThreshold;
     const queryString = qs.stringify(treeOptions);
     let x = uriEncode(treeOptions.query);
     let y = "";

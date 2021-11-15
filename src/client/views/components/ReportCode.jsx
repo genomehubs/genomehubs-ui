@@ -9,6 +9,11 @@ export const ReportCode = ({ reportId, reportById, report, queryString }) => {
   if (!reportById.report || !reportById.report.queryString) {
     return null;
   }
+  let code = reportById.report;
+  if (code.tree) {
+    let { lines, ...tree } = code.tree;
+    code.tree = tree;
+  }
   // TODO: filter processed data from report code
   return (
     <code style={{ textAlign: "left" }}>

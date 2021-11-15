@@ -120,7 +120,6 @@ export const ReportFull = ({
       />
     );
   }
-
   let content = (
     <Grid
       container
@@ -145,7 +144,7 @@ export const ReportFull = ({
       >
         {reportComponent}
       </Grid>
-      {edit && (
+      {edit && !query && !info && !download && (
         <Fragment>
           <Grid item xs={1} />
           <Grid

@@ -10,6 +10,8 @@ export const receiveNodes = createAction("RECEIVE_NODES");
 export const cancelNodesRequest = createAction("CANCEL_NODES_REQUEST");
 export const resetNodes = createAction("RESET_NODES");
 
+export const treeThreshold = TREE_THRESHOLD;
+
 const defaultState = () => ({
   isFetching: false,
   treeNodes: {},

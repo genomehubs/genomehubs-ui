@@ -22,8 +22,8 @@ export const ReportDownload = ({
     return null;
   }
 
-  const exportChart = ({ options, format, filename = "report" }) => {
-    const downloadLink = (uri, filename) => {
+  const exportChart = async ({ options, format, filename = "report" }) => {
+    const downloadLink = async (uri, filename) => {
       const link = document.createElement("a");
       link.href = uri;
       link.setAttribute("download", filename);
@@ -33,6 +33,7 @@ export const ReportDownload = ({
     };
 
     let chartSVG;
+    let success = false;
     if (format == "png" || format == "svg") {
       if (chartRef.current && chartRef.current.children) {
         chartSVG = chartRef.current.childNodes[0].childNodes[0];
@@ -51,22 +52,25 @@ export const ReportDownload = ({
         width,
       };
       if (format == "png") {
-        saveSvgAsPng(chartSVG, `${filename}.png`, opts);
+        await saveSvgAsPng(chartSVG, `${filename}.png`, opts);
+        success = true;
       } else if (format == "svg") {
-        svgAsDataUri(chartSVG, opts).then((uri) => {
-          downloadLink(uri, `${filename}.svg`);
-        });
+        let uri = await svgAsDataUri(chartSVG, opts);
+        await downloadLink(uri, `${filename}.svg`);
+        success = true;
       }
-      return;
     } else if (format) {
-      saveReport(options, format);
+      success = await saveReport(options, format);
     }
+    return success;
   };
 
-  const handleClick = (options, format) => {
+  const handleClick = async (options, format) => {
+    let success = false;
     if (format) {
-      exportChart({ options, format });
+      success = exportChart({ options, format });
     }
+    return success;
   };
 
   let options = {
