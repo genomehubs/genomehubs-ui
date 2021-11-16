@@ -6,7 +6,6 @@ import { exploreReducers } from "./explore";
 import { fileReducers } from "./file";
 import { lookupReducers } from "./lookup";
 import { pageReducers } from "./pages";
-import { paneReducers } from "./panes";
 import { recordReducers } from "./record";
 import { reportReducers } from "./report";
 import { routeReducers } from "./routes";
@@ -25,7 +24,6 @@ const allReducers = Object.assign(
   exploreReducers,
   fileReducers,
   lookupReducers,
-  paneReducers,
   pageReducers,
   recordReducers,
   reportReducers,

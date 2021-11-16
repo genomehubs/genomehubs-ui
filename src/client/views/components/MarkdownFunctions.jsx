@@ -2,6 +2,7 @@ import { Link, useLocation } from "@reach/router";
 import React, { Fragment, createElement, useEffect, useState } from "react";
 
 import Grid from "@material-ui/core/Grid";
+import Highlight from "./Highlight";
 import MarkdownInclude from "./MarkdownInclude";
 import NavLink from "./NavLink";
 import Report from "./Report";
@@ -49,11 +50,12 @@ export const RehypeComponentsList = {
       <img {...processProps(props)} />
     </div>
   ),
-  report: (props) => (
-    <Report {...processProps(props)} className={styles.reportContainer} />
-  ),
   item: (props) => (
     <Grid {...processProps(props)} item className={styles.reportContainer} />
+  ),
+  pre: (props) => <Highlight {...props} />,
+  report: (props) => (
+    <Report {...processProps(props)} className={styles.reportContainer} />
   ),
   span: (props) => <span {...processProps(props)} />,
   tooltip: (props) => {

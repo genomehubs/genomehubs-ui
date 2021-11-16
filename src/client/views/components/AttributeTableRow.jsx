@@ -26,6 +26,7 @@ import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
+import withSiteName from "../hocs/withSiteName";
 import withSummary from "../hocs/withSummary";
 import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
@@ -40,7 +41,13 @@ const useRowStyles = makeStyles({
   },
 });
 
-const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
+const NestedTable = ({
+  values,
+  types,
+  setPreferSearchTerm,
+  taxonomy,
+  siteName,
+}) => {
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -61,9 +68,9 @@ const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  let goatHeader;
+  let hubHeader;
   if (values[0].source_index) {
-    goatHeader = <TableCell>GoaT link</TableCell>;
+    hubHeader = <TableCell>{siteName} link</TableCell>;
   }
   return (
     <Box margin={1}>
@@ -71,7 +78,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
         <TableHead>
           <TableRow>
             <TableCell>Value</TableCell>
-            {goatHeader}
+            {hubHeader}
             <TableCell>External source</TableCell>
             <TableCell>Comment</TableCell>
           </TableRow>
@@ -105,10 +112,10 @@ const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
                   )}
                 </TableCell>
               );
-              let goatCell;
-              if (goatHeader) {
+              let hubCell;
+              if (hubHeader) {
                 if (row.source_index) {
-                  goatCell = (
+                  hubCell = (
                     <Tooltip
                       title={`view ${row.source_index} record`}
                       arrow
@@ -125,7 +132,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
                     </Tooltip>
                   );
                 } else {
-                  goatCell = <TableCell></TableCell>;
+                  hubCell = <TableCell></TableCell>;
                 }
               }
               let comment = row.comment || "";
@@ -137,7 +144,7 @@ const NestedTable = ({ values, types, setPreferSearchTerm, taxonomy }) => {
                   <TableCell component="th" scope="row">
                     {row.value}
                   </TableCell>
-                  {goatCell}
+                  {hubCell}
                   <Tooltip
                     title={
                       row.source_description || link_url
@@ -180,6 +187,7 @@ const AttributeTableRow = ({
   setSummaryField,
   setPreferSearchTerm,
   taxonomy,
+  siteName,
 }) => {
   const navigate = useNavigate();
 
@@ -331,7 +339,7 @@ const AttributeTableRow = ({
       }
 
       fieldValues.push(
-        <TableCell key={"aggregation_source"}>
+        <TableCell key={"aggregation_source"} style={{ whiteSpace: "nowrap" }}>
           <span className={css}>{aggSource}</span>
           {icon}
         </TableCell>
@@ -363,6 +371,7 @@ const AttributeTableRow = ({
                   values={values}
                   setPreferSearchTerm={setPreferSearchTerm}
                   taxonomy={taxonomy}
+                  siteName={siteName}
                 />
               </Collapse>
             </TableCell>
@@ -399,6 +408,7 @@ const AttributeTableRow = ({
 };
 
 export default compose(
+  withSiteName,
   withTaxonomy,
   withRecord,
   withSummary,

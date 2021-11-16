@@ -13,25 +13,12 @@ import loadable from "@loadable/component";
 import styles from "./Styles.scss";
 import withRoutes from "../hocs/withRoutes";
 
-// const Landing = loadable(() => import("./Landing"));
-// const ExplorePage = loadable(() => import("./ExplorePage"));
-// const RecordPage = loadable(() => import("./RecordPage"));
-// const ReportPage = loadable(() => import("./ReportPage"));
-// const SearchPage = loadable(() => import("./SearchPage"));
-// const GenericPage = loadable(() => import("./GenericPage"));
-// const AboutPage = loadable(() => import("./AboutPage"));
-// const TutorialPage = loadable(() => import("./TutorialPage"));
-
 const basename = BASENAME || "";
 
 const fixedRoutes = { search: true, explore: true, records: true };
 
 const Main = ({ routes }) => {
-  let css = classnames(
-    // styles.flexCenter,
-    // styles.flexCenterHorizontal,
-    styles.fillParent
-  );
+  let css = classnames(styles.fillParent);
   let paths = [
     <Landing path="/" />,
     <SearchPage path="/search" />,
