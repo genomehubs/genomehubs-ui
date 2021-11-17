@@ -1,13 +1,16 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
-import { createSelector } from "reselect";
-import store from "../store";
-import qs from "qs";
-import { queryToStore, qsDefault } from "../querySync";
-import { byIdSelectorCreator } from "./selectorCreators";
-import history from "./history";
 import { getAnalytics, trackPage } from "./tracking";
+import { qsDefault, queryToStore } from "../querySync";
+
+import { byIdSelectorCreator } from "./selectorCreators";
+import { createSelector } from "reselect";
+import history from "./history";
+import qs from "qs";
+import store from "../store";
 
 const basename = BASENAME || "";
+
+export const siteName = SITENAME || "";
 
 export const setPathname = createAction("SET_PATHNAME");
 export const pathname = handleAction(

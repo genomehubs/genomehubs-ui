@@ -9,7 +9,6 @@ import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
 import qs from "qs";
 import styles from "./Styles.scss";
-import withPanes from "../hocs/withPanes";
 import withReportDefaults from "../hocs/withReportDefaults";
 
 const reportTypes = {

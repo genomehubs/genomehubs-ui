@@ -38,6 +38,12 @@ const processPages = (pages, pageId) => {
   let page = pages.byId[pageId];
   if (page === false) return false;
   if (!page) return undefined;
+  if (pageId == "tabs.md") {
+    page = page
+      .split("\n")
+      .filter((line) => line.match(/^-/))
+      .join("\n");
+  }
   return page;
 };
 

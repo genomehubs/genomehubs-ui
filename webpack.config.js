@@ -106,7 +106,7 @@ const config = {
           from: "./src/client/favicon",
         },
         {
-          from: "./src/client/static",
+          from: main.pagesPath,
           to: STATIC_DIR,
         },
       ],

@@ -1,10 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import { getPanes } from "../reducers/panes";
+import { siteName } from "../reducers/location";
 
-const withPanes = (WrappedComponent) => (props) => {
+const withSiteName = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
-    panes: getPanes(state),
+    siteName,
   });
 
   const Connected = connect(mapStateToProps)(WrappedComponent);
@@ -12,4 +12,4 @@ const withPanes = (WrappedComponent) => (props) => {
   return <Connected {...props} />;
 };
 
-export default withPanes;
+export default withSiteName;

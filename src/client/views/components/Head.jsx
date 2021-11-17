@@ -1,13 +1,13 @@
+import { Helmet } from "react-helmet";
 import React from "react";
 import { compose } from "recompose";
-import { Helmet } from "react-helmet";
-import withTitle from "../hocs/withTitle";
+import withSiteName from "../hocs/withSiteName";
 
-const Head = ({ title }) => {
+const Head = ({ siteName }) => {
   return (
     <Helmet>
       <meta charset="utf8" />
-      <title>{title}</title>
+      <title>{siteName}</title>
       <link
         rel="apple-touch-icon"
         sizes="180x180"
@@ -34,4 +34,4 @@ const Head = ({ title }) => {
   );
 };
 
-export default compose(withTitle)(Head);
+export default compose(withSiteName)(Head);
