@@ -102,8 +102,8 @@ const ReportTreePaths = ({
   useEffect(() => {
     if (treeRef.current) {
       let dimensions = getDimensions(treeRef);
-      setTreeDimensions(dimensions);
       if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
+      setTreeDimensions(dimensions);
       if (reportRef) {
         let container = reportRef.current;
         container.style.height = `${Math.max(dimensions.height + 40, 350)}px`;
@@ -353,7 +353,7 @@ const ReportTreePaths = ({
         // preserveAspectRatio="xMinYMin"
         preserveAspectRatio="xMinYMin meet"
         ref={anchorRef}
-        height={plotHeight}
+        height={(plotHeight * svgWidth) / (treeDimensions.width || 1)}
         width={svgWidth}
         viewBox={`${treeDimensions.x} ${treeDimensions.y} ${treeDimensions.width} ${treeDimensions.height}`}
         xmlns="http://www.w3.org/2000/svg"

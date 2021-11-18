@@ -842,7 +842,7 @@ export const processTreePaths = (nodes) => {
       highlightColor,
     });
   });
-  return { lines, maxDepth, plotHeight: yScale.range()[0] + charHeight };
+  return { lines, maxDepth, plotHeight: yScale(0) - yScale(yMax) + charHeight };
 };
 
 export const processTree = (nodes, treeStyle = "rect") => {
