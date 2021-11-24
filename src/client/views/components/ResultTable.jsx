@@ -402,6 +402,15 @@ const ResultTable = ({
           value = isNaN(value) ? value : formatter(value);
           if (Array.isArray(field.value) && field.count > 1) {
             value = `${value} ...`;
+            let list = field.value.slice(0, 3).join(", ");
+            if (field.count > 3) {
+              list = `${list}, ...`;
+            }
+            value = (
+              <Tooltip title={list} placement="top" arrow>
+                <span>{value}</span>
+              </Tooltip>
+            );
           }
           cells.push(
             <TableCell key={type.name}>
