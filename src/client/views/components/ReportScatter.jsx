@@ -120,7 +120,9 @@ const searchByCell = ({
     ranks,
   });
   // let hash = encodeURIComponent(query);
-  navigate(`/search?${queryString}#${encodeURIComponent(query)}`);
+  navigate(
+    `/search?${queryString.replace(/^\?/, "")}#${encodeURIComponent(query)}`
+  );
 };
 
 const CustomShape = (props, chartProps) => {

@@ -42,7 +42,7 @@ const RecordPage = ({
     if (hashTerm) {
       hash = `#${encodeURIComponent(hashTerm)}`;
     } else {
-      hash = location.hash;
+      hash = location.hash || "";
     }
     navigate(
       `?record_id=${recordId}&result=${result}&taxonomy=${taxonomy}${hash}`,

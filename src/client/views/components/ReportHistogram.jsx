@@ -131,7 +131,9 @@ const searchByCell = ({
     ranks,
   });
   // let hash = encodeURIComponent(query);
-  navigate(`/search?${queryString}#${encodeURIComponent(query)}`);
+  navigate(
+    `/search?${queryString.replace(/^\?/, "")}#${encodeURIComponent(query)}`
+  );
 };
 
 const CustomBackground = ({ chartProps, ...props }) => {
@@ -218,7 +220,7 @@ const Histogram = ({
       )}
     </XAxis>,
     <XAxis xAxisId={1} dataKey="x" hide={true}></XAxis>,
-    <YAxis>
+    <YAxis allowDecimals={false}>
       {width > 300 && (
         <Label
           value={yLabel}

@@ -41,6 +41,9 @@ export const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  label: {
+    color: "rgba(0, 0, 0, 0.54)",
+  },
 }));
 
 // const handleValueChange =
@@ -391,10 +394,10 @@ const QueryBuilder = ({
     }
     opts.offset = 0;
     delete opts.query;
-    delete opts.excludeAncestral;
-    delete opts.excludeDescendant;
-    delete opts.excludeDirect;
-    delete opts.excludeMissing;
+    // delete opts.excludeAncestral;
+    // delete opts.excludeDescendant;
+    // delete opts.excludeDirect;
+    // delete opts.excludeMissing;
     return opts;
   });
 
@@ -480,18 +483,20 @@ const QueryBuilder = ({
             >
               <Grid item>
                 <FormControl className={classes.formControl}>
-                  <Switch
-                    id={"taxon-filter-filter"}
-                    checked={taxFilter.filter == "tax_tree"}
-                    onChange={handleTaxonFilterChange}
-                    name="filter-type"
-                    color="default"
+                  <FormControlLabel
+                    className={classes.label}
+                    control={
+                      <Switch
+                        id={"taxon-filter-filter"}
+                        checked={taxFilter.filter == "tax_tree"}
+                        onChange={handleTaxonFilterChange}
+                        name="filter-type"
+                        color="default"
+                      />
+                    }
+                    label={taxFilter.filter == "tax_tree" ? "On" : "Off"}
                   />
-                  <FormHelperText>
-                    {taxFilter.filter == "tax_tree"
-                      ? "include descendants"
-                      : "ignore descendants"}
-                  </FormHelperText>
+                  <FormHelperText>{"include descendants"}</FormHelperText>
                 </FormControl>
               </Grid>
             </Tooltip>
@@ -522,18 +527,20 @@ const QueryBuilder = ({
           >
             <Grid item>
               <FormControl className={classes.formControl}>
-                <Switch
-                  id={"taxon-filter-estimates"}
-                  checked={moreOptions.includeEstimates}
-                  onChange={handleTaxonFilterChange}
-                  name="filter-estimates"
-                  color="default"
+                <FormControlLabel
+                  className={classes.label}
+                  control={
+                    <Switch
+                      id={"taxon-filter-estimates"}
+                      checked={moreOptions.includeEstimates}
+                      onChange={handleTaxonFilterChange}
+                      name="filter-estimates"
+                      color="default"
+                    />
+                  }
+                  label={moreOptions.includeEstimates ? "On" : "Off"}
                 />
-                <FormHelperText>
-                  {moreOptions.includeEstimates
-                    ? "include estimates"
-                    : "ignore estimates"}
-                </FormHelperText>
+                <FormHelperText>{"include estimates"}</FormHelperText>
               </FormControl>
             </Grid>
           </Tooltip>

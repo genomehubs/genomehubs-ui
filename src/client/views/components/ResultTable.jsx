@@ -26,6 +26,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import classnames from "classnames";
 import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
+import qs from "qs";
 import { setPreferSearchTerm } from "../reducers/search";
 import styles from "./Styles.scss";
 import withNames from "../hocs/withNames";
@@ -98,6 +99,7 @@ const SortableCell = ({
   excludeAncestral,
   excludeDescendant,
   excludeMissing,
+  handleToggleExclusion,
 }) => {
   let css = styles.aggregationToggle;
   if (excludeAncestral) {
@@ -157,7 +159,7 @@ const SortableCell = ({
             >
               <StyledCheckbox
                 checked={!excludeDirect.hasOwnProperty(name)}
-                onChange={() => handleTableSort({ toggleDirect: name })}
+                onChange={() => handleToggleExclusion({ toggleDirect: name })}
                 color={"green"}
                 inputProps={{ "aria-label": "direct checkbox" }}
               />
@@ -171,7 +173,9 @@ const SortableCell = ({
             >
               <StyledCheckbox
                 checked={!excludeDescendant.hasOwnProperty(name)}
-                onChange={() => handleTableSort({ toggleDescendant: name })}
+                onChange={() =>
+                  handleToggleExclusion({ toggleDescendant: name })
+                }
                 color={"orange"}
                 inputProps={{ "aria-label": "descendant checkbox" }}
               />
@@ -185,7 +189,9 @@ const SortableCell = ({
             >
               <StyledCheckbox
                 checked={!excludeAncestral.hasOwnProperty(name)}
-                onChange={() => handleTableSort({ toggleAncestral: name })}
+                onChange={() =>
+                  handleToggleExclusion({ toggleAncestral: name })
+                }
                 color={"red"}
                 inputProps={{ "aria-label": "ancestral checkbox" }}
               />
@@ -194,7 +200,7 @@ const SortableCell = ({
           <Tooltip key={"missing"} title={"Toggle missing values"} arrow>
             <StyledCheckbox
               checked={!excludeMissing.hasOwnProperty(name)}
-              onChange={() => handleTableSort({ toggleMissing: name })}
+              onChange={() => handleToggleExclusion({ toggleMissing: name })}
               color={"black"}
               inputProps={{ "aria-label": "missing checkbox" }}
             />
@@ -247,31 +253,15 @@ const ResultTable = ({
       )}`
     );
   };
-  const arrToObj = (arr) => {
-    let obj = {};
-    if (arr) {
-      arr.forEach((key) => {
-        obj[key] = true;
-      });
-    }
-    return obj;
-  };
-  const handleTableSort = ({
-    sortBy,
-    sortOrder,
+
+  const handleToggleExclusion = ({
     toggleAncestral,
     toggleDescendant,
     toggleDirect,
     toggleMissing,
   }) => {
+    setPreferSearchTerm(false);
     let options = { ...searchTerm };
-    if (sortBy && sortBy != "") {
-      options.sortBy = sortBy;
-      options.sortOrder = sortOrder;
-    } else if (sortBy) {
-      delete options.sortBy;
-      delete options.sortOrder;
-    }
     let ancestral = arrToObj(options.excludeAncestral);
     if (toggleAncestral) {
       ancestral[toggleAncestral] = !ancestral[toggleAncestral];
@@ -312,6 +302,86 @@ const ResultTable = ({
         options.excludeMissing.push(key);
       }
     });
+    navigate(`/search?${qs.stringify(options)}${location.hash || ""}`);
+    // let recordId, searchText;
+    // if (searchIndex == "assembly") {
+    //   recordId = record.assembly_id;
+    //   searchText = record.assembly_id;
+    // } else {
+    //   recordId = record.taxon_id;
+    //   searchText = record.scientific_name;
+    // }
+    // navigate(
+    //   `/sarch?record_id=${recordId}&result=${searchIndex}&taxonomy=${taxonomy}#${encodeURIComponent(
+    //     searchText
+    //   )}`
+    // );
+  };
+  const arrToObj = (arr) => {
+    let obj = {};
+    if (arr) {
+      arr.forEach((key) => {
+        obj[key] = true;
+      });
+    }
+    return obj;
+  };
+  const handleTableSort = ({
+    sortBy,
+    sortOrder,
+    toggleAncestral,
+    toggleDescendant,
+    toggleDirect,
+    toggleMissing,
+  }) => {
+    let options = { ...searchTerm };
+    if (sortBy && sortBy != "") {
+      options.sortBy = sortBy;
+      options.sortOrder = sortOrder;
+    } else if (sortBy) {
+      delete options.sortBy;
+      delete options.sortOrder;
+    }
+    // let ancestral = arrToObj(options.excludeAncestral);
+    // if (toggleAncestral) {
+    //   ancestral[toggleAncestral] = !ancestral[toggleAncestral];
+    // }
+    // options.excludeAncestral = [];
+    // Object.keys(ancestral).forEach((key) => {
+    //   if (ancestral[key]) {
+    //     options.excludeAncestral.push(key);
+    //   }
+    // });
+    // let descendant = arrToObj(options.excludeDescendant);
+    // if (toggleDescendant) {
+    //   descendant[toggleDescendant] = !descendant[toggleDescendant];
+    // }
+    // options.excludeDescendant = [];
+    // Object.keys(descendant).forEach((key) => {
+    //   if (descendant[key]) {
+    //     options.excludeDescendant.push(key);
+    //   }
+    // });
+    // let direct = arrToObj(options.excludeDirect);
+    // if (toggleDirect) {
+    //   direct[toggleDirect] = !direct[toggleDirect];
+    // }
+    // options.excludeDirect = [];
+    // Object.keys(direct).forEach((key) => {
+    //   if (direct[key]) {
+    //     options.excludeDirect.push(key);
+    //   }
+    // });
+    // let missing = arrToObj(options.excludeMissing);
+    // if (toggleMissing) {
+    //   missing[toggleMissing] = !missing[toggleMissing];
+    // }
+    // options.excludeMissing = [];
+    // Object.keys(missing).forEach((key) => {
+    //   if (missing[key]) {
+    //     options.excludeMissing.push(key);
+    //   }
+    // });
     if (location.search.match(/tax_tree%28/)) {
       options.query = options.query.replace("tax_name", "tax_tree");
     }
@@ -521,6 +591,7 @@ const ResultTable = ({
           excludeDescendant={arrToObj(searchTerm.excludeDescendant)}
           excludeDirect={arrToObj(searchTerm.excludeDirect)}
           excludeMissing={arrToObj(searchTerm.excludeMissing)}
+          handleToggleExclusion={handleToggleExclusion}
         />
       );
     }

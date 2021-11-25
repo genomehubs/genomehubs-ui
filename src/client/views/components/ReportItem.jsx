@@ -140,7 +140,7 @@ const ReportItem = ({
           permaLink = (queryString, toggle) => {
             let path = "report";
             // TODO: include taxonomy
-            navigate(`/${path}?${queryString}`);
+            navigate(`/${path}?${queryString.replace(/^\?/, "")}`);
           };
         }
         component = (

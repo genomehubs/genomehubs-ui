@@ -99,7 +99,9 @@ export const updatePathname = (update = {}, remove = {}) => {
       history.push({ pathname, hash, search });
       if (getAnalytics(state)) {
         trackPage(
-          pathname + (search ? `?${search}` : "") + (hash ? `#${hash}` : "")
+          pathname +
+            (search ? `?${search.replace(/^\?/, "")}` : "") +
+            (hash ? `#${hash}` : "")
         );
       }
       dispatch(setPathname(pathname));

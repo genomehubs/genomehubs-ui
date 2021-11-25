@@ -56,7 +56,7 @@ const HistogramSVG = ({
     });
   };
   const updateSearch = (options) => {
-    let hashTerm = encodeURIComponent(options.query);
+    let hashTerm = encodeURIComponent(options.query) || "";
     setPreferSearchTerm(false);
     setLookupTerm(hashTerm);
     navigate(`/search?${qs.stringify(options)}#${hashTerm}`);

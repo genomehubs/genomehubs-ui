@@ -470,7 +470,52 @@ export const getNewickString = createSelector(getAPITreeNodes, (nodes) => {
   return `${newick};`;
 });
 
-export const processTreeRings = (nodes) => {
+const setColor = ({ node, yQuery, recurse }) => {
+  let field = (yQuery?.yFields || [])[0];
+  let color, highlightColor;
+  let tonalRange = 9;
+  let baseTone = 2;
+  let greys = schemeGreys[tonalRange];
+  let reds = schemeReds[tonalRange];
+  let greens = schemeGreens[tonalRange];
+  let oranges = schemeOranges[tonalRange];
+  if (!recurse) {
+    color = "white";
+    highlightColor = "white";
+  } else if (yQuery) {
+    let status = node.status ? 1 : 0;
+    let source;
+    if (node.fields && node.fields[field]) {
+      source = node.fields[field].source;
+    }
+    color = greys[baseTone + status];
+    highlightColor = greys[baseTone + 1 + status];
+
+    if (source == "direct") {
+      if (status) {
+        color = greens[baseTone + 1 + status * 2];
+        highlightColor = greens[baseTone + 2 + status * 2];
+      } else {
+        color = greys[baseTone + 2];
+        highlightColor = greys[baseTone + 2];
+      }
+    } else if (source == "descendant") {
+      if (status) {
+        color = oranges[baseTone + status * 2];
+        highlightColor = oranges[baseTone + 2 + status * 2];
+      } else {
+        color = greys[baseTone + 2];
+        highlightColor = greys[baseTone + 2];
+      }
+    }
+  } else {
+    color = greys[baseTone + 2];
+    highlightColor = greys[baseTone + 2];
+  }
+  return { color, highlightColor };
+};
+
+export const processTreeRings = ({ nodes, xQuery, yQuery }) => {
   if (!nodes) return undefined;
   let { treeNodes, lca } = nodes;
   if (!lca) return undefined;
@@ -485,12 +530,7 @@ export const processTreeRings = (nodes) => {
   let cMax = treeNodes[rootNode] ? treeNodes[rootNode].count : 0;
   let cScale = scaleLinear().domain([0, cMax]).range([-Math.PI, Math.PI]);
   let arcs = [];
-  let tonalRange = 9;
-  let baseTone = 2;
-  let greys = schemeGreys[tonalRange];
-  let reds = schemeReds[tonalRange];
-  let greens = schemeGreens[tonalRange];
-  let oranges = schemeOranges[tonalRange];
+
   let scaleFont = false;
   let charLen = 8;
   let charHeight = charLen * 1.3;
@@ -505,20 +545,8 @@ export const processTreeRings = (nodes) => {
     visited[node.taxon_id] = true;
     let outer = depth + 1;
     if (!node) return {};
-    let color = greys[baseTone + node.status];
-    let highlightColor = greys[baseTone + 1 + node.status];
-    if (!recurse) {
-      color = "white";
-      highlightColor = "white";
-    } else if (node) {
-      if (node.source == "direct") {
-        color = greens[baseTone + 1 + node.status];
-        highlightColor = greens[baseTone + 2 + node.status];
-      } else if (node.source == "descendant") {
-        color = oranges[baseTone + node.status];
-        highlightColor = oranges[baseTone + 1 + node.status];
-      }
-    }
+    let { color, highlightColor } = setColor({ node, yQuery, recurse });
+
     if (
       !node.hasOwnProperty("children") ||
       Object.keys(node.children).length == 0
@@ -651,6 +679,7 @@ export const processTreeRings = (nodes) => {
       });
     }
   };
+
   drawArcs({
     node: {
       taxon_id: ancNode,
@@ -664,9 +693,10 @@ export const processTreeRings = (nodes) => {
   return { arcs, labels, maxDepth };
 };
 
-export const processTreePaths = (nodes) => {
+export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
   if (!nodes) return undefined;
   let { treeNodes, lca } = nodes;
+  let field = (yQuery?.yFields || [])[0];
   if (!lca) return undefined;
   let { maxDepth, taxDepth, taxon_id: rootNode, parent: ancNode } = lca;
   maxDepth = taxDepth ? taxDepth : maxDepth;
@@ -678,6 +708,7 @@ export const processTreePaths = (nodes) => {
   let xScale = scaleLinear()
     .domain([-0.5, maxDepth + 3])
     .range([0, width]);
+  console.log(treeNodes[rootNode]);
   let yMax = treeNodes[rootNode] ? treeNodes[rootNode].count : 0;
   let yScale = scaleLinear()
     .domain([0, yMax])
@@ -784,16 +815,7 @@ export const processTreePaths = (nodes) => {
     node.yMin = yScale(maxY);
     node.yMax = yScale(minY);
     node.height = node.yMax - node.yMin;
-    let color = greys[baseTone + 1 + node.status * 2];
-    let highlightColor = greys[baseTone + 2 + node.status * 2];
-
-    if (node.source == "direct") {
-      color = greens[baseTone + 1 + node.status * 2];
-      highlightColor = greens[baseTone + 2 + node.status * 2];
-    } else if (node.source == "descendant") {
-      color = oranges[baseTone + node.status * 2];
-      highlightColor = oranges[baseTone + 1 + node.status * 2];
-    }
+    let { color, highlightColor } = setColor({ node, yQuery, recurse: true });
 
     let label;
     if (node.tip) {
@@ -845,10 +867,9 @@ export const processTreePaths = (nodes) => {
   return { lines, maxDepth, plotHeight: yScale(0) - yScale(yMax) + charHeight };
 };
 
-export const processTree = (nodes, treeStyle = "rect") => {
-  let func = processTreeRings;
+export const processTree = ({ nodes, xQuery, yQuery, treeStyle = "rect" }) => {
   if (treeStyle == "ring") {
-    return processTreeRings(nodes);
+    return processTreeRings({ nodes, xQuery, yQuery });
   }
-  return processTreePaths(nodes);
+  return processTreePaths({ nodes, xQuery, yQuery });
 };

@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "@reach/router";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import DialogContent from "@material-ui/core/DialogContent";
 import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
 import HelpIcon from "@material-ui/icons/Help";
@@ -37,6 +38,9 @@ export const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
+  label: {
+    color: "rgba(0, 0, 0, 0.54)",
+  },
 }));
 
 // const handleValueChange =
@@ -67,37 +71,42 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
               className={classes.formControl}
               style={{ margin: "-8px 0 0", transform: "scale(0.75)" }}
             >
-              <FormHelperText>
-                {searchDefaults.includeDescendants
-                  ? "include descendants"
-                  : "ignore descendants"}
-              </FormHelperText>
-              <Switch
-                id={"taxon-filter-filter"}
-                checked={searchDefaults.includeDescendants}
-                onChange={() => {
-                  let includeDescendants = !searchDefaults.includeDescendants;
-                  setSearchDefaults({
-                    includeDescendants,
-                  });
-                  let query = options.query;
-                  let hash = location.hash;
-                  if (includeDescendants) {
-                    query = query.replaceAll(/tax_(:?eq|name)/gi, "tax_tree");
-                    hash = hash.replaceAll(/tax_(:?eq|name)/gi, "tax_tree");
-                  } else {
-                    query = query.replaceAll(/tax_tree/gi, "tax_name");
-                    hash = hash.replaceAll(/tax_tree/gi, "tax_name");
-                  }
-                  navigate(
-                    `${location.pathname}?${qs.stringify({
-                      ...options,
-                      query,
-                    })}${hash}`
-                  );
-                }}
-                name="filter-type"
-                color="default"
+              <FormHelperText>{"include descendants"}</FormHelperText>
+              <FormControlLabel
+                className={classes.label}
+                control={
+                  <Switch
+                    id={"taxon-filter-filter"}
+                    checked={searchDefaults.includeDescendants}
+                    onChange={() => {
+                      let includeDescendants = !searchDefaults.includeDescendants;
+                      setSearchDefaults({
+                        includeDescendants,
+                      });
+                      let query = options.query;
+                      let hash = location.hash || "";
+                      if (includeDescendants) {
+                        query = query.replaceAll(
+                          /tax_(:?eq|name)/gi,
+                          "tax_tree"
+                        );
+                        hash = hash.replaceAll(/tax_(:?eq|name)/gi, "tax_tree");
+                      } else {
+                        query = query.replaceAll(/tax_tree/gi, "tax_name");
+                        hash = hash.replaceAll(/tax_tree/gi, "tax_name");
+                      }
+                      navigate(
+                        `${location.pathname}?${qs.stringify({
+                          ...options,
+                          query,
+                        })}${hash}`
+                      );
+                    }}
+                    name="filter-type"
+                    color="default"
+                  />
+                }
+                label={searchDefaults.includeDescendants ? "On" : "Off"}
               />
             </FormControl>
           </Grid>
@@ -116,28 +125,30 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
               className={classes.formControl}
               style={{ margin: "-8px 0 0", transform: "scale(0.75)" }}
             >
-              <FormHelperText>
-                {searchDefaults.includeEstimates
-                  ? "include estimates"
-                  : "exclude estimates"}
-              </FormHelperText>
-              <Switch
-                id={"estimated-values-filter"}
-                checked={searchDefaults.includeEstimates}
-                onChange={() => {
-                  let includeEstimates = !searchDefaults.includeEstimates;
-                  setSearchDefaults({
-                    includeEstimates,
-                  });
-                  navigate(
-                    `${location.pathname}?${qs.stringify({
-                      ...options,
-                      includeEstimates,
-                    })}${location.hash}`
-                  );
-                }}
-                name="include-estimates"
-                color="default"
+              <FormHelperText>{"include estimates"}</FormHelperText>
+              <FormControlLabel
+                className={classes.label}
+                control={
+                  <Switch
+                    id={"estimated-values-filter"}
+                    checked={searchDefaults.includeEstimates}
+                    onChange={() => {
+                      let includeEstimates = !searchDefaults.includeEstimates;
+                      setSearchDefaults({
+                        includeEstimates,
+                      });
+                      navigate(
+                        `${location.pathname}?${qs.stringify({
+                          ...options,
+                          includeEstimates,
+                        })}${location.hash}`
+                      );
+                    }}
+                    name="include-estimates"
+                    color="default"
+                  />
+                }
+                label={searchDefaults.includeEstimates ? "On" : "Off"}
               />
             </FormControl>
           </Grid>

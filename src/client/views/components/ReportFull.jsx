@@ -18,14 +18,9 @@ import SearchIcon from "@material-ui/icons/Search";
 import classnames from "classnames";
 import { compose } from "recompose";
 import dispatchReport from "../hocs/dispatchReport";
-import loadable from "@loadable/component";
 import styles from "./Styles.scss";
 import { useStyles } from "./ReportModal";
 import useWindowDimensions from "../hooks/useWindowDimensions";
-
-// const ReportCode = loadable(() => import("./ReportCode"));
-// const ReportEdit = loadable(() => import("./ReportEdit"));
-// const ReportQuery = loadable(() => import("./ReportQuery"));
 
 export const ReportFull = ({
   reportId,
@@ -80,14 +75,16 @@ export const ReportFull = ({
   const permaLink = (queryString, toggle) => {
     let path = modal || topLevel ? "report" : toggle ? "reporturl" : "report";
     // TODO: include taxonomy
-    navigate(`/${path}?${queryString}`);
+    navigate(`/${path}?${queryString.replace(/^\?/, "")}`);
   };
 
   const handleUpdate = ({ queryString, hash }) => {
     if (hash && !hash.startsWith("#")) {
       hash = "#" + hash;
+    } else {
+      hash = hash || "";
     }
-    navigate(`${location.pathname}?${queryString}${hash}`);
+    navigate(`${location.pathname}?${queryString.replace(/^\?/, "")}${hash}`);
   };
 
   let reportComponent;

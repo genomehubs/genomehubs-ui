@@ -191,10 +191,10 @@ const SearchSettings = ({
       ...(ranks.length > 0 && { ranks: ranks.join(",") }),
       taxonomy: state.taxonomy,
     };
-    delete options.excludeAncestral;
-    delete options.excludeDescendant;
-    delete options.excludeDirect;
-    delete options.excludeMissing;
+    // delete options.excludeAncestral;
+    // delete options.excludeDescendant;
+    // delete options.excludeDirect;
+    // delete options.excludeMissing;
     setPreferSearchTerm(false);
     navigate(`/search?${qs.stringify(options)}${location.hash}`);
   };

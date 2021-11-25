@@ -104,12 +104,19 @@ const ReportTreePaths = ({
       let dimensions = getDimensions(treeRef);
       if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
       setTreeDimensions(dimensions);
-      if (reportRef) {
-        let container = reportRef.current;
-        container.style.height = `${Math.max(dimensions.height + 40, 350)}px`;
-        let grid = gridRef.current;
-        grid.style.height = `${Math.max(dimensions.height + 40, 350)}px`;
-      }
+      console.log(dimensions);
+      // if (reportRef) {
+      //   let container = reportRef.current;
+      //   container.style.height = `${Math.max(
+      //     (dimensions.height * 1000) / dimensions.width,
+      //     350
+      //   )}px`;
+      //   let grid = gridRef.current;
+      //   grid.style.height = `${Math.max(
+      //     (dimensions.height * 1000) / dimensions.width,
+      //     350
+      //   )}px`;
+      // }
     }
   }, [treeRef]);
 
@@ -343,7 +350,10 @@ const ReportTreePaths = ({
   return (
     <div
       style={{
-        height: Math.min(plotHeight + 20, divHeight),
+        height: Math.min(
+          (plotHeight * svgWidth) / (treeDimensions.width || 1) + 20,
+          divHeight
+        ),
         overflowY: "auto",
         overflowX: "hidden",
         width: { divWidth },
