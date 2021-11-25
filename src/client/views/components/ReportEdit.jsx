@@ -159,9 +159,6 @@ export const ReportEdit = ({
       }
     }
 
-    console.log(queryObj);
-    console.log(prevQuery);
-
     let hash = queryObj.query;
     let newQueryString = qs.stringify({
       ...prevQuery,

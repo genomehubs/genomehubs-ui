@@ -104,7 +104,6 @@ const ReportTreePaths = ({
       let dimensions = getDimensions(treeRef);
       if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
       setTreeDimensions(dimensions);
-      console.log(dimensions);
       // if (reportRef) {
       //   let container = reportRef.current;
       //   container.style.height = `${Math.max(

@@ -708,7 +708,6 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
   let xScale = scaleLinear()
     .domain([-0.5, maxDepth + 3])
     .range([0, width]);
-  console.log(treeNodes[rootNode]);
   let yMax = treeNodes[rootNode] ? treeNodes[rootNode].count : 0;
   let yScale = scaleLinear()
     .domain([0, yMax])
