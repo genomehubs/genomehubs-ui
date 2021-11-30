@@ -241,7 +241,7 @@ export const ReportEdit = ({
       queryProp == "cumulative"
     ) {
       toggles.push(
-        <div style={{ float: "left", marginRight: "2em" }}>
+        <div style={{ float: "left", marginRight: "2em" }} key={queryProp}>
           <FormControl key={queryProp}>
             <FormControlLabel
               className={classes.label}
@@ -276,21 +276,25 @@ export const ReportEdit = ({
             value="linear"
             control={<Radio color="default" />}
             label="linear"
+            key={"linear"}
           />
           <FormControlLabel
             value="sqrt"
             control={<Radio color="default" />}
             label="sqrt"
+            key={"sqrt"}
           />
           <FormControlLabel
             value="log10"
             control={<Radio color="default" />}
             label="log10"
+            key={"log10"}
           />
           <FormControlLabel
             value="proportion"
             control={<Radio color="default" />}
             label="proportion"
+            key={"linproportionear"}
           />
         </RadioGroup>
       );
@@ -314,7 +318,7 @@ export const ReportEdit = ({
     }
     if (input) {
       fields.push(
-        <Grid item style={{ width: "95%" }}>
+        <Grid item style={{ width: "95%" }} key={`input-${queryProp}`}>
           {input}
         </Grid>
       );
@@ -322,13 +326,13 @@ export const ReportEdit = ({
   });
   if (toggles.length > 0) {
     fields.push(
-      <Grid item align="left">
+      <Grid item align="left" key={"toggles"}>
         {toggles}
       </Grid>
     );
   }
   fields.push(
-    <Grid item align="right">
+    <Grid item align="right" key={"submit"}>
       <SettingsButton
         handleClick={handleSubmit}
         handleResetClick={handleReset}

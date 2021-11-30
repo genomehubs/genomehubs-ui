@@ -405,7 +405,7 @@ const SearchBox = ({
                       variant="outlined"
                       fullWidth
                       multiline
-                      rowsMax={5}
+                      maxRows={5}
                     />
                   )}
                   renderOption={(option) => {

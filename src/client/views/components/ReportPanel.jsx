@@ -65,6 +65,7 @@ const ReportPanel = ({ options, reportDefaults }) => {
               item
               style={{ cursor: "pointer" }}
               onClick={() => setReport(key)}
+              key={key}
             >
               {obj.name}
             </Grid>

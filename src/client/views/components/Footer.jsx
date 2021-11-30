@@ -98,13 +98,7 @@ const Footer = ({ version, fetchTypes, types, resetRecord, hidden }) => {
   return (
     <footer>
       <Taxonomy display={false} />
-      <Grid
-        container
-        direction="row"
-        xs={12}
-        spacing={0}
-        style={{ maxHeight: "100%" }}
-      >
+      <Grid container direction="row" spacing={0} style={{ maxHeight: "100%" }}>
         <Grid item xs={3}>
           {dataRelease}
         </Grid>

@@ -87,7 +87,7 @@ const VariableFilter = ({
         <Grid item style={{ marginLeft: "auto" }}>
           <IconButton
             aria-label="remove filter"
-            size="inherit"
+            size="small"
             onClick={handleDismiss}
           >
             <CloseIcon />

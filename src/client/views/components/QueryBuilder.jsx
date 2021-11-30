@@ -358,7 +358,7 @@ const QueryBuilder = ({
     }
   });
   filterOptions.push(
-    <Grid container alignItems="center" direction="row" spacing={2}>
+    <Grid container alignItems="center" direction="row" spacing={2} key={"new"}>
       {bool && (
         <Grid item>
           <Typography>{bool}</Typography>
@@ -560,7 +560,7 @@ const QueryBuilder = ({
           </Tooltip>
         </Grid>
         {filterOptions}
-        <Grid container alignItems="right" direction="row">
+        <Grid container alignItems="flex-end" direction="row">
           <Grid item>
             <Button
               variant="contained"

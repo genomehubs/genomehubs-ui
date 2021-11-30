@@ -1,8 +1,8 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import React from "react";
 import TextField from "@material-ui/core/TextField";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -28,7 +28,7 @@ const BasicTextField = ({
       <TextField
         id={id}
         label={label}
-        value={value}
+        value={value || ""}
         onBlur={handleBlur}
         onChange={handleChange}
       />

@@ -51,8 +51,8 @@ const SearchPagination = ({
       count={resultCount}
       rowsPerPage={pageSize}
       page={page}
-      onChangePage={handleChange}
-      onChangeRowsPerPage={handleChangeRowsPerPage}
+      onPageChange={handleChange}
+      onRowsPerPageChange={handleChangeRowsPerPage}
     />
   );
 };

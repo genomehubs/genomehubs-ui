@@ -48,7 +48,7 @@ const AttributePanel = ({ attributes, result, taxonId }) => {
             <TableCell>Source</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody stripedRows>{tableRows}</TableBody>
+        <TableBody>{tableRows}</TableBody>
       </Table>
     );
   }

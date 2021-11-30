@@ -21,7 +21,7 @@ const AggregationIcon = ({ method }) => {
     ancestor: "Estimated value inferred from ancestral taxa",
   };
   return (
-    <Tooltip title={tooltips[method]} arrow placement={"top"}>
+    <Tooltip title={tooltips[method] || ""} arrow placement={"top"}>
       <Grid
         style={{
           minHeight: "1.02em",

@@ -1,3 +1,4 @@
+import { Circle, Layer, Line, Rect, Stage, Text } from "react-konva";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
@@ -46,6 +47,9 @@ const ReportTreePaths = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  if (!lines || lines.length == 0) {
+    return null;
+  }
   // const [highlightParams, setHighlightParams] = useState(treeHighlight);
 
   // if (!searchResults.status || !searchResults.status.hasOwnProperty("hits")) {
@@ -59,65 +63,65 @@ const ReportTreePaths = ({
     styles.resultPanel
   );
   // const count = searchResults.status.hits;
-  if (count > 10000) {
-    return (
-      <div className={css}>
-        <div className={styles.header} style={{ cursor: "default" }}>
-          <span className={styles.title}>Tree</span>
-          <span>
-            {" "}
-            (not available for queries returning over 10,000 results)
-          </span>
-        </div>
-      </div>
-    );
-  }
-  const [position, setPosition] = useState({
-    x: undefined,
-    y: undefined,
-  });
+  // if (count > 10000) {
+  //   return (
+  //     <div className={css}>
+  //       <div className={styles.header} style={{ cursor: "default" }}>
+  //         <span className={styles.title}>Tree</span>
+  //         <span>
+  //           {" "}
+  //           (not available for queries returning over 10,000 results)
+  //         </span>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+  // const [position, setPosition] = useState({
+  //   x: undefined,
+  //   y: undefined,
+  // });
 
   let divHeight = height;
   let divWidth = width;
   height = plotHeight;
   width = 1000;
-  const [dimensions, setDimensions] = useState({
-    x: 0,
-    y: 0,
-    height: plotHeight,
-    width: 1000,
-  });
+  // const [dimensions, setDimensions] = useState({
+  //   x: 0,
+  //   y: 0,
+  //   height: plotHeight,
+  //   width: 1000,
+  // });
 
-  const [highlight, setHighlight] = useState();
+  // const [highlight, setHighlight] = useState();
 
-  const anchorRef = useRef(null);
-  const treeRef = useRef(null);
-  const [treeDimensions, setTreeDimensions] = useState({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  });
-  const getDimensions = (myRef) => myRef.current.getBBox();
-  useEffect(() => {
-    if (treeRef.current) {
-      let dimensions = getDimensions(treeRef);
-      if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
-      setTreeDimensions(dimensions);
-      // if (reportRef) {
-      //   let container = reportRef.current;
-      //   container.style.height = `${Math.max(
-      //     (dimensions.height * 1000) / dimensions.width,
-      //     350
-      //   )}px`;
-      //   let grid = gridRef.current;
-      //   grid.style.height = `${Math.max(
-      //     (dimensions.height * 1000) / dimensions.width,
-      //     350
-      //   )}px`;
-      // }
-    }
-  }, [treeRef]);
+  // const anchorRef = useRef(null);
+  // const treeRef = useRef(null);
+  // const [treeDimensions, setTreeDimensions] = useState({
+  //   x: 0,
+  //   y: 0,
+  //   width: 0,
+  //   height: 0,
+  // });
+  // const getDimensions = (myRef) => myRef.current.getBBox();
+  // useEffect(() => {
+  //   if (treeRef.current) {
+  //     let dimensions = getDimensions(treeRef);
+  //     if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
+  //     setTreeDimensions(dimensions);
+  //     // if (reportRef) {
+  //     //   let container = reportRef.current;
+  //     //   container.style.height = `${Math.max(
+  //     //     (dimensions.height * 1000) / dimensions.width,
+  //     //     350
+  //     //   )}px`;
+  //     //   let grid = gridRef.current;
+  //     //   grid.style.height = `${Math.max(
+  //     //     (dimensions.height * 1000) / dimensions.width,
+  //     //     350
+  //     //   )}px`;
+  //     // }
+  //   }
+  // }, [treeRef]);
 
   const highlightSegment = (segment) => {
     setHighlight(segment);
@@ -131,184 +135,184 @@ const ReportTreePaths = ({
   let strokeWidth = 0.8;
 
   let paths = [];
-  if (lines) {
-    lines.forEach((segment) => {
-      const longPressCallback = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        handleSearch({
-          root: segment.taxon_id,
-          name: segment.scientific_name,
-          depth: segment.depth,
-        });
-      }, []);
+  // if (lines) {
+  //   lines.forEach((segment) => {
+  //     const longPressCallback = useCallback((e) => {
+  //       e.preventDefault();
+  //       e.stopPropagation();
+  //       handleSearch({
+  //         root: segment.taxon_id,
+  //         name: segment.scientific_name,
+  //         depth: segment.depth,
+  //       });
+  //     }, []);
 
-      const longPress = useLongPress(longPressCallback, {
-        onStart: (e) => e.preventDefault(),
-        onCancel: (e) => {
-          highlightSegment();
-          handleNavigation({
-            root: segment.taxon_id,
-            name: segment.scientific_name,
-            depth: segment.depth,
-          });
-        },
-        captureEvent: true,
-        threshold: 500,
-      });
+  //     const longPress = useLongPress(longPressCallback, {
+  //       onStart: (e) => e.preventDefault(),
+  //       onCancel: (e) => {
+  //         highlightSegment();
+  //         handleNavigation({
+  //           root: segment.taxon_id,
+  //           name: segment.scientific_name,
+  //           depth: segment.depth,
+  //         });
+  //       },
+  //       captureEvent: true,
+  //       threshold: 500,
+  //     });
 
-      const clear = "rgba(255,255,255,0)";
+  //     const clear = "rgba(255,255,255,0)";
 
-      paths.push(
-        // <Tooltip
-        //   key={segment.taxon_id}
-        //   title={segment.scientific_name}
-        //   onPointerMove={(e) => setPosition({ x: e.clientX, y: e.clientY })}
-        //   PopperProps={{
-        //     anchorEl: {
-        //       clientHeight: 0,
-        //       clientWidth: 0,
-        //       getBoundingClientRect: () => ({
-        //         top: position.y,
-        //         left: position.x,
-        //         right: position.x,
-        //         bottom: position.y + 10,
-        //         width: 0,
-        //         height: 10,
-        //       }),
-        //     },
-        //   }}
-        //   arrow
-        //   placement="bottom"
-        // >
-        <>
-          <path
-            stroke={segment.color}
-            fill="none"
-            strokeWidth={strokeWidth}
-            d={segment.hLine}
-          />
-          {segment.vLine && (
-            <path
-              stroke={segment.color}
-              fill="none"
-              strokeWidth={strokeWidth}
-              d={segment.vLine}
-            />
-          )}
-          <circle
-            r={4}
-            cx={segment.xEnd}
-            cy={segment.yStart}
-            stroke={segment.color}
-            fill={"white"}
-            strokeWidth={strokeWidth * 2}
-          />
-          <Tooltip
-            title={segment.scientific_name}
-            onPointerMove={(e) => setPosition({ x: e.clientX, y: e.clientY })}
-            PopperProps={{
-              anchorEl: {
-                clientHeight: 0,
-                clientWidth: 0,
-                getBoundingClientRect: () => ({
-                  top: position.y,
-                  left: position.x,
-                  right: position.x,
-                  bottom: position.y + 10,
-                  width: 0,
-                  height: 10,
-                }),
-              },
-            }}
-            arrow
-            placement="bottom"
-          >
-            <g>
-              {segment.label && (
-                <text
-                  // onPointerEnter={(e) => highlightSegment(segment)}
-                  // onPointerLeave={(e) => highlightSegment()}
-                  {...longPress}
-                  fill={segment.color}
-                  style={{ cursor: "pointer" }}
-                  x={segment.xEnd}
-                  y={segment.yStart}
-                  textAnchor={segment.tip ? "start" : "end"}
-                  alignmentBaseline={segment.tip ? "middle" : "bottom"}
-                  transform={`translate(${segment.tip ? 10 : -6}, ${
-                    segment.tip ? 0 : -2
-                  })`}
-                >
-                  {segment.label}
-                </text>
-              )}
-              <rect
-                // onPointerEnter={(e) => highlightSegment(segment)}
-                // onPointerLeave={(e) => highlightSegment()}
-                {...longPress}
-                fill={clear}
-                style={{ cursor: "pointer" }}
-                x={segment.xStart}
-                y={segment.yMin}
-                width={
-                  // segment.tip ? dimensions.width - segment.xStart : segment.width
-                  segment.width
-                }
-                height={segment.height}
-                stroke="none"
-              />
-            </g>
-          </Tooltip>
-        </>
-      );
-    });
-  }
+  //     paths.push(
+  //       // <Tooltip
+  //       //   key={segment.taxon_id}
+  //       //   title={segment.scientific_name}
+  //       //   onPointerMove={(e) => setPosition({ x: e.clientX, y: e.clientY })}
+  //       //   PopperProps={{
+  //       //     anchorEl: {
+  //       //       clientHeight: 0,
+  //       //       clientWidth: 0,
+  //       //       getBoundingClientRect: () => ({
+  //       //         top: position.y,
+  //       //         left: position.x,
+  //       //         right: position.x,
+  //       //         bottom: position.y + 10,
+  //       //         width: 0,
+  //       //         height: 10,
+  //       //       }),
+  //       //     },
+  //       //   }}
+  //       //   arrow
+  //       //   placement="bottom"
+  //       // >
+  //       <>
+  //         <path
+  //           stroke={segment.color}
+  //           fill="none"
+  //           strokeWidth={strokeWidth}
+  //           d={segment.hLine}
+  //         />
+  //         {segment.vLine && (
+  //           <path
+  //             stroke={segment.color}
+  //             fill="none"
+  //             strokeWidth={strokeWidth}
+  //             d={segment.vLine}
+  //           />
+  //         )}
+  //         <circle
+  //           r={4}
+  //           cx={segment.xEnd}
+  //           cy={segment.yStart}
+  //           stroke={segment.color}
+  //           fill={"white"}
+  //           strokeWidth={strokeWidth * 2}
+  //         />
+  //         <Tooltip
+  //           title={segment.scientific_name}
+  //           onPointerMove={(e) => setPosition({ x: e.clientX, y: e.clientY })}
+  //           PopperProps={{
+  //             anchorEl: {
+  //               clientHeight: 0,
+  //               clientWidth: 0,
+  //               getBoundingClientRect: () => ({
+  //                 top: position.y,
+  //                 left: position.x,
+  //                 right: position.x,
+  //                 bottom: position.y + 10,
+  //                 width: 0,
+  //                 height: 10,
+  //               }),
+  //             },
+  //           }}
+  //           arrow
+  //           placement="bottom"
+  //         >
+  //           <g>
+  //             {segment.label && (
+  //               <text
+  //                 // onPointerEnter={(e) => highlightSegment(segment)}
+  //                 // onPointerLeave={(e) => highlightSegment()}
+  //                 {...longPress}
+  //                 fill={segment.color}
+  //                 style={{ cursor: "pointer" }}
+  //                 x={segment.xEnd}
+  //                 y={segment.yStart}
+  //                 textAnchor={segment.tip ? "start" : "end"}
+  //                 alignmentBaseline={segment.tip ? "middle" : "bottom"}
+  //                 transform={`translate(${segment.tip ? 10 : -6}, ${
+  //                   segment.tip ? 0 : -2
+  //                 })`}
+  //               >
+  //                 {segment.label}
+  //               </text>
+  //             )}
+  //             <rect
+  //               // onPointerEnter={(e) => highlightSegment(segment)}
+  //               // onPointerLeave={(e) => highlightSegment()}
+  //               {...longPress}
+  //               fill={clear}
+  //               style={{ cursor: "pointer" }}
+  //               x={segment.xStart}
+  //               y={segment.yMin}
+  //               width={
+  //                 // segment.tip ? dimensions.width - segment.xStart : segment.width
+  //                 segment.width
+  //               }
+  //               height={segment.height}
+  //               stroke="none"
+  //             />
+  //           </g>
+  //         </Tooltip>
+  //       </>
+  //     );
+  //   });
+  // }
 
-  let highlightPath;
-  if (highlight) {
-    highlightPath = (
-      <g style={{ pointerEvents: "none" }}>
-        <path
-          fill={"white"}
-          strokeWidth={3}
-          stroke={highlight.highlightColor}
-          fillOpacity={0.25}
-          d={highlight.highlight}
-        />
-      </g>
-    );
-  }
-  let text = [];
-  let defs = [];
-  if (labels) {
-    labels.forEach((label) => {
-      defs.push(
-        <path
-          key={label.taxon_id}
-          id={`${label.taxon_id}-label-path`}
-          style={{ pointerEvents: "none" }}
-          d={label.arc}
-        />
-      );
-      text.push(
-        <text
-          fill={"white"}
-          style={{ pointerEvents: "none" }}
-          textAnchor="middle"
-          fontSize={label.labelScale > 1 && `${label.labelScale * 10}pt`}
-        >
-          <textPath
-            xlinkHref={`#${label.taxon_id}-label-path`}
-            startOffset="50%"
-            alignmentBaseline="central"
-          >
-            {label.scientific_name}
-          </textPath>
-        </text>
-      );
-    });
-  }
+  // let highlightPath;
+  // if (highlight) {
+  //   highlightPath = (
+  //     <g style={{ pointerEvents: "none" }}>
+  //       <path
+  //         fill={"white"}
+  //         strokeWidth={3}
+  //         stroke={highlight.highlightColor}
+  //         fillOpacity={0.25}
+  //         d={highlight.highlight}
+  //       />
+  //     </g>
+  //   );
+  // }
+  // let text = [];
+  // let defs = [];
+  // if (labels) {
+  //   labels.forEach((label) => {
+  //     defs.push(
+  //       <path
+  //         key={label.taxon_id}
+  //         id={`${label.taxon_id}-label-path`}
+  //         style={{ pointerEvents: "none" }}
+  //         d={label.arc}
+  //       />
+  //     );
+  //     text.push(
+  //       <text
+  //         fill={"white"}
+  //         style={{ pointerEvents: "none" }}
+  //         textAnchor="middle"
+  //         fontSize={label.labelScale > 1 && `${label.labelScale * 10}pt`}
+  //       >
+  //         <textPath
+  //           xlinkHref={`#${label.taxon_id}-label-path`}
+  //           startOffset="50%"
+  //           alignmentBaseline="central"
+  //         >
+  //           {label.scientific_name}
+  //         </textPath>
+  //       </text>
+  //     );
+  //   });
+  // }
 
   // const handleHighlightChange = (e, key) => {
   //   e.stopPropagation();
@@ -340,12 +344,50 @@ const ReportTreePaths = ({
   //   fields[key] = key;
   // });
   css = undefined;
-  let svgHeight = treeDimensions.width
-    ? divWidth < treeDimensions.width
-      ? (treeDimensions.height * divWidth) / treeDimensions.width
-      : treeDimensions.height
-    : 0;
+  // let svgHeight = treeDimensions.width
+  //   ? divWidth < treeDimensions.width
+  //     ? (treeDimensions.height * divWidth) / treeDimensions.width
+  //     : treeDimensions.height
+  //   : 0;
   let svgWidth = divWidth ? divWidth - 20 : 0;
+  // divHeight = height;
+  // divWidth = width;
+  return (
+    <div
+      style={{
+        height: divHeight,
+        overflowY: "auto",
+        overflowX: "hidden",
+        width: divWidth,
+      }}
+    >
+      <Stage width={divWidth} height={divHeight}>
+        <Layer>
+          <Text text="Some text on canvas" x={150} y={150} />
+          <Rect
+            x={20}
+            y={50}
+            width={100}
+            height={100}
+            fill="red"
+            shadowBlur={10}
+          />
+          <Circle x={200} y={100} radius={50} fill="green" />
+          <Line
+            x={20}
+            y={200}
+            points={[0, 0, 100, 0, 100, 100]}
+            tension={0.5}
+            closed
+            stroke="black"
+            fillLinearGradientStartPoint={{ x: -50, y: -50 }}
+            fillLinearGradientEndPoint={{ x: 50, y: 50 }}
+            fillLinearGradientColorStops={[0, "red", 1, "yellow"]}
+          />
+        </Layer>
+      </Stage>
+    </div>
+  );
   return (
     <div
       style={{

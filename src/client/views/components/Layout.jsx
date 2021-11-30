@@ -71,9 +71,9 @@ const SearchLayout = (props) => {
 
 const Layout = () => {
   let paths = [
-    <DefaultLayout path="/*" />,
-    <ReportLayout path="/reporturl" />,
-    <SearchLayout path="/searchurl" />,
+    <DefaultLayout path="/*" key={0} />,
+    <ReportLayout path="/reporturl" key={1} />,
+    <SearchLayout path="/searchurl" key={2} />,
   ];
   return (
     <>

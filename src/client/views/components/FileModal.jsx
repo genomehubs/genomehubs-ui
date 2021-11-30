@@ -128,7 +128,7 @@ export const FileModal = ({ meta, apiUrl, children }) => {
       className={classes.paper}
     >
       <Grid item xs style={{ width: previewDimensions.width }}>
-        <Grid container direction="row" justify="flex-start">
+        <Grid container direction="row" justifyContent="flex-start">
           <Grid item xs={true}>
             <Typography
               id="file-modal-title"

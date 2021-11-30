@@ -58,6 +58,9 @@ const ReportItem = ({
   yScale,
   zScale,
   setEdit,
+  treeStyle,
+  handleUpdate,
+  dispatch,
   ...gridProps
 }) => {
   queryString = qs.stringify({
@@ -154,6 +157,9 @@ const ReportItem = ({
             containerRef={containerRef}
             reportRef={reportRef}
             gridRef={gridRef}
+            treeStyle={treeStyle}
+            handleUpdate={handleUpdate}
+            dispatch={dispatch}
             {...qs.parse(queryString)}
           />
         );

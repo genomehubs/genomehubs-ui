@@ -66,7 +66,7 @@ const AnalysisPanel = ({
             <TableCell>Taxa</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody stripedRows>{tableRows}</TableBody>
+        <TableBody>{tableRows}</TableBody>
       </Table>
     );
   }

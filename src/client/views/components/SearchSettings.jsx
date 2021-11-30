@@ -223,7 +223,7 @@ const SearchSettings = ({
     Object.keys(group).forEach((id) => {
       totals[key]++;
       content.push(
-        <Grid container alignItems="center" direction="row">
+        <Grid container alignItems="center" direction="row" key={id}>
           <Grid item>
             <FormControlLabel
               aria-label={`Item ${id}`}
@@ -265,7 +265,7 @@ const SearchSettings = ({
             />
           </AccordionSummary>
           <AccordionDetails>
-            <Grid container justify="top" direction="column">
+            <Grid container justifyContent="flex-start" direction="column">
               {content}
             </Grid>
           </AccordionDetails>
@@ -296,7 +296,7 @@ const SearchSettings = ({
           {groups}
         </Grid>
 
-        <Grid container alignItems="left" direction="row" spacing={2} xs={12}>
+        <Grid container alignItems="flex-start" direction="row" spacing={2}>
           <SettingsButton
             handleClick={handleClick}
             handleResetClick={handleResetClick}

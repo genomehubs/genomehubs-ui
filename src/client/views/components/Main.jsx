@@ -20,11 +20,11 @@ const fixedRoutes = { search: true, explore: true, records: true };
 const Main = ({ routes }) => {
   let css = classnames(styles.fillParent);
   let paths = [
-    <Landing path="/" />,
-    <SearchPage path="/search" />,
-    <ExplorePage path="/explore" />,
-    <RecordPage path="/records" />,
-    <ReportPage path="/report" />,
+    <Landing path="/" key="/" />,
+    <SearchPage path="/search" key="/search" />,
+    <ExplorePage path="/explore" key="/explore" />,
+    <RecordPage path="/records" key="/records" />,
+    <ReportPage path="/report" key="/report" />,
   ];
   routes.allIds.forEach((routeName) => {
     if (!fixedRoutes[routeName]) {
@@ -32,12 +32,14 @@ const Main = ({ routes }) => {
         <GenericPage
           path={`/${routeName}`}
           pageId={routes.byId[routeName].pageId}
+          key={routeName}
         />
       );
     }
     paths.push(
       <GenericPage
         path={`/${routeName}/*`}
+        key={"other"}
         // pageId={routes.byId[routeName].pageId}
       />
     );
