@@ -3,17 +3,21 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
 import Grid from "@material-ui/core/Grid";
+import KonvaTooltip from "./KonvaTooltip";
 import ReactDOM from "react-dom";
 import SVGDownloadButton from "./SVGDownloadButton";
+import Skeleton from "@material-ui/lab/Skeleton";
 import Tooltip from "@material-ui/core/Tooltip";
 import VariableFilter from "./VariableFilter";
 import classnames from "classnames";
 import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
+import { scaleLinear } from "d3-scale";
 import { scaleLog } from "d3-scale";
 import styles from "./Styles.scss";
 import { useLongPress } from "use-long-press";
 import useResize from "../hooks/useResize";
+import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
@@ -36,7 +40,7 @@ const ReportTreePaths = ({
   // newickString,
   count,
   lines,
-  labels,
+  // labels,
   handleNavigation,
   handleSearch,
   width,
@@ -92,39 +96,127 @@ const ReportTreePaths = ({
   //   width: 1000,
   // });
 
-  // const [highlight, setHighlight] = useState();
+  const [highlight, setHighlight] = useState();
+  const [tooltip, setTooltip] = useState({});
+  const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
+  const [previewOffset, setPreviewOffset] = useState({ x: 0, y: 0 });
+  const [scrollBarWidth, setScrollBarWidth] = useState(0);
+  const [scale, setScale] = useState(1);
+  const padding = 500;
+  let xMax = divWidth;
+  let previewScale = 1;
+  let previewWidth = xMax;
+  let previewHeight = plotHeight + 10;
+  let previewRatio = 1;
+
+  const scrollContainerRef = useRef(null);
+  const stageRef = useRef(null);
+  const previewRef = useRef(null);
+  let maxY = plotHeight - divHeight + 10;
+  let yScale = scaleLinear()
+    .domain([0, plotHeight + 10 - divHeight])
+    .range([0, divHeight]);
+  let previewYScale = scaleLinear();
+  let globalYScale = scaleLinear();
+
+  // Element scroll positionxMax
+  useScrollPosition(
+    ({ currPos }) => {
+      let y = Math.min(currPos.y, maxY);
+      if (plotHeight > previewHeight) {
+        let previewY = 0;
+        previewY = yScale(currPos.y);
+        setPreviewOffset({
+          x: previewOffset.x,
+          y: previewY,
+        });
+      }
+      setScrollPosition({
+        x: currPos.x,
+        y,
+      });
+    },
+    [],
+    stageRef,
+    false,
+    100,
+    scrollContainerRef
+  );
+
+  const handleDragStart = () => {};
+  const handleDragMove = (event) => {
+    event.target.x(0);
+  };
+  const handleDragEnd = (event) => {
+    let x = scrollPosition.x;
+    let y = Math.min(event.target.y(), maxY);
+    setScrollPosition({
+      x,
+      y,
+    });
+    scrollContainerRef.current.scrollLeft = x;
+    scrollContainerRef.current.scrollTop = y;
+  };
+
+  const handlePreviewClick = ({ evt, target }) => {
+    const stage = target.getStage();
+    const offset = { x: stage.x(), y: stage.y() };
+    let x = scrollPosition.x;
+    let y = evt.layerY - offset.y;
+    y = previewYScale(y);
+    y = Math.max(Math.min(y, maxY), 0);
+    setScrollPosition({
+      x,
+      y,
+    });
+    scrollContainerRef.current.scrollLeft = x;
+    scrollContainerRef.current.scrollTop = y;
+  };
 
   // const anchorRef = useRef(null);
-  // const treeRef = useRef(null);
-  // const [treeDimensions, setTreeDimensions] = useState({
-  //   x: 0,
-  //   y: 0,
-  //   width: 0,
-  //   height: 0,
-  // });
-  // const getDimensions = (myRef) => myRef.current.getBBox();
-  // useEffect(() => {
-  //   if (treeRef.current) {
-  //     let dimensions = getDimensions(treeRef);
-  //     if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
-  //     setTreeDimensions(dimensions);
-  //     // if (reportRef) {
-  //     //   let container = reportRef.current;
-  //     //   container.style.height = `${Math.max(
-  //     //     (dimensions.height * 1000) / dimensions.width,
-  //     //     350
-  //     //   )}px`;
-  //     //   let grid = gridRef.current;
-  //     //   grid.style.height = `${Math.max(
-  //     //     (dimensions.height * 1000) / dimensions.width,
-  //     //     350
-  //     //   )}px`;
-  //     // }
-  //   }
-  // }, [treeRef]);
+  const treeRef = useRef(null);
+  const [treeDimensions, setTreeDimensions] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+  const getDimensions = (myRef) => {
+    return treeDimensions;
+    myRef.current ? myRef.current.getBBox() : treeDimensions;
+  };
+  useEffect(() => {
+    if (treeRef.current) {
+      let dimensions = getDimensions(treeRef);
+      // if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
+      setTreeDimensions(dimensions);
+      setScale(divWidth / (xMax || divWidth));
+      //     // if (reportRef) {
+      //     //   let container = reportRef.current;
+      //     //   container.style.height = `${Math.max(
+      //     //     (dimensions.height * 1000) / dimensions.width,
+      //     //     350
+      //     //   )}px`;
+      //     //   let grid = gridRef.current;
+      //     //   grid.style.height = `${Math.max(
+      //     //     (dimensions.height * 1000) / dimensions.width,
+      //     //     350
+      //     //   )}px`;
+      //     // }
+    }
+    if (stageRef.current) {
+      setScrollBarWidth(
+        stageRef.current.offsetWidth - stageRef.current.clientWidth
+      );
+    }
+  }, [treeRef, stageRef]);
 
   const highlightSegment = (segment) => {
     setHighlight(segment);
+  };
+
+  const showTooltip = (e, segment) => {
+    setTooltip({ e, segment });
   };
 
   const strokeScale = scaleLog()
@@ -132,9 +224,134 @@ const ReportTreePaths = ({
     .range([1, 0.1])
     .clamp(true);
 
-  let strokeWidth = 0.8;
+  let strokeWidth = 1;
+  const [paths, setPaths] = useState([]);
+  const [nodes, setNodes] = useState([]);
+  const [labels, setLabels] = useState([]);
 
-  let paths = [];
+  useEffect(() => {
+    if (lines) {
+      let newPaths = [];
+      let newNodes = [];
+      let newLabels = [];
+      lines.forEach((segment) => {
+        // const longPressCallback = useCallback((e) => {
+        //   e.preventDefault();
+        //   e.stopPropagation();
+        //   handleSearch({
+        //     root: segment.taxon_id,
+        //     name: segment.scientific_name,
+        //     depth: segment.depth,
+        //   });
+        // }, []);
+
+        // const longPress = useLongPress(longPressCallback, {
+        //   onStart: (e) => e.preventDefault(),
+        //   onCancel: (e) => {
+        //     highlightSegment();
+        //     handleNavigation({
+        //       root: segment.taxon_id,
+        //       name: segment.scientific_name,
+        //       depth: segment.depth,
+        //     });
+        //   },
+        //   captureEvent: true,
+        //   threshold: 500,
+        // });
+        newPaths.push(
+          <Line
+            key={`h-${segment.taxon_id}`}
+            points={[
+              segment.xStart,
+              segment.yStart,
+              segment.xEnd,
+              segment.yStart,
+            ]}
+            stroke={segment.color}
+          />
+        );
+        {
+          segment.vLine &&
+            newPaths.push(
+              <Line
+                key={`v-${segment.taxon_id}`}
+                points={[
+                  segment.xEnd,
+                  segment.yMin,
+                  segment.xEnd,
+                  segment.yMax,
+                ]}
+                stroke={segment.color}
+              />
+            );
+        }
+        newNodes.push(
+          <Circle
+            x={segment.xEnd}
+            y={segment.yStart}
+            radius={4}
+            fill="white"
+            stroke={segment.color}
+            key={`c-${segment.taxon_id}`}
+          />
+        );
+        {
+          segment.label &&
+            newLabels.push(
+              <Text
+                key={`t-${segment.taxon_id}`}
+                text={segment.label}
+                fontSize={10}
+                x={segment.tip ? segment.xEnd + 10 : segment.xStart - 6}
+                y={segment.tip ? segment.yMin : segment.yStart - 11}
+                width={segment.width}
+                height={segment.yMax - segment.yMin}
+                fill={segment.color}
+                align={segment.tip ? "left" : "right"}
+                verticalAlign={segment.tip ? "middle" : "top"}
+                // onPointerEnter={(e) => highlightSegment(segment)}
+                // onPointerLeave={(e) => highlightSegment()}
+                // onClick={(e) => highlightSegment(segment)}
+                onMouseEnter={(e) => showTooltip(e, segment)}
+                onTouchStart={(e) => showTooltip(e, segment)}
+                onMouseLeave={(e) => showTooltip()}
+                onTouchEnd={(e) => showTooltip()}
+                // {...longPress}
+              />
+            );
+        }
+        //               <text
+        //                 // onPointerEnter={(e) => highlightSegment(segment)}
+        //                 // onPointerLeave={(e) => highlightSegment()}
+        //                 {...longPress}
+        //                 fill={segment.color}
+        //                 style={{ cursor: "pointer" }}
+        //                 x={segment.xEnd}
+        //                 y={segment.yStart}
+        //                 textAnchor={segment.tip ? "start" : "end"}
+        //                 alignmentBaseline={segment.tip ? "middle" : "bottom"}
+        //                 transform={`translate(${segment.tip ? 10 : -6}, ${
+        //                   segment.tip ? 0 : -2
+        //                 })`}
+        //               >
+        //                 {segment.label}
+        //               </text>
+        //             )}
+        //         <circle
+        //           r={4}
+        //           cx={segment.xEnd}
+        //           cy={segment.yStart}
+        //           stroke={segment.color}
+        //           fill={"white"}
+        //           strokeWidth={strokeWidth * 2}
+        //         />
+      });
+      setNodes(newNodes);
+      setPaths(newPaths);
+      setLabels(newLabels);
+    }
+  }, [lines]);
+
   // if (lines) {
   //   lines.forEach((segment) => {
   //     const longPressCallback = useCallback((e) => {
@@ -344,94 +561,219 @@ const ReportTreePaths = ({
   //   fields[key] = key;
   // });
   css = undefined;
-  // let svgHeight = treeDimensions.width
-  //   ? divWidth < treeDimensions.width
-  //     ? (treeDimensions.height * divWidth) / treeDimensions.width
-  //     : treeDimensions.height
-  //   : 0;
-  let svgWidth = divWidth ? divWidth - 20 : 0;
-  // divHeight = height;
-  // divWidth = width;
+  previewHeight = Math.min(10000, plotHeight + 10);
+  previewRatio = previewHeight / (plotHeight + 10);
+  previewScale = divHeight / previewHeight;
+  previewWidth = previewScale * divWidth;
+
+  globalYScale
+    .domain([0, plotHeight + 10 - divHeight])
+    .range([0, divHeight - divHeight * previewRatio]);
+
+  previewYScale = scaleLinear()
+    .domain([0, divHeight / previewRatio])
+    .range([0 - divHeight / 2, plotHeight + 10 - divHeight / 2]);
+
+  console.log([
+    0,
+    0,
+    10,
+    globalYScale(scrollPosition.y),
+    10,
+    globalYScale(scrollPosition.y) + divHeight * previewRatio,
+    0,
+    divHeight,
+  ]);
   return (
     <div
       style={{
         height: divHeight,
-        overflowY: "auto",
-        overflowX: "hidden",
+        overflow: "visible",
         width: divWidth,
+        position: "relative",
       }}
     >
-      <Stage width={divWidth} height={divHeight}>
-        <Layer>
-          <Text text="Some text on canvas" x={150} y={150} />
-          <Rect
-            x={20}
-            y={50}
-            width={100}
-            height={100}
-            fill="red"
-            shadowBlur={10}
-          />
-          <Circle x={200} y={100} radius={50} fill="green" />
-          <Line
-            x={20}
-            y={200}
-            points={[0, 0, 100, 0, 100, 100]}
-            tension={0.5}
-            closed
-            stroke="black"
-            fillLinearGradientStartPoint={{ x: -50, y: -50 }}
-            fillLinearGradientEndPoint={{ x: 50, y: 50 }}
-            fillLinearGradientColorStops={[0, "red", 1, "yellow"]}
-          />
-        </Layer>
-      </Stage>
-    </div>
-  );
-  return (
-    <div
-      style={{
-        height: Math.min(
-          (plotHeight * svgWidth) / (treeDimensions.width || 1) + 20,
-          divHeight
-        ),
-        overflowY: "auto",
-        overflowX: "hidden",
-        width: { divWidth },
-      }}
-    >
-      <svg
-        // preserveAspectRatio="xMinYMin"
-        preserveAspectRatio="xMinYMin meet"
-        ref={anchorRef}
-        height={(plotHeight * svgWidth) / (treeDimensions.width || 1)}
-        width={svgWidth}
-        viewBox={`${treeDimensions.x} ${treeDimensions.y} ${treeDimensions.width} ${treeDimensions.height}`}
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
+      <div
+        style={{
+          height: divHeight,
+          width: divWidth,
+          position: "absolute",
+          overflow: "hidden",
+          top: 0,
+          left: 0,
+        }}
       >
-        <defs>{defs}</defs>
-        {/* <rect
-          fill={"rgba(0,0,0,0.1)"}
-          x={treeDimensions.x}
-          y={treeDimensions.y}
-          height={treeDimensions.height}
-          width={treeDimensions.width}
-        /> */}
-        <g
-          transform="translate(0, 0)"
+        <Skeleton variant="rect" width={divWidth} height={divHeight} />
+      </div>
+      <div
+        style={{
+          height: divHeight,
+          overflowY: "auto",
+          overflowX: "hidden",
+          width: divWidth,
+          position: "absolute",
+        }}
+        ref={scrollContainerRef}
+      >
+        <div
           style={{
-            fontFamily:
-              '"Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif',
-            fontSize: "10pt",
+            height: plotHeight + 10,
+            width: divWidth,
+            position: "absolute",
+            overflow: "hidden",
           }}
-          ref={treeRef}
+          ref={stageRef}
         >
-          {paths}
-          {text}
-          {highlightPath}
-        </g>
-      </svg>
+          <div
+            style={{
+              height: divHeight + padding * 2,
+              width: divWidth, // + padding * 2,
+              top: scrollPosition.y - padding,
+              left: scrollPosition.x, // - padding,
+              overflowY: "hidden",
+              // transform: `translate(${scrollPosition.x}, ${
+              //   scrollPosition.y * 2
+              // })`,
+              position: "absolute",
+            }}
+          >
+            <Stage
+              width={divWidth} // + padding * 2}
+              height={divHeight + padding * 2}
+              x={-scrollPosition.x} // + padding}
+              y={-scrollPosition.y + padding}
+              pixelRatio={1}
+              // ref={treeRef}
+              // scaleX={scale}
+              // scaleY={scale}
+            >
+              <Layer>
+                <Rect
+                  x={scrollPosition.x}
+                  width={divWidth}
+                  y={scrollPosition.y - padding}
+                  height={divHeight + padding * 2}
+                  // stroke={"black"}
+                  fill={"white"}
+                />
+              </Layer>
+              <Layer>{paths}</Layer>
+              <Layer>{labels}</Layer>
+              <Layer>{nodes}</Layer>
+              <Layer>
+                <KonvaTooltip {...tooltip} />
+              </Layer>
+            </Stage>
+          </div>
+        </div>
+      </div>
+      <div
+        style={{
+          height: divHeight,
+          overflow: "hidden",
+          width: previewWidth,
+          position: "absolute",
+          top: 0,
+          left: divWidth,
+          border: "rgba(0,0,0,0.1) solid 1px",
+          boxSizing: "border-box",
+          pointerEvents: "none",
+          cursor: "pointer",
+        }}
+      >
+        <div
+          style={{
+            height: divHeight,
+            width: previewWidth,
+            position: "absolute",
+            right: 0,
+            top: previewOffset.y - padding,
+          }}
+          ref={previewRef}
+        >
+          <Stage
+            width={previewWidth}
+            height={divHeight + padding}
+            y={-previewOffset.y / previewRatio + padding}
+            scaleX={previewScale}
+            scaleY={previewScale}
+            style={{ pointerEvents: "auto" }}
+            pixelRatio={1}
+          >
+            <Layer>
+              {paths}
+              <Rect
+                x={0}
+                width={xMax}
+                y={0}
+                height={plotHeight}
+                // stroke={"black"}
+                fill={"rgba(0,0,0,0)"}
+                onClick={handlePreviewClick}
+              />
+            </Layer>
+            <Layer>
+              <Rect
+                x={0}
+                width={xMax}
+                y={
+                  // scrollPosition.y -
+                  // previewOffset.y / previewScale / previewRatio
+                  yScale.invert(previewOffset.y)
+                }
+                height={divHeight}
+                // stroke={"black"}
+                fill={"rgba(0,0,255,0.1)"}
+                draggable={true}
+                onDragStart={handleDragStart}
+                onDragMove={handleDragMove}
+                onDragEnd={handleDragEnd}
+                onClick={({ evt }) => {
+                  evt.preventDefault();
+                  evt.stopPropagation();
+                }}
+              />
+            </Layer>
+          </Stage>
+        </div>
+      </div>
+      <div
+        style={{
+          height: divHeight,
+          overflow: "hidden",
+          width: 10,
+          position: "absolute",
+          top: 0,
+          left: divWidth + previewWidth,
+          border: "rgba(0,0,0,0.1) solid 1px",
+          borderLeft: "none",
+          boxSizing: "border-box",
+          pointerEvents: "none",
+        }}
+      >
+        <div
+          style={{
+            height: divHeight,
+            width: 10,
+            position: "absolute",
+            right: 0,
+          }}
+        >
+          <Stage width={10} height={divHeight} pixelRatio={1}>
+            <Layer>
+              <Rect
+                x={0}
+                width={10}
+                y={globalYScale(scrollPosition.y)}
+                height={divHeight * previewRatio}
+                // stroke={"black"}
+                fill={"rgba(0,0,0,0.1)"}
+                onClick={handlePreviewClick}
+              />
+            </Layer>
+          </Stage>
+        </div>
+      </div>
     </div>
   );
 };

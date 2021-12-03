@@ -90,7 +90,7 @@ const ReportItem = ({
     reportById.report[report].status.success == false
   ) {
     if (setEdit) {
-      setEdit(true);
+      setTimeout(() => setEdit(true), 500);
     }
     error = reportById.report[report].status.error;
     component = <ReportError report={report} error={error} />;
