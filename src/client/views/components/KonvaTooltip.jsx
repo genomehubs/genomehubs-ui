@@ -6,8 +6,14 @@ const KonvaTooltip = ({ e, segment }) => {
   if (!segment) {
     return null;
   }
+  const stage = e.target.getStage();
+  const offset = { x: stage.x(), y: stage.y() };
+  let x = e.evt.layerX - offset.x;
+  let y = e.evt.layerY - offset.y;
+
   return (
-    <Label x={e.target.attrs.x + e.target.attrs.width / 2} y={e.target.attrs.y}>
+    // <Label x={e.target.attrs.x + e.target.attrs.width / 2} y={e.target.attrs.y}>
+    <Label x={x} y={y}>
       <Tag
         fill="black"
         pointerDirection="down"

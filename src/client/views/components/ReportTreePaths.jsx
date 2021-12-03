@@ -1,4 +1,4 @@
-import { Circle, Layer, Line, Rect, Stage, Text } from "react-konva";
+import { Circle, Group, Layer, Line, Rect, Stage, Text } from "react-konva";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
@@ -108,6 +108,7 @@ const ReportTreePaths = ({
   let previewWidth = xMax;
   let previewHeight = plotHeight + 10;
   let previewRatio = 1;
+  let previewDivHeight = divHeight;
 
   const scrollContainerRef = useRef(null);
   const stageRef = useRef(null);
@@ -123,14 +124,14 @@ const ReportTreePaths = ({
   useScrollPosition(
     ({ currPos }) => {
       let y = Math.min(currPos.y, maxY);
-      if (plotHeight > previewHeight) {
-        let previewY = 0;
-        previewY = yScale(currPos.y);
-        setPreviewOffset({
-          x: previewOffset.x,
-          y: previewY,
-        });
-      }
+      // if (plotHeight > previewHeight) {
+      let previewY = 0;
+      previewY = yScale(currPos.y);
+      setPreviewOffset({
+        x: previewOffset.x,
+        y: previewY,
+      });
+      // }
       setScrollPosition({
         x: currPos.x,
         y,
@@ -144,12 +145,27 @@ const ReportTreePaths = ({
   );
 
   const handleDragStart = () => {};
-  const handleDragMove = (event) => {
+  const handleDragMove = (event, limit) => {
     event.target.x(0);
+    if (limit) {
+      event.target.y(Math.max(0, Math.min(event.target.y(), limit)));
+    }
   };
   const handleDragEnd = (event) => {
     let x = scrollPosition.x;
-    let y = Math.min(event.target.y(), maxY);
+    let y = event.target.y();
+    setScrollPosition({
+      x,
+      y,
+    });
+    scrollContainerRef.current.scrollLeft = x;
+    scrollContainerRef.current.scrollTop = y;
+  };
+
+  const handleGlobalDragEnd = (event) => {
+    let x = scrollPosition.x;
+    let y = event.target.y();
+    y = globalYScale.invert(y);
     setScrollPosition({
       x,
       y,
@@ -188,21 +204,8 @@ const ReportTreePaths = ({
   useEffect(() => {
     if (treeRef.current) {
       let dimensions = getDimensions(treeRef);
-      // if (divHeight) dimensions.height = Math.min(divHeight, dimensions.height);
       setTreeDimensions(dimensions);
       setScale(divWidth / (xMax || divWidth));
-      //     // if (reportRef) {
-      //     //   let container = reportRef.current;
-      //     //   container.style.height = `${Math.max(
-      //     //     (dimensions.height * 1000) / dimensions.width,
-      //     //     350
-      //     //   )}px`;
-      //     //   let grid = gridRef.current;
-      //     //   grid.style.height = `${Math.max(
-      //     //     (dimensions.height * 1000) / dimensions.width,
-      //     //     350
-      //     //   )}px`;
-      //     // }
     }
     if (stageRef.current) {
       setScrollBarWidth(
@@ -216,6 +219,13 @@ const ReportTreePaths = ({
   };
 
   const showTooltip = (e, segment) => {
+    if (segment) {
+      const container = e.target.getStage().container();
+      container.style.cursor = "pointer";
+    } else {
+      const container = e.target.getStage().container();
+      container.style.cursor = "default";
+    }
     setTooltip({ e, segment });
   };
 
@@ -228,36 +238,44 @@ const ReportTreePaths = ({
   const [paths, setPaths] = useState([]);
   const [nodes, setNodes] = useState([]);
   const [labels, setLabels] = useState([]);
+  const [regions, setRegions] = useState([]);
+
+  const longPressCallback = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { segment } = tooltip;
+    handleSearch({
+      root: segment.taxon_id,
+      name: segment.scientific_name,
+      depth: segment.depth,
+    });
+  }, []);
+
+  const longPress = useLongPress(longPressCallback, {
+    onStart: (e) => e.preventDefault(),
+    onCancel: (e) => {
+      // highlightSegment();
+      const { segment } = tooltip;
+      handleNavigation({
+        root: segment.taxon_id,
+        name: segment.scientific_name,
+        depth: segment.depth,
+      });
+    },
+    captureEvent: true,
+    threshold: 500,
+  });
+
+  let mouseDown = false;
+  let mouseDownTimeout;
 
   useEffect(() => {
     if (lines) {
       let newPaths = [];
       let newNodes = [];
       let newLabels = [];
+      let newRegions = [];
       lines.forEach((segment) => {
-        // const longPressCallback = useCallback((e) => {
-        //   e.preventDefault();
-        //   e.stopPropagation();
-        //   handleSearch({
-        //     root: segment.taxon_id,
-        //     name: segment.scientific_name,
-        //     depth: segment.depth,
-        //   });
-        // }, []);
-
-        // const longPress = useLongPress(longPressCallback, {
-        //   onStart: (e) => e.preventDefault(),
-        //   onCancel: (e) => {
-        //     highlightSegment();
-        //     handleNavigation({
-        //       root: segment.taxon_id,
-        //       name: segment.scientific_name,
-        //       depth: segment.depth,
-        //     });
-        //   },
-        //   captureEvent: true,
-        //   threshold: 500,
-        // });
         newPaths.push(
           <Line
             key={`h-${segment.taxon_id}`}
@@ -285,6 +303,50 @@ const ReportTreePaths = ({
               />
             );
         }
+        newRegions.push(
+          <Rect
+            key={`r-${segment.taxon_id}`}
+            x={segment.xStart}
+            y={segment.yMin}
+            width={
+              segment.tip
+                ? segment.label.length * 6 + segment.width
+                : segment.width
+            }
+            height={segment.yMax - segment.yMin}
+            fill={"rgba(0,0,0,0.1)"}
+            onMouseEnter={(e) => showTooltip(e, segment)}
+            onTouchStart={(e) => showTooltip(e, segment)}
+            onMouseMove={(e) => showTooltip(e, segment)}
+            onTouchMove={(e) => showTooltip(e, segment)}
+            onMouseLeave={(e) => showTooltip(e)}
+            onTouchEnd={(e) => showTooltip(e)}
+            onMouseDown={(e) => {
+              mouseDownTimeout = setTimeout(() => {
+                handleSearch({
+                  root: segment.taxon_id,
+                  name: segment.scientific_name,
+                  depth: segment.depth,
+                });
+              }, 500);
+            }}
+            onMouseUp={() => {
+              clearTimeout(mouseDownTimeout);
+              handleNavigation({
+                root: segment.taxon_id,
+                name: segment.scientific_name,
+                depth: segment.depth,
+              });
+            }}
+            // onClick={() =>
+            //   handleSearch({
+            //     root: segment.taxon_id,
+            //     name: segment.scientific_name,
+            //     depth: segment.depth,
+            //   })
+            // }
+          />
+        );
         newNodes.push(
           <Circle
             x={segment.xEnd}
@@ -304,7 +366,7 @@ const ReportTreePaths = ({
                 fontSize={10}
                 x={segment.tip ? segment.xEnd + 10 : segment.xStart - 6}
                 y={segment.tip ? segment.yMin : segment.yStart - 11}
-                width={segment.width}
+                width={segment.tip ? segment.label.length * 6 : segment.width}
                 height={segment.yMax - segment.yMin}
                 fill={segment.color}
                 align={segment.tip ? "left" : "right"}
@@ -312,11 +374,6 @@ const ReportTreePaths = ({
                 // onPointerEnter={(e) => highlightSegment(segment)}
                 // onPointerLeave={(e) => highlightSegment()}
                 // onClick={(e) => highlightSegment(segment)}
-                onMouseEnter={(e) => showTooltip(e, segment)}
-                onTouchStart={(e) => showTooltip(e, segment)}
-                onMouseLeave={(e) => showTooltip()}
-                onTouchEnd={(e) => showTooltip()}
-                // {...longPress}
               />
             );
         }
@@ -349,6 +406,7 @@ const ReportTreePaths = ({
       setNodes(newNodes);
       setPaths(newPaths);
       setLabels(newLabels);
+      setRegions(newRegions);
     }
   }, [lines]);
 
@@ -565,34 +623,165 @@ const ReportTreePaths = ({
   previewRatio = previewHeight / (plotHeight + 10);
   previewScale = divHeight / previewHeight;
   previewWidth = previewScale * divWidth;
+  if (previewWidth > divWidth / 8) {
+    previewWidth = divWidth / 8;
+    previewScale = previewWidth / divWidth;
+    previewDivHeight = previewScale * previewHeight;
+  }
 
   globalYScale
     .domain([0, plotHeight + 10 - divHeight])
     .range([0, divHeight - divHeight * previewRatio]);
 
   previewYScale = scaleLinear()
-    .domain([0, divHeight / previewRatio])
-    .range([0 - divHeight / 2, plotHeight + 10 - divHeight / 2]);
+    .domain([0, previewDivHeight / previewRatio])
+    .range([0 - previewDivHeight / 2, plotHeight + 10 - previewDivHeight / 2]);
 
-  console.log([
-    0,
-    0,
-    10,
-    globalYScale(scrollPosition.y),
-    10,
-    globalYScale(scrollPosition.y) + divHeight * previewRatio,
-    0,
-    divHeight,
-  ]);
-  return (
-    <div
-      style={{
-        height: divHeight,
-        overflow: "visible",
-        width: divWidth,
-        position: "relative",
-      }}
-    >
+  let preview;
+
+  if (plotHeight > divHeight * 1.5) {
+    let globalPosition;
+    if (previewHeight < plotHeight + 10) {
+      globalPosition = (
+        <div
+          style={{
+            height: previewDivHeight,
+            overflow: "hidden",
+            width: 10,
+            position: "absolute",
+            top: 0,
+            left: -10,
+            // border: "rgba(0,0,0,0.1) solid 1px",
+            // borderLeft: "none",
+            // boxSizing: "border-box",
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              height: previewDivHeight,
+              width: 10,
+              position: "absolute",
+              right: 0,
+              pointerEvents: "auto",
+            }}
+          >
+            <Stage width={10} height={previewDivHeight} pixelRatio={1}>
+              <Layer>
+                <Rect
+                  x={0}
+                  width={10}
+                  y={globalYScale(scrollPosition.y)}
+                  height={previewDivHeight * previewRatio}
+                  // stroke={"black"}
+                  fill={"rgba(0,0,0,0.1)"}
+                  onClick={handlePreviewClick}
+                  draggable
+                  onDragStart={handleDragStart}
+                  onDragMove={(e) =>
+                    handleDragMove(
+                      e,
+                      divHeight - previewDivHeight * previewRatio
+                    )
+                  }
+                  onDragEnd={handleGlobalDragEnd}
+                />
+              </Layer>
+            </Stage>
+          </div>
+        </div>
+      );
+    }
+    preview = (
+      <div
+        style={{
+          height: previewDivHeight,
+          overflow: "visible",
+          width: previewWidth,
+          position: "absolute",
+          top: 0,
+          left: -previewWidth,
+        }}
+      >
+        <div
+          style={{
+            height: previewDivHeight,
+            overflow: "hidden",
+            width: previewWidth,
+            position: "absolute",
+            top: 0,
+            right: 0,
+            border: "rgba(0,0,0,0.1) solid 1px",
+            borderRight: "none",
+            boxSizing: "border-box",
+            pointerEvents: "none",
+            cursor: "pointer",
+          }}
+        >
+          <div
+            style={{
+              height: previewDivHeight,
+              width: previewWidth,
+              position: "absolute",
+              right: 0,
+              top: 0,
+            }}
+            ref={previewRef}
+          >
+            <Stage
+              width={previewWidth}
+              height={previewDivHeight}
+              y={previewOffset.y - previewOffset.y / previewRatio}
+              scaleX={previewScale}
+              scaleY={previewScale}
+              style={{ pointerEvents: "auto" }}
+              pixelRatio={1}
+            >
+              <Layer>
+                {paths}
+                <Rect
+                  x={0}
+                  width={xMax}
+                  y={0}
+                  height={plotHeight}
+                  // stroke={"black"}
+                  fill={"rgba(0,0,0,0)"}
+                  onClick={handlePreviewClick}
+                />
+              </Layer>
+              <Layer>
+                <Rect
+                  x={0}
+                  width={xMax}
+                  y={
+                    // scrollPosition.y -
+                    // previewOffset.y / previewScale / previewRatio
+                    yScale.invert(previewOffset.y)
+                  }
+                  height={divHeight}
+                  // stroke={"black"}
+                  fill={"rgba(0,0,255,0.1)"}
+                  draggable={true}
+                  onDragStart={handleDragStart}
+                  onDragMove={handleDragMove}
+                  onDragEnd={(e) => handleDragEnd(e, maxY)}
+                  onClick={({ evt }) => {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                  }}
+                />
+              </Layer>
+            </Stage>
+          </div>
+        </div>
+        {globalPosition}
+      </div>
+    );
+  }
+
+  let skeleton;
+  if (plotHeight > divHeight + padding) {
+    skeleton = (
       <div
         style={{
           height: divHeight,
@@ -605,6 +794,19 @@ const ReportTreePaths = ({
       >
         <Skeleton variant="rect" width={divWidth} height={divHeight} />
       </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        height: divHeight,
+        overflow: "visible",
+        width: divWidth,
+        position: "relative",
+      }}
+    >
+      {skeleton}
       <div
         style={{
           height: divHeight,
@@ -612,6 +814,8 @@ const ReportTreePaths = ({
           overflowX: "hidden",
           width: divWidth,
           position: "absolute",
+          border: "rgba(0,0,0,0.1) solid 1px",
+          boxSizing: "border-box",
         }}
         ref={scrollContainerRef}
       >
@@ -658,8 +862,11 @@ const ReportTreePaths = ({
                 />
               </Layer>
               <Layer>{paths}</Layer>
-              <Layer>{labels}</Layer>
-              <Layer>{nodes}</Layer>
+              <Layer>
+                <Group>{labels}</Group>
+                <Group>{nodes}</Group>
+                <Group>{regions}</Group>
+              </Layer>
               <Layer>
                 <KonvaTooltip {...tooltip} />
               </Layer>
@@ -667,113 +874,7 @@ const ReportTreePaths = ({
           </div>
         </div>
       </div>
-      <div
-        style={{
-          height: divHeight,
-          overflow: "hidden",
-          width: previewWidth,
-          position: "absolute",
-          top: 0,
-          left: divWidth,
-          border: "rgba(0,0,0,0.1) solid 1px",
-          boxSizing: "border-box",
-          pointerEvents: "none",
-          cursor: "pointer",
-        }}
-      >
-        <div
-          style={{
-            height: divHeight,
-            width: previewWidth,
-            position: "absolute",
-            right: 0,
-            top: previewOffset.y - padding,
-          }}
-          ref={previewRef}
-        >
-          <Stage
-            width={previewWidth}
-            height={divHeight + padding}
-            y={-previewOffset.y / previewRatio + padding}
-            scaleX={previewScale}
-            scaleY={previewScale}
-            style={{ pointerEvents: "auto" }}
-            pixelRatio={1}
-          >
-            <Layer>
-              {paths}
-              <Rect
-                x={0}
-                width={xMax}
-                y={0}
-                height={plotHeight}
-                // stroke={"black"}
-                fill={"rgba(0,0,0,0)"}
-                onClick={handlePreviewClick}
-              />
-            </Layer>
-            <Layer>
-              <Rect
-                x={0}
-                width={xMax}
-                y={
-                  // scrollPosition.y -
-                  // previewOffset.y / previewScale / previewRatio
-                  yScale.invert(previewOffset.y)
-                }
-                height={divHeight}
-                // stroke={"black"}
-                fill={"rgba(0,0,255,0.1)"}
-                draggable={true}
-                onDragStart={handleDragStart}
-                onDragMove={handleDragMove}
-                onDragEnd={handleDragEnd}
-                onClick={({ evt }) => {
-                  evt.preventDefault();
-                  evt.stopPropagation();
-                }}
-              />
-            </Layer>
-          </Stage>
-        </div>
-      </div>
-      <div
-        style={{
-          height: divHeight,
-          overflow: "hidden",
-          width: 10,
-          position: "absolute",
-          top: 0,
-          left: divWidth + previewWidth,
-          border: "rgba(0,0,0,0.1) solid 1px",
-          borderLeft: "none",
-          boxSizing: "border-box",
-          pointerEvents: "none",
-        }}
-      >
-        <div
-          style={{
-            height: divHeight,
-            width: 10,
-            position: "absolute",
-            right: 0,
-          }}
-        >
-          <Stage width={10} height={divHeight} pixelRatio={1}>
-            <Layer>
-              <Rect
-                x={0}
-                width={10}
-                y={globalYScale(scrollPosition.y)}
-                height={divHeight * previewRatio}
-                // stroke={"black"}
-                fill={"rgba(0,0,0,0.1)"}
-                onClick={handlePreviewClick}
-              />
-            </Layer>
-          </Stage>
-        </div>
-      </div>
+      {preview}
     </div>
   );
 };
