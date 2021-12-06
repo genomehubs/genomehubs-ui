@@ -1,8 +1,8 @@
-import { Label, Tag, Text } from "react-konva";
+import { Group, Label, Rect, Tag, Text } from "react-konva";
 
 import React from "react";
 
-const KonvaTooltip = ({ e, segment }) => {
+const KonvaTooltip = ({ e, segment, scale }) => {
   if (!segment) {
     return null;
   }
@@ -10,12 +10,14 @@ const KonvaTooltip = ({ e, segment }) => {
   const offset = { x: stage.x(), y: stage.y() };
   let x = e.evt.layerX - offset.x;
   let y = e.evt.layerY - offset.y;
+  x /= scale;
+  y /= scale;
 
   return (
     // <Label x={e.target.attrs.x + e.target.attrs.width / 2} y={e.target.attrs.y}>
     <Label x={x} y={y}>
       <Tag
-        fill="black"
+        fill={"31323f"}
         pointerDirection="down"
         pointerWidth={10}
         pointerHeight={10}

@@ -65,7 +65,7 @@ export const ReportDownload = ({
     return success;
   };
 
-  const handleClick = async (options, format) => {
+  const handleClick = async ({ options, format }) => {
     let success = false;
     if (format) {
       success = exportChart({ options, format });

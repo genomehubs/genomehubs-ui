@@ -701,17 +701,17 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
   let { maxDepth, taxDepth, taxon_id: rootNode, parent: ancNode } = lca;
   maxDepth = taxDepth ? taxDepth : maxDepth;
   if (!treeNodes || !rootNode) return undefined;
-  let margin = 0;
-  let width = 1000;
-  let charLen = 9;
-  let charHeight = charLen * 1.6;
+  let maxWidth = 0;
+  let targetWidth = 1000;
+  let charLen = 6.5;
+  let charHeight = charLen * 2;
   let xScale = scaleLinear()
-    .domain([-0.5, maxDepth + 3])
-    .range([0, width]);
+    .domain([-0.5, maxDepth + 2])
+    .range([0, targetWidth]);
   let yMax = treeNodes[rootNode] ? treeNodes[rootNode].count : 0;
   let yScale = scaleLinear()
     .domain([0, yMax])
-    .range([charHeight * (yMax + 1), charHeight]);
+    .range([charHeight * (yMax + 2), 0]);
   let lines = [];
   let tonalRange = 9;
   let baseTone = 2;
@@ -819,6 +819,10 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
     let label;
     if (node.tip) {
       label = node.scientific_name;
+      maxWidth = Math.max(
+        maxWidth,
+        node.xEnd + 10 + node.scientific_name.length * charLen
+      );
     } else if (node.scientific_name != "parent" && node.width > charLen * 5) {
       label = node.scientific_name;
       if (label.length * charLen - 2 > node.width) {
@@ -859,11 +863,17 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
               ]),
             })),
       label,
+      labelWidth: label ? label.length * charLen : 0,
       color,
       highlightColor,
     });
   });
-  return { lines, maxDepth, plotHeight: yScale(0) - yScale(yMax) + charHeight };
+  return {
+    lines,
+    maxDepth,
+    maxWidth,
+    plotHeight: yScale(0) - yScale(yMax) + charHeight / 2,
+  };
 };
 
 export const processTree = ({ nodes, xQuery, yQuery, treeStyle = "rect" }) => {

@@ -4,12 +4,14 @@ import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
 import MuiAlert from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import { compose } from "recompose";
+import withController from "../hocs/withController";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const DownloadMessage = ({ message, severity, duration }) => {
+const DownloadMessage = ({ message, severity, duration, controller }) => {
   const [open, setOpen] = React.useState(true);
 
   useEffect(() => {
@@ -20,7 +22,10 @@ const DownloadMessage = ({ message, severity, duration }) => {
     if (reason === "clickaway") {
       return;
     }
-
+    console.log(controller);
+    controller.abort();
+    console.log(controller);
+    console.log("cancelling");
     setOpen(false);
   };
 
@@ -54,4 +59,4 @@ const DownloadMessage = ({ message, severity, duration }) => {
   );
 };
 
-export default DownloadMessage;
+export default compose(withController)(DownloadMessage);

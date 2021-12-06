@@ -29,7 +29,8 @@ const dispatchSearch = (WrappedComponent) => (props) => {
     setPreferSearchTerm: (bool) => dispatch(setPreferSearchTerm(bool)),
     setPreviousSearchTerm: (options) =>
       dispatch(setPreviousSearchTerm(options)),
-    saveSearchResults: (options, format) => saveSearchResults(options, format),
+    saveSearchResults: ({ options, format }) =>
+      dispatch(saveSearchResults({ options, format })),
     setSearchDefaults: (options) => dispatch(setSearchDefaults(options)),
     resetSearchDefaults: () => dispatch(resetSearchDefaults()),
   });

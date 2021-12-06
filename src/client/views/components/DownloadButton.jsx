@@ -58,7 +58,15 @@ const DownloadButton = ({
     };
     delete fullOptions.format;
     delete fullOptions.image;
-    let success = await onButtonClick(fullOptions, format);
+    let success;
+    try {
+      success = await onButtonClick({
+        options: fullOptions,
+        format,
+      });
+    } catch (err) {
+      console.log(err);
+    }
     if (success) {
       setMessage({
         message: `${key} file downloaded`,
@@ -85,10 +93,9 @@ const DownloadButton = ({
 
   const handleClose = (event) => {
     event.stopPropagation();
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-
+    // if (anchorRef.current && anchorRef.current.contains(event.target)) {
+    //   return;
+    // }
     setOpen(false);
   };
 

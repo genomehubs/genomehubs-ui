@@ -5,6 +5,7 @@ import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
 import qs from "qs";
+import store from "../store";
 
 export const requestSearch = createAction("REQUEST_SEARCH");
 export const receiveSearch = createAction(
@@ -77,36 +78,46 @@ export const getSearchResultById = createCachedSelector(
   }
 )((_state, searchId) => searchId);
 
-export const saveSearchResults = async (options, format = "tsv") => {
-  const filename = `download.${format}`;
-  options.filename = filename;
-  const queryString = qs.stringify(options);
-  const formats = {
-    csv: "text/csv",
-    json: "application/json",
-    tsv: "text/tab-separated-values",
-  };
-  try {
-    let url = `${apiUrl}/search?${queryString}`;
-    let response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: formats[format],
-      },
-    });
-    let blob = await response.blob();
+// export let controller = new AbortController();
 
-    const linkUrl = window.URL.createObjectURL(new Blob([blob]));
-    const link = document.createElement("a");
-    link.href = linkUrl;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
-  } catch (err) {
-    return false;
-  }
-  return true;
+export const saveSearchResults = ({ options, format = "tsv" }) => {
+  return async function (dispatch) {
+    console.log("calling");
+    const state = store.getState();
+
+    const filename = `download.${format}`;
+    options.filename = filename;
+    const queryString = qs.stringify(options);
+    const formats = {
+      csv: "text/csv",
+      json: "application/json",
+      tsv: "text/tab-separated-values",
+    };
+
+    try {
+      let url = `${apiUrl}/search?${queryString}`;
+      let response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: formats[format],
+        },
+        signal: getController(state).signal,
+      });
+      let blob = await response.blob();
+
+      const linkUrl = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = linkUrl;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (err) {
+      dispatch(resetController());
+      return false;
+    }
+    return true;
+  };
 };
 
 export const setSearchTerm = createAction("SET_SEARCH_TERM");
@@ -208,7 +219,16 @@ export const suggestedTerms = handleActions(
 );
 export const getSuggestedTerms = (state) => state.suggestedTerms;
 
+export const resetController = createAction("RESET_CONTROLLER");
+export const controller = handleAction(
+  "RESET_CONTROLLER",
+  (state, action) => new AbortController(),
+  new AbortController()
+);
+export const getController = (state) => state.controller;
+
 export const searchReducers = {
+  controller,
   searchTerm,
   searchIndex,
   searchResults,
