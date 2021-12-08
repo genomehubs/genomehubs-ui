@@ -63,15 +63,6 @@ export const ReportFull = ({
     height *= 0.9;
   }
 
-  const downloadLink = (uri, filename) => {
-    const link = document.createElement("a");
-    link.href = uri;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
-  };
-
   const permaLink = (queryString, toggle) => {
     let path = modal || topLevel ? "report" : toggle ? "reporturl" : "report";
     // TODO: include taxonomy

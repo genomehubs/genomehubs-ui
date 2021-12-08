@@ -1,15 +1,15 @@
-import { getController, resetController } from "../reducers/message";
+import { getMessage, setMessage } from "../reducers/message";
 
 import React from "react";
 import { connect } from "react-redux";
 
-const withController = (WrappedComponent) => (props) => {
+const withMessage = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
-    controller: getController(state),
+    message: getMessage(state),
   });
 
   const mapDispatchToProps = (dispatch) => ({
-    resetController: () => resetController(),
+    setMessage: (message) => dispatch(setMessage(message)),
   });
 
   const Connected = connect(
@@ -20,4 +20,4 @@ const withController = (WrappedComponent) => (props) => {
   return <Connected {...props} />;
 };
 
-export default withController;
+export default withMessage;

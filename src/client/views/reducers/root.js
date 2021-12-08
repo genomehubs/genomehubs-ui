@@ -5,6 +5,7 @@ import { combineReducers } from "redux";
 import { exploreReducers } from "./explore";
 import { fileReducers } from "./file";
 import { lookupReducers } from "./lookup";
+import { messageReducers } from "./message";
 import { pageReducers } from "./pages";
 import { recordReducers } from "./record";
 import { reportReducers } from "./report";
@@ -24,6 +25,7 @@ const allReducers = Object.assign(
   exploreReducers,
   fileReducers,
   lookupReducers,
+  messageReducers,
   pageReducers,
   recordReducers,
   reportReducers,

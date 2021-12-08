@@ -1,5 +1,10 @@
 import { apiUrl, setApiStatus } from "../reducers/api";
 import {
+  getController,
+  resetController,
+  setMessage,
+} from "../reducers/message";
+import {
   getReports,
   getReportsFetching,
   receiveReport,
@@ -12,15 +17,18 @@ import {
 } from "../reducers/search";
 
 import { byIdSelectorCreator } from "../reducers/selectorCreators";
+import { checkProgress } from "./checkProgress";
 import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
+// import { format } from "d3-format";
 import { getTypes } from "../reducers/types";
+import { nanoid } from "nanoid";
 import { processTree } from "./tree";
 import qs from "qs";
 import store from "../store";
 import { treeThreshold } from "../reducers/tree";
 
-export function fetchReport({ queryString, reportId, reload }) {
+export function fetchReport({ queryString, reportId, reload, report }) {
   return async function (dispatch) {
     const state = store.getState();
     const fetching = getReportsFetching(state);
@@ -31,26 +39,84 @@ export function fetchReport({ queryString, reportId, reload }) {
       }
     }
     dispatch(requestReport(reportId));
-    // TODO: use terms
     if (
       queryString.match("report=tree") &&
       !queryString.match("treeThreshold")
     ) {
       queryString += `&treeThreshold=${treeThreshold}`;
     }
-    let url = `${apiUrl}/report?${queryString.replace(/^\?/, "")}`;
+    const queryId = nanoid(10);
+    let url = `${apiUrl}/report?${queryString.replace(
+      /^\?/,
+      ""
+    )}&queryId=${queryId}`;
     try {
       let json;
+      let status;
+      const interval = checkProgress({
+        queryId,
+        delay: 1000,
+        dispatch,
+        message: `Fetching ${report} report`,
+      });
       try {
-        const response = await fetch(url);
+        // dispatch(
+        //   setMessage({
+        //     message: `Fetching ${report} report`,
+        //     duration: 5000,
+        //     severity: "info",
+        //   })
+        // );
+        const response = await fetch(url, {
+          signal: getController(state).signal,
+        });
         json = await response.json();
       } catch (error) {
-        json = console.log("An error occured.", error);
+        clearInterval(interval);
+        if (getController(state).signal.aborted) {
+          dispatch(
+            setMessage({
+              message: `Cancelled`,
+              duration: 5000,
+              severity: "warning",
+            })
+          );
+          status = { success: false, error: "Request cancelled" };
+        } else {
+          dispatch(
+            setMessage({
+              message: `Failed to fetch ${report} report`,
+              duration: 5000,
+              severity: "error",
+            })
+          );
+          status = { success: false, error: "Unexpected error" };
+          console.log(error);
+        }
+        dispatch(resetController());
+        json = {
+          status,
+          report: {
+            name: report,
+            report: { queryString, tree: { status } },
+          },
+        };
+        dispatch(receiveReport({ json, reportId }));
       }
-      if (json.report && json.report.report) {
-        json.report.report.queryString = queryString;
+      if (!status) {
+        clearInterval(interval);
+        if (json.report && json.report.report) {
+          json.report.report.queryString = queryString;
+        }
+        dispatch(
+          setMessage({
+            message: `Parsing ${report} report`,
+            duration: 5000,
+            severity: "info",
+          })
+        );
+        dispatch(receiveReport({ json, reportId }));
       }
-      dispatch(receiveReport({ json, reportId }));
     } catch (err) {
       return dispatch(setApiStatus(false));
     }
@@ -337,35 +403,69 @@ export const getReportDefaults = createSelector(
   }
 );
 
-export const saveReport = async (options, format = "json") => {
-  const filename = `report.${format}`;
-  options.filename = filename;
-  const queryString = qs.stringify(options);
-  const formats = {
-    json: "application/json",
-    nwk: "text/x-nh",
-    xml: "application/xml",
-    zip: "application/zip",
-  };
-  try {
-    let url = `${apiUrl}/report?${queryString}`;
-    let response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: formats[format],
-      },
+export const saveReport = (options, format = "json") => {
+  return async function (dispatch) {
+    const filename = `report.${format}`;
+    options.filename = filename;
+    const queryString = qs.stringify(options);
+    const formats = {
+      json: "application/json",
+      nwk: "text/x-nh",
+      xml: "application/xml",
+      zip: "application/zip",
+    };
+    const queryId = nanoid(10);
+    let url = `${apiUrl}/search?${queryString}&queryId=${queryId}`;
+    let status;
+    const interval = checkProgress({
+      queryId,
+      delay: 1000,
+      dispatch,
+      message: `Downloading ${format.toUpperCase()} file`,
     });
-    let blob = await response.blob();
+    try {
+      let response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: formats[format],
+        },
+        signal: getController(state).signal,
+      });
+      clearInterval(interval);
+      let blob = await response.blob();
 
-    const linkUrl = window.URL.createObjectURL(new Blob([blob]));
-    const link = document.createElement("a");
-    link.href = linkUrl;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
-  } catch (err) {
-    return false;
-  }
-  return true;
+      const linkUrl = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = linkUrl;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (err) {
+      clearInterval(interval);
+      if (getController(state).signal.aborted) {
+        dispatch(
+          setMessage({
+            message: `Cancelled`,
+            duration: 5000,
+            severity: "warning",
+          })
+        );
+        status = { success: false, error: "Request cancelled" };
+      } else {
+        dispatch(
+          setMessage({
+            message: `Failed to fetch ${report} report`,
+            duration: 5000,
+            severity: "error",
+          })
+        );
+        status = { success: false, error: "Unexpected error" };
+        console.log(error);
+      }
+      dispatch(resetController());
+      return false;
+    }
+    return true;
+  };
 };

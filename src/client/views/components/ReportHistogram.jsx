@@ -9,12 +9,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import React, { Fragment, useRef } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
 import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
+import { compose } from "recompose";
+import dispatchMessage from "../hocs/dispatchMessage";
 import formats from "../functions/formats";
 import qs from "qs";
 import styles from "./Styles.scss";
@@ -205,10 +207,11 @@ const Histogram = ({
   chartProps,
 }) => {
   let axes = [
-    <CartesianGrid strokeDasharray="3 3" vertical={false} />,
+    <CartesianGrid key={"grid"} strokeDasharray="3 3" vertical={false} />,
     <XAxis
       xAxisId={0}
       dataKey="x"
+      key={"x"}
       interval={0}
       tickLine={false}
       tick={(props) =>
@@ -219,8 +222,8 @@ const Histogram = ({
         <Label value={xLabel} offset={5} position="bottom" fill="#666" />
       )}
     </XAxis>,
-    <XAxis xAxisId={1} dataKey="x" hide={true}></XAxis>,
-    <YAxis allowDecimals={false}>
+    <XAxis xAxisId={1} dataKey="x" key={"hidden-x"} hide={true}></XAxis>,
+    <YAxis allowDecimals={false} key={"y"}>
       {width > 300 && (
         <Label
           value={yLabel}
@@ -235,7 +238,9 @@ const Histogram = ({
     // <Tooltip />,
   ];
   if (width > 300) {
-    axes.push(<Legend verticalAlign="top" offset={28} height={28} />);
+    axes.push(
+      <Legend key={"legend"} verticalAlign="top" offset={28} height={28} />
+    );
   }
   // return (
   //   <AreaChart
@@ -280,6 +285,7 @@ const Histogram = ({
       {cats.map((cat, i) => (
         <Bar
           dataKey={cat}
+          key={cat}
           xAxisId={1}
           legendType={"none"}
           isAnimationActive={false}
@@ -296,6 +302,7 @@ const Histogram = ({
       {cats.map((cat, i) => (
         <Bar
           dataKey={cat}
+          key={i}
           stackId={stacked ? 1 : false}
           fill={COLORS[i]}
           isAnimationActive={false}
@@ -323,6 +330,7 @@ const ReportHistogram = ({
   stacked,
   cumulative,
   yScale = "linear",
+  setMessage,
 }) => {
   const navigate = useNavigate();
   const componentRef = chartRef ? chartRef : useRef();
@@ -335,6 +343,11 @@ const ReportHistogram = ({
   } else {
     minDim /= ratio;
   }
+  useEffect(() => {
+    if (histogram && histogram.status) {
+      setMessage(null);
+    }
+  }, [histogram]);
   if (histogram && histogram.status) {
     let chartData = [];
     let chart;
@@ -445,4 +458,4 @@ const ReportHistogram = ({
   }
 };
 
-export default ReportHistogram;
+export default compose(dispatchMessage)(ReportHistogram);

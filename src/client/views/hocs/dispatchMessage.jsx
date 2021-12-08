@@ -1,13 +1,15 @@
 import React from "react";
 import { connect } from "react-redux";
-import { setLookupTerm, resetLookup } from "../reducers/lookup";
+import { setMessage } from "../reducers/message";
 
-const withSetLookup = (WrappedComponent) => (props) => {
+const dispatchMessage = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({});
 
   const mapDispatchToProps = (dispatch) => ({
-    setLookupTerm: (lookupTerm) => dispatch(setLookupTerm(lookupTerm)),
-    resetLookup: () => dispatch(resetLookup()),
+    setMessage: (message) => {
+      console.log(message);
+      dispatch(setMessage(message));
+    },
   });
 
   const Connected = connect(
@@ -18,4 +20,4 @@ const withSetLookup = (WrappedComponent) => (props) => {
   return <Connected {...props} />;
 };
 
-export default withSetLookup;
+export default dispatchMessage;

@@ -9,13 +9,13 @@ import ResultPanel from "./ResultPanel";
 import TextPanel from "./TextPanel";
 import classnames from "classnames";
 import { compose } from "recompose";
+import dispatchLookup from "../hocs/dispatchLookup";
 import { getRecordIsFetching } from "../reducers/record";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
-import withSetLookup from "../hocs/withSetLookup";
 import withTaxonomy from "../hocs/withTaxonomy";
 import withTypes from "../hocs/withTypes";
 
@@ -178,6 +178,6 @@ export default compose(
   withTaxonomy,
   withRecord,
   withSearch,
-  withSetLookup,
+  dispatchLookup,
   withTypes
 )(RecordPage);

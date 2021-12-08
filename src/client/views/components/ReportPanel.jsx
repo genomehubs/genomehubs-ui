@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
 import Grid from "@material-ui/core/Grid";
@@ -25,7 +25,6 @@ const ReportPanel = ({ options, reportDefaults }) => {
     styles.textPanel
   );
   const reportRef = useRef(null);
-
   const location = useLocation();
   useEffect(() => {
     if (location.search.match("report=")) {
@@ -43,7 +42,6 @@ const ReportPanel = ({ options, reportDefaults }) => {
   };
   let { query, ...treeOptions } = options;
   let report = options.report;
-  // console.log(reportDefaults);
   let queryString = qs.stringify({
     ...treeOptions,
     ...reportDefaults[report],
@@ -86,4 +84,4 @@ const ReportPanel = ({ options, reportDefaults }) => {
   );
 };
 
-export default compose(withReportDefaults)(ReportPanel);
+export default compose(memo, withReportDefaults)(ReportPanel);

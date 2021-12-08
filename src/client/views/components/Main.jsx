@@ -18,6 +18,9 @@ const basename = BASENAME || "";
 const fixedRoutes = { search: true, explore: true, records: true };
 
 const Main = ({ routes }) => {
+  if (routes.allIds.length == 0) {
+    return null;
+  }
   let css = classnames(styles.fillParent);
   let paths = [
     <Landing path="/" key="/" />,

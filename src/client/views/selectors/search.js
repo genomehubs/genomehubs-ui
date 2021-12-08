@@ -10,8 +10,11 @@ import {
   setSearchIndex,
   setSearchTerm,
 } from "../reducers/search";
+import { getController, resetController } from "../reducers/message";
 
+import { checkProgress } from "./checkProgress";
 import { getCurrentTaxonomy } from "../reducers/taxonomy";
+import { nanoid } from "nanoid";
 import qs from "qs";
 import { setTreeQuery } from "../reducers/tree";
 import store from "../store";
@@ -102,3 +105,72 @@ export function fetchSearchResults(options, navigate) {
     }
   };
 }
+
+export const saveSearchResults = ({ options, format = "tsv" }) => {
+  return async function (dispatch) {
+    const state = store.getState();
+
+    const filename = `download.${format}`;
+    options.filename = filename;
+    const queryString = qs.stringify(options);
+    const formats = {
+      csv: "text/csv",
+      json: "application/json",
+      tsv: "text/tab-separated-values",
+    };
+    const queryId = nanoid(10);
+    let url = `${apiUrl}/search?${queryString}&queryId=${queryId}`;
+    let status;
+    const interval = checkProgress({
+      queryId,
+      delay: 1000,
+      dispatch,
+      message: `Downloading ${format.toUpperCase()} file`,
+    });
+
+    try {
+      let response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: formats[format],
+        },
+        signal: getController(state).signal,
+      });
+      clearInterval(interval);
+      let blob = await response.blob();
+
+      const linkUrl = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = linkUrl;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (err) {
+      clearInterval(interval);
+      if (getController(state).signal.aborted) {
+        dispatch(
+          setMessage({
+            message: `Cancelled`,
+            duration: 5000,
+            severity: "warning",
+          })
+        );
+        status = { success: false, error: "Request cancelled" };
+      } else {
+        dispatch(
+          setMessage({
+            message: `Failed to fetch ${report} report`,
+            duration: 5000,
+            severity: "error",
+          })
+        );
+        status = { success: false, error: "Unexpected error" };
+        console.log(error);
+      }
+      dispatch(resetController());
+      return false;
+    }
+    return true;
+  };
+};

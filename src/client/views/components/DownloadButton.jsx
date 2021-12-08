@@ -8,6 +8,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import Paper from "@material-ui/core/Paper";
 import React from "react";
+import { compose } from "recompose";
+import dispatchMessage from "../hocs/dispatchMessage";
 import { withStyles } from "@material-ui/core/styles";
 
 const ColorButtonGroup = withStyles((theme) => ({
@@ -36,9 +38,9 @@ const DownloadButton = ({
   onButtonClick,
   searchTerm,
   options = defaultOptions,
+  setMessage,
 }) => {
   const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
@@ -147,9 +149,8 @@ const DownloadButton = ({
           </MenuList>
         </ClickAwayListener>
       </Paper>
-      {message && <DownloadMessage {...message} />}
     </span>
   );
 };
 
-export default DownloadButton;
+export default compose(dispatchMessage)(DownloadButton);

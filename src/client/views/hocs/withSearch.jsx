@@ -1,3 +1,4 @@
+import { fetchSearchResults, saveSearchResults } from "../selectors/search";
 import {
   getPreferSearchTerm,
   getPreviousSearchTerm,
@@ -7,7 +8,6 @@ import {
   getSearchResults,
   getSearchTerm,
   resetSearch,
-  saveSearchResults,
   setPreferSearchTerm,
   setPreviousSearchTerm,
   setSearchIndex,
@@ -16,7 +16,6 @@ import {
 
 import React from "react";
 import { connect } from "react-redux";
-import { fetchSearchResults } from "../selectors/search";
 
 const withSearch = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({

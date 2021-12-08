@@ -10,13 +10,15 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
 import { useLocation, useNavigate } from "@reach/router";
 
 import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
+import { compose } from "recompose";
+import dispatchMessage from "../hocs/dispatchMessage";
 import { format } from "d3-format";
 import formats from "../functions/formats";
 import { point } from "leaflet";
@@ -224,10 +226,11 @@ const Heatmap = ({
   stacked,
 }) => {
   let axes = [
-    <CartesianGrid strokeDasharray="3 3" />,
+    <CartesianGrid key={"grid"} strokeDasharray="3 3" />,
     <XAxis
       type="number"
       dataKey="x"
+      key={"x"}
       scale="log"
       angle={buckets.length > 15 ? -90 : 0}
       domain={[buckets[0], buckets[buckets.length - 1]]}
@@ -247,6 +250,7 @@ const Heatmap = ({
     <YAxis
       type="number"
       dataKey="y"
+      key={"y"}
       scale="log"
       ticks={yBuckets}
       domain={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
@@ -266,6 +270,7 @@ const Heatmap = ({
     <ZAxis
       id={0}
       type="number"
+      key={"z"}
       dataKey="count"
       domain={[chartProps.zDomain[0], chartProps.zDomain[1]]}
       range={[0.1, 1]}
@@ -274,7 +279,9 @@ const Heatmap = ({
     // <Tooltip />,
   ];
   if (width > 300) {
-    axes.push(<Legend verticalAlign="top" offset={28} height={28} />);
+    axes.push(
+      <Legend key={"legend"} verticalAlign="top" offset={28} height={28} />
+    );
   }
 
   // let stripe = 4;
@@ -331,6 +338,7 @@ const Heatmap = ({
       {cats.map((cat, i) => (
         <Scatter
           name={cat}
+          key={cat}
           data={data[i]}
           fill={COLORS[i]}
           shape={(props) => CustomShape(props, { ...chartProps, i })}
@@ -342,6 +350,7 @@ const Heatmap = ({
           <Scatter
             name={`${cat}_points`}
             legendType="none"
+            key={i}
             data={pointData[i]}
             fill={COLORS[i]}
             shape={"circle"}
@@ -360,6 +369,7 @@ const ReportScatter = ({
   containerRef,
   ratio,
   zScale = "linear",
+  setMessage,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -373,6 +383,11 @@ const ReportScatter = ({
   } else {
     minDim /= ratio;
   }
+  useEffect(() => {
+    if (scatter && scatter.status) {
+      setMessage(null);
+    }
+  }, [scatter]);
   if (scatter && scatter.status) {
     let chart;
     let {
@@ -438,4 +453,4 @@ const ReportScatter = ({
   }
 };
 
-export default ReportScatter;
+export default compose(dispatchMessage)(ReportScatter);

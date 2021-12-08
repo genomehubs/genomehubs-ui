@@ -168,7 +168,12 @@ export const ReportEdit = ({
     });
 
     if (modal) {
-      fetchReport({ reportId, queryString: newQueryString, reload: true });
+      fetchReport({
+        reportId,
+        queryString: newQueryString,
+        reload: true,
+        report,
+      });
     } else {
       handleUpdate({ queryString: newQueryString, hash });
     }
@@ -248,7 +253,9 @@ export const ReportEdit = ({
               control={
                 <Switch
                   id={`report-${queryProp}`}
-                  checked={values[queryProp] && values[queryProp] != "false"}
+                  checked={Boolean(
+                    values[queryProp] && values[queryProp] != "false"
+                  )}
                   onClick={(e) => toggleSwitch(e, queryProp)}
                   name={queryProp}
                   color="default"

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import ReportEmpty from "./ReportEmpty";
@@ -61,6 +61,7 @@ const ReportItem = ({
   treeStyle,
   handleUpdate,
   dispatch,
+  includeEstimates,
   ...gridProps
 }) => {
   queryString = qs.stringify({
@@ -69,11 +70,57 @@ const ReportItem = ({
     scatterThreshold,
     ...qs.parse(queryString),
   });
+
+  // const [fetchTimeout, setFetchTimeout] = useState();
   useEffect(() => {
+    // let mounted = true;
     if (reportId && (!reportById || Object.keys(reportById).length == 0)) {
-      setTimeout(() => fetchReport({ reportId, queryString }), delay);
+      // clearTimeout(fetchTimeout);
+      // setFetchTimeout(
+      //   setTimeout(() => {
+      //     if (mounted) {
+      //       setMessage({
+      //         message: `Fetching ${report} report`,
+      //         duration: 60000,
+      //         severity: "info",
+      //       });
+      //     }
+      //   }, 100)
+      // );
+      setTimeout(() => fetchReport({ reportId, queryString, report }), delay);
+      // return function cleanup() {
+      //   clearTimeout(fetchTimeout);
+      //   mounted = false;
+      // };
     }
   }, [reportId]);
+
+  // useEffect(() => {
+  //   console.log(reportById);
+  //   if (!reportById || Object.keys(reportById).length == 0) {
+  //   } else if (
+  //     reportById.report[report].status &&
+  //     reportById.report[report].status.success == false
+  //   ) {
+  //     setMessage({
+  //       message: `Failed to fetch ${report} report`,
+  //       duration: 5000,
+  //       severity: "error",
+  //     });
+  //   } else if (reportById.report[report].x == 0) {
+  //     setMessage({
+  //       message: `Empty ${report} report`,
+  //       duration: 5000,
+  //       severity: "warning",
+  //     });
+  //   } else {
+  //     setMessage({
+  //       message: `Fetched ${report} report`,
+  //       duration: 5000,
+  //       severity: "success",
+  //     });
+  //   }
+  // }, [reportById]);
   let component, error, loading;
   if (!reportById || Object.keys(reportById).length == 0) {
     component = (
@@ -94,8 +141,18 @@ const ReportItem = ({
     }
     error = reportById.report[report].status.error;
     component = <ReportError report={report} error={error} />;
+    // message = {
+    //   message: `Failed to fetch ${report} report`,
+    //   duration: 5000,
+    //   severity: "error",
+    // };
   } else if (reportById.report[report].x == 0) {
     component = <ReportEmpty report={report} />;
+    // message = {
+    //   message: `No ${report} data to display`,
+    //   duration: 5000,
+    //   severity: "warning",
+    // };
   } else {
     switch (report) {
       case "histogram":
@@ -108,6 +165,7 @@ const ReportItem = ({
             stacked={stacked}
             cumulative={cumulative}
             xOpts={xOpts}
+            includeEstimates={includeEstimates}
             // yScale={yScale}
             {...qs.parse(queryString)}
           />
@@ -124,6 +182,7 @@ const ReportItem = ({
             yOpts={yOpts}
             zScale={zScale}
             scatterThreshold={scatterThreshold}
+            includeEstimates={includeEstimates}
             {...qs.parse(queryString)}
           />
         );
@@ -160,6 +219,7 @@ const ReportItem = ({
             treeStyle={treeStyle}
             handleUpdate={handleUpdate}
             dispatch={dispatch}
+            includeEstimates={includeEstimates}
             {...qs.parse(queryString)}
           />
         );
