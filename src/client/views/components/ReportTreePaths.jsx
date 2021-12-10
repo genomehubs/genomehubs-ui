@@ -199,7 +199,7 @@ const ReportTreePaths = ({
   };
   const [portionCache, setPortionCache] = useState([]);
 
-  const overviewWidth = 10;
+  const overviewWidth = 15;
   const overviewHeight = divHeight;
   const overviewScale = scaleLinear()
     .domain([10, plotHeight - 10])
@@ -236,7 +236,7 @@ const ReportTreePaths = ({
             newOverview.push(
               <Line
                 key={`o-${segment.taxon_id}`}
-                points={[4, oveviewY, overviewWidth, oveviewY]}
+                points={[5, oveviewY, overviewWidth, oveviewY]}
                 stroke={segment.color}
                 opacity={0.5}
               />
