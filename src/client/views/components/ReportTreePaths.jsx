@@ -231,16 +231,12 @@ const ReportTreePaths = ({
         let lowerY = portionHeight * portion - portionOverlap;
         let upperY = portionHeight * (portion + 1) + portionOverlap;
         for (let segment of lines) {
-          if (
-            overview.length == 0 &&
-            segment.tip &&
-            segment.source == "direct"
-          ) {
+          if (overview.length == 0 && segment.tip && segment.status == 1) {
             let oveviewY = overviewScale(segment.yStart);
             newOverview.push(
               <Line
                 key={`o-${segment.taxon_id}`}
-                points={[2, oveviewY, 10, oveviewY]}
+                points={[4, oveviewY, overviewWidth, oveviewY]}
                 stroke={segment.color}
                 opacity={0.5}
               />
@@ -404,28 +400,32 @@ const ReportTreePaths = ({
           style={{
             height: previewDivHeight,
             overflow: "hidden",
-            width: 10,
+            width: overviewWidth,
             position: "absolute",
             top: 0,
-            left: -10,
+            left: -overviewWidth,
             pointerEvents: "none",
           }}
         >
           <div
             style={{
               height: previewDivHeight,
-              width: 10,
+              width: overviewWidth,
               position: "absolute",
               right: 0,
               pointerEvents: "auto",
             }}
           >
-            <Stage width={10} height={previewDivHeight} pixelRatio={1}>
+            <Stage
+              width={overviewWidth}
+              height={previewDivHeight}
+              pixelRatio={1}
+            >
               <Layer>
                 <Group>{overview}</Group>
                 <Rect
                   x={0}
-                  width={10}
+                  width={overviewWidth}
                   y={globalYScale(scrollPosition.y)}
                   height={previewDivHeight * previewRatio}
                   fill={"rgba(125,125,125,0.5)"}
