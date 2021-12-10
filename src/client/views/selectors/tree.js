@@ -479,12 +479,12 @@ const setColor = ({ node, yQuery, recurse }) => {
   let reds = schemeReds[tonalRange];
   let greens = schemeGreens[tonalRange];
   let oranges = schemeOranges[tonalRange];
+  let source;
   if (!recurse) {
     color = "white";
     highlightColor = "white";
   } else if (yQuery) {
     let status = node.status ? 1 : 0;
-    let source;
     if (node.fields && node.fields[field]) {
       source = node.fields[field].source;
     }
@@ -512,7 +512,7 @@ const setColor = ({ node, yQuery, recurse }) => {
     color = greys[baseTone + 2];
     highlightColor = greys[baseTone + 2];
   }
-  return { color, highlightColor };
+  return { color, highlightColor, source };
 };
 
 export const processTreeRings = ({ nodes, xQuery, yQuery }) => {
@@ -818,8 +818,11 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
     node.yMin = yScale(maxY);
     node.yMax = yScale(minY);
     node.height = node.yMax - node.yMin;
-    let { color, highlightColor } = setColor({ node, yQuery, recurse: true });
-
+    let { color, highlightColor, source } = setColor({
+      node,
+      yQuery,
+      recurse: true,
+    });
     let label;
     if (node.tip) {
       label = node.scientific_name;
@@ -870,6 +873,7 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
       labelWidth: label ? label.length * charLen : 0,
       color,
       highlightColor,
+      source,
     });
   });
   return {

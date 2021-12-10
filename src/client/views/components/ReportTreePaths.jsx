@@ -190,6 +190,7 @@ const ReportTreePaths = ({
   const [nodes, setNodes] = useState([]);
   const [labels, setLabels] = useState([]);
   const [regions, setRegions] = useState([]);
+  const [overview, setOverview] = useState([]);
   const [portion, setPortion] = useState(0);
   const updateCache = (index, value) => {
     const updatedCache = [...portionCache];
@@ -198,6 +199,11 @@ const ReportTreePaths = ({
   };
   const [portionCache, setPortionCache] = useState([]);
 
+  const overviewWidth = 10;
+  const overviewHeight = divHeight;
+  const overviewScale = scaleLinear()
+    .domain([10, plotHeight - 10])
+    .range([0, overviewHeight]);
   const portionHeight = 10000;
   const portionOverlap = 10000;
 
@@ -218,12 +224,28 @@ const ReportTreePaths = ({
       let newNodes = [];
       let newLabels = [];
       let newRegions = [];
+      let newOverview = [];
       if (portionCache[portion]) {
         ({ newNodes, newPaths, newLabels, newRegions } = portionCache[portion]);
       } else {
         let lowerY = portionHeight * portion - portionOverlap;
         let upperY = portionHeight * (portion + 1) + portionOverlap;
         for (let segment of lines) {
+          if (
+            overview.length == 0 &&
+            segment.tip &&
+            segment.source == "direct"
+          ) {
+            let oveviewY = overviewScale(segment.yStart);
+            newOverview.push(
+              <Line
+                key={`o-${segment.taxon_id}`}
+                points={[2, oveviewY, 10, oveviewY]}
+                stroke={segment.color}
+                opacity={0.5}
+              />
+            );
+          }
           if (segment.yMin > upperY || segment.yMax < lowerY) {
             continue;
           }
@@ -344,6 +366,9 @@ const ReportTreePaths = ({
       setPaths(newPaths);
       setLabels(newLabels);
       setRegions(newRegions);
+      if (newOverview.length > 0) {
+        setOverview(newOverview);
+      }
     }
   }, [lines, portion]);
 
@@ -397,12 +422,13 @@ const ReportTreePaths = ({
           >
             <Stage width={10} height={previewDivHeight} pixelRatio={1}>
               <Layer>
+                <Group>{overview}</Group>
                 <Rect
                   x={0}
                   width={10}
                   y={globalYScale(scrollPosition.y)}
                   height={previewDivHeight * previewRatio}
-                  fill={"rgba(0,0,0,0.1)"}
+                  fill={"rgba(125,125,125,0.5)"}
                   onClick={handlePreviewClick}
                   draggable
                   onDragStart={handleDragStart}
