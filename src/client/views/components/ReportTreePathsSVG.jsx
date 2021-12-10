@@ -1,22 +1,22 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
-import Grid from "@material-ui/core/Grid";
-import ReactDOM from "react-dom";
-import SVGDownloadButton from "./SVGDownloadButton";
+// import Grid from "@material-ui/core/Grid";
+// import ReactDOM from "react-dom";
+// import SVGDownloadButton from "./SVGDownloadButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import VariableFilter from "./VariableFilter";
+// import VariableFilter from "./VariableFilter";
 import classnames from "classnames";
 import { compose } from "recompose";
-import { formatter } from "../functions/formatter";
+// import { formatter } from "../functions/formatter";
 import { scaleLog } from "d3-scale";
 import styles from "./Styles.scss";
 import { useLongPress } from "use-long-press";
-import useResize from "../hooks/useResize";
-import withRecord from "../hocs/withRecord";
-import withSearch from "../hocs/withSearch";
-import withSummary from "../hocs/withSummary";
-import withTree from "../hocs/withTree";
+// import useResize from "../hooks/useResize";
+// import withRecord from "../hocs/withRecord";
+// import withSearch from "../hocs/withSearch";
+// import withSummary from "../hocs/withSummary";
+// import withTree from "../hocs/withTree";
 import withTypes from "../hocs/withTypes";
 
 const ReportTreePaths = ({

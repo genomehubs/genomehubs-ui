@@ -33,6 +33,7 @@ const ReportTreePaths = ({
   height,
   plotHeight,
   maxWidth,
+  hidePreview,
   reportRef,
   gridRef,
 }) => {
@@ -240,7 +241,9 @@ const ReportTreePaths = ({
             key={`r-${segment.taxon_id}`}
             x={segment.xStart}
             y={segment.yMin}
-            width={segment.labelWidth + segment.width}
+            width={
+              segment.tip ? segment.labelWidth + segment.width : segment.width
+            }
             height={segment.height}
             fill={"rgba(0,0,0,0)"}
             onMouseEnter={(e) => showTooltip(e, segment)}
@@ -270,7 +273,7 @@ const ReportTreePaths = ({
         );
         if (
           segment.scientific_name == "parent" ||
-          (!segment.tip && segment.count == 1)
+          (!segment.tip && segment.childCount == 1)
         ) {
           newNodes.push(
             <Circle
@@ -333,7 +336,7 @@ const ReportTreePaths = ({
 
   let preview;
 
-  if (plotHeight > divHeight * 1.5) {
+  if (!hidePreview && plotHeight > divHeight * 1.5) {
     let globalPosition;
     if (previewHeight < plotHeight) {
       globalPosition = (

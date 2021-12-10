@@ -8,8 +8,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import Paper from "@material-ui/core/Paper";
 import React from "react";
-import { compose } from "recompose";
-import dispatchMessage from "../hocs/dispatchMessage";
+// import { compose } from "recompose";
+// import dispatchMessage from "../hocs/dispatchMessage";
 import { withStyles } from "@material-ui/core/styles";
 
 const ColorButtonGroup = withStyles((theme) => ({
@@ -38,7 +38,7 @@ const DownloadButton = ({
   onButtonClick,
   searchTerm,
   options = defaultOptions,
-  setMessage,
+  // setMessage,
 }) => {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -46,11 +46,11 @@ const DownloadButton = ({
 
   const handleClick = async () => {
     let key = Object.keys(options)[selectedIndex];
-    setMessage({
-      message: `Downloading ${key} file`,
-      duration: 60000,
-      severity: "info",
-    });
+    // setMessage({
+    //   message: `Downloading ${key} file`,
+    //   duration: 60000,
+    //   severity: "info",
+    // });
     let format = options[key].format;
     let fullOptions = {
       ...searchTerm,
@@ -69,19 +69,19 @@ const DownloadButton = ({
     } catch (err) {
       console.log(err);
     }
-    if (success) {
-      setMessage({
-        message: `${key} file downloaded`,
-        duration: 5000,
-        severity: "success",
-      });
-    } else {
-      setMessage({
-        message: `${key} file download failed`,
-        duration: 5000,
-        severity: "error",
-      });
-    }
+    // if (success) {
+    //   setMessage({
+    //     message: `${key} file downloaded`,
+    //     duration: 5000,
+    //     severity: "success",
+    //   });
+    // } else {
+    //   setMessage({
+    //     message: `${key} file download failed`,
+    //     duration: 5000,
+    //     severity: "error",
+    //   });
+    // }
   };
 
   const handleMenuItemClick = (event, index) => {
@@ -89,15 +89,17 @@ const DownloadButton = ({
     setOpen(false);
   };
 
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpen(!open);
   };
 
   const handleClose = (event) => {
     event.stopPropagation();
-    // if (anchorRef.current && anchorRef.current.contains(event.target)) {
-    //   return;
-    // }
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
     setOpen(false);
   };
 
@@ -153,4 +155,4 @@ const DownloadButton = ({
   );
 };
 
-export default compose(dispatchMessage)(DownloadButton);
+export default DownloadButton;

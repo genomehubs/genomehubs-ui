@@ -79,7 +79,8 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
                     id={"taxon-filter-filter"}
                     checked={searchDefaults.includeDescendants}
                     onChange={() => {
-                      let includeDescendants = !searchDefaults.includeDescendants;
+                      let includeDescendants =
+                        !searchDefaults.includeDescendants;
                       setSearchDefaults({
                         includeDescendants,
                       });
@@ -193,7 +194,11 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
             </FormControl>
             <Modal
               open={showSettings}
-              onClose={() => setShowSettings(false)}
+              onClose={(event, reason) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setShowSettings(false);
+              }}
               aria-labelledby="result-settings-modal-title"
               aria-describedby="result-settings-modal-description"
               className={classes.modal}
@@ -227,7 +232,11 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
             </FormControl>
             <Modal
               open={showOptions}
-              onClose={() => setShowOptions(false)}
+              onClose={(event, reason) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setShowOptions(false);
+              }}
               aria-labelledby="search-options-modal-title"
               aria-describedby="search-options-modal-description"
               className={classes.modal}

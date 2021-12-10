@@ -186,9 +186,9 @@ const SearchSettings = ({
       ...searchTerm,
       result: index,
       offset: 0,
-      ...(fields.length > 0 && { fields: fields.join(",") }),
-      ...(names.length > 0 && { names: names.join(",") }),
-      ...(ranks.length > 0 && { ranks: ranks.join(",") }),
+      fields: fields.length > 0 ? fields.join(",") : "none",
+      names: names.join(","),
+      ranks: ranks.join(","),
       taxonomy: state.taxonomy,
     };
     // delete options.excludeAncestral;
@@ -196,7 +196,7 @@ const SearchSettings = ({
     // delete options.excludeDirect;
     // delete options.excludeMissing;
     setPreferSearchTerm(false);
-    navigate(`/search?${qs.stringify(options)}${location.hash}`);
+    navigate(`/search?${qs.stringify(options)}${location.hash || ""}`);
   };
 
   const handleResetClick = () => {
@@ -206,12 +206,16 @@ const SearchSettings = ({
       offset: 0,
     };
     delete options.fields;
+    delete options.names;
+    delete options.ranks;
+    delete options.offset;
+    delete options.pageSize;
     delete options.excludeAncestral;
     delete options.excludeDescendant;
     delete options.excludeDirect;
     delete options.excludeMissing;
     setPreferSearchTerm(false);
-    navigate(`/search?${qs.stringify(options)}${location.hash}`);
+    navigate(`/search?${qs.stringify(options)}${location.hash || ""}`);
   };
 
   let groups = [];

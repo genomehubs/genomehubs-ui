@@ -53,7 +53,9 @@ const reports = handleActions(
   defaultReportState()
 );
 
-export const getReports = (state) => state.reports.byId;
+export const getReports = (state) => {
+  return state.reports.byId;
+};
 export const getReportsFetching = (state) => state.reports.requestedById;
 
 export const reportReducers = {

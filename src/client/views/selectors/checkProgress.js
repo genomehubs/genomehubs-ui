@@ -23,7 +23,6 @@ export function checkProgress({
           signal: getController(state).signal,
         });
         json = await response.json();
-        console.log(json);
       } catch (error) {
         isFetching = false;
         console.log(error);

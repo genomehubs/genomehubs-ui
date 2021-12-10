@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useRef } from "react";
 
 import ReportItem from "./ReportItem";
 import qs from "qs";
+import { sortReportQuery } from "../selectors/report";
 import { useLocation } from "@reach/router";
 import useResize from "../hooks/useResize";
 
@@ -36,16 +37,26 @@ const Report = (props) => {
     reportProps.result = "taxon";
     queryProps.result = "taxon";
   }
-  if (!props.queryString) {
-    queryPropList.forEach((prop) => {
-      if (props.hasOwnProperty(prop)) {
-        queryProps[prop] = props[prop];
-      }
-    });
-    reportProps.queryString = qs.stringify(queryProps);
+  if (!reportProps.queryString) {
+    //   reportProps.queryString = sortReportQuery({
+    //     queryString: reportProps.queryString,
+    //   });
+    // } else {
+    //   // queryPropList.forEach((prop) => {
+    //   if (props.hasOwnProperty(prop)) {
+    //     queryProps[prop] = props[prop];
+    //   }
+    // });
+    reportProps.queryString = sortReportQuery({ options: queryProps });
   }
-  if (!props.reportId) {
-    reportProps.reportId = reportProps.queryString;
+  if (props.reportId) {
+    reportProps.reportId = sortReportQuery({
+      queryString: reportProps.reportId,
+    });
+  } else {
+    reportProps.reportId = sortReportQuery({
+      options: { ...props, ...queryProps },
+    });
   }
   reportProps.inModal = props.inModal;
   reportProps.permaLink = props.permaLink;
@@ -66,6 +77,7 @@ const Report = (props) => {
   reportProps.treeStyle = props.treeStyle || "rect";
   reportProps.yOpts = props.yOpts;
   reportProps.scatterThreshold = props.scatterThreshold;
+  reportProps.treeThreshold = props.treeThreshold;
 
   const componentRef = useRef();
   const { width, height } = useResize(componentRef);

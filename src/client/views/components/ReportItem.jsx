@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import ReportEmpty from "./ReportEmpty";
@@ -11,18 +11,13 @@ import ReportSources from "./ReportSources";
 import ReportTree from "./ReportTree";
 import ReportXInY from "./ReportXInY";
 import ReportXPerRank from "./ReportXPerRank";
-import Tooltip from "@material-ui/core/Tooltip";
 import { compose } from "recompose";
-import loadable from "@loadable/component";
+import dispatchMessage from "../hocs/dispatchMessage";
+import dispatchReport from "../hocs/dispatchReport";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
-import withFetchReport from "../hocs/withFetchReport";
 import withReportById from "../hocs/withReportById";
-
-// const ReportSources = loadable(() => import("./ReportSources"));
-// const ReportXPerRank = loadable(() => import("./ReportXPerRank"));
-// const ReportXInY = loadable(() => import("./ReportXInY"));
 
 const headings = {
   tree: "Tap tree nodes to browse taxa or long-press to search",
@@ -59,68 +54,58 @@ const ReportItem = ({
   zScale,
   setEdit,
   treeStyle,
+  treeThreshold,
   handleUpdate,
   dispatch,
   includeEstimates,
+  setMessage,
+  saveReport,
   ...gridProps
 }) => {
   queryString = qs.stringify({
     xOpts,
     yOpts,
     scatterThreshold,
+    treeThreshold,
     ...qs.parse(queryString),
   });
+  const navigate = useNavigate();
+  const hideMessage = !inModal && !topLevel;
+  // const [hideMessage, sethideMessage] = useState(false);
 
-  // const [fetchTimeout, setFetchTimeout] = useState();
   useEffect(() => {
-    // let mounted = true;
     if (reportId && (!reportById || Object.keys(reportById).length == 0)) {
-      // clearTimeout(fetchTimeout);
-      // setFetchTimeout(
-      //   setTimeout(() => {
-      //     if (mounted) {
-      //       setMessage({
-      //         message: `Fetching ${report} report`,
-      //         duration: 60000,
-      //         severity: "info",
-      //       });
-      //     }
-      //   }, 100)
-      // );
-      setTimeout(() => fetchReport({ reportId, queryString, report }), delay);
-      // return function cleanup() {
-      //   clearTimeout(fetchTimeout);
-      //   mounted = false;
-      // };
+      // let hideMessage;
+      // if (!inModal && !topLevel) {
+      //   sethideMessage(true);
+      // }
+      setTimeout(
+        () => fetchReport({ reportId, queryString, report, hideMessage }),
+        delay
+      );
     }
   }, [reportId]);
 
-  // useEffect(() => {
-  //   console.log(reportById);
-  //   if (!reportById || Object.keys(reportById).length == 0) {
-  //   } else if (
-  //     reportById.report[report].status &&
-  //     reportById.report[report].status.success == false
-  //   ) {
-  //     setMessage({
-  //       message: `Failed to fetch ${report} report`,
-  //       duration: 5000,
-  //       severity: "error",
-  //     });
-  //   } else if (reportById.report[report].x == 0) {
-  //     setMessage({
-  //       message: `Empty ${report} report`,
-  //       duration: 5000,
-  //       severity: "warning",
-  //     });
-  //   } else {
-  //     setMessage({
-  //       message: `Fetched ${report} report`,
-  //       duration: 5000,
-  //       severity: "success",
-  //     });
-  //   }
-  // }, [reportById]);
+  let status;
+  if (reportById && reportById.report && reportById.report[report]) {
+    if (reportById.report[report].status) {
+      status = reportById.report[report].status;
+    }
+  }
+
+  useEffect(() => {
+    if (
+      !hideMessage &&
+      status &&
+      reportById.report[report].status.success == false
+    ) {
+      setMessage({
+        message: `Unable to load ${report} report`,
+        duration: 5000,
+        severity: "warning",
+      });
+    }
+  }, [status]);
   let component, error, loading;
   if (!reportById || Object.keys(reportById).length == 0) {
     component = (
@@ -136,7 +121,7 @@ const ReportItem = ({
     reportById.report[report].status &&
     reportById.report[report].status.success == false
   ) {
-    if (setEdit) {
+    if (setEdit && !hideMessage) {
       setTimeout(() => setEdit(true), 500);
     }
     error = reportById.report[report].status.error;
@@ -198,7 +183,6 @@ const ReportItem = ({
         break;
       case "tree":
         if (!permaLink) {
-          const navigate = useNavigate();
           permaLink = (queryString, toggle) => {
             let path = "report";
             // TODO: include taxonomy
@@ -220,6 +204,8 @@ const ReportItem = ({
             handleUpdate={handleUpdate}
             dispatch={dispatch}
             includeEstimates={includeEstimates}
+            treeThreshold={treeThreshold}
+            hidePreview={hideMessage}
             {...qs.parse(queryString)}
           />
         );
@@ -247,6 +233,7 @@ const ReportItem = ({
         break;
     }
   }
+
   heading = heading || headings[report];
   caption = reportById?.report?.caption;
   let content = (
@@ -302,4 +289,8 @@ const ReportItem = ({
   );
 };
 
-export default compose(withFetchReport, withReportById)(ReportItem);
+export default compose(
+  dispatchMessage,
+  dispatchReport,
+  withReportById
+)(ReportItem);

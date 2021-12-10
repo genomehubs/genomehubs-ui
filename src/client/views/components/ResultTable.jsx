@@ -396,8 +396,11 @@ const ResultTable = ({
       options.query = options.query.replace("tax_name", "tax_tree");
     }
     options.offset = 0;
-    setPreferSearchTerm(true);
-    setSearchTerm(options);
+    // setPreferSearchTerm(true);
+    // setSearchTerm(options);
+    navigate(
+      `${location.pathname}?${qs.stringify(options)}${location.hash || ""}`
+    );
   };
   let rows = searchResults.results.map((result) => {
     let name = result.result.scientific_name;
@@ -470,7 +473,10 @@ const ResultTable = ({
     }
     displayTypes.forEach((type) => {
       if (type.name != "sex_determination_system") {
-        if (result.result.fields.hasOwnProperty(type.name)) {
+        if (
+          result.result.fields &&
+          result.result.fields.hasOwnProperty(type.name)
+        ) {
           let field = result.result.fields[type.name];
           let value = field.value;
           if (Array.isArray(value)) {

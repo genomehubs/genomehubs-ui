@@ -21,14 +21,14 @@ const ReportTree = ({
   reportRef,
   gridRef,
   ratio,
+  hidePreview,
   fetchReport,
   topLevel,
   permaLink,
   treeStyle,
 }) => {
-  if (!tree.report) return null;
   const navigate = useNavigate();
-  const location = useLocation();
+  if (!tree.report) return null;
   let maxDepth = tree.report.tree.maxDepth;
   let queryObj = qs.parse(tree.report.queryString);
   const updateQuery = ({ root, name, depth }) => {
@@ -153,6 +153,7 @@ const ReportTree = ({
         containerRef={containerRef}
         reportRef={reportRef}
         gridRef={gridRef}
+        hidePreview={hidePreview}
       />
     );
   }

@@ -1,13 +1,19 @@
+import { fetchReport, saveReport } from "../selectors/report";
+
 import React from "react";
 import { connect } from "react-redux";
-import { fetchReport } from "../selectors/report";
 
 const dispatchReport = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({});
 
   const mapDispatchToProps = (dispatch) => ({
-    fetchReport: ({ reportId, queryString, reload, report }) =>
-      dispatch(fetchReport({ reportId, queryString, reload, report })),
+    fetchReport: ({ reportId, queryString, reload, report, hideMessage }) =>
+      dispatch(
+        fetchReport({ reportId, queryString, reload, report, hideMessage })
+      ),
+    saveReport: (props) => {
+      dispatch(saveReport(props));
+    },
   });
 
   const Connected = connect(

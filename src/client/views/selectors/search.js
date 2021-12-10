@@ -10,7 +10,11 @@ import {
   setSearchIndex,
   setSearchTerm,
 } from "../reducers/search";
-import { getController, resetController } from "../reducers/message";
+import {
+  getController,
+  resetController,
+  setMessage,
+} from "../reducers/message";
 
 import { checkProgress } from "./checkProgress";
 import { getCurrentTaxonomy } from "../reducers/taxonomy";
@@ -125,7 +129,7 @@ export const saveSearchResults = ({ options, format = "tsv" }) => {
       queryId,
       delay: 1000,
       dispatch,
-      message: `Downloading ${format.toUpperCase()} file`,
+      message: `Preparing ${format.toUpperCase()} file for download`,
     });
 
     try {
@@ -138,7 +142,12 @@ export const saveSearchResults = ({ options, format = "tsv" }) => {
       });
       clearInterval(interval);
       let blob = await response.blob();
-
+      dispatch(
+        setMessage({
+          duration: 0,
+          severity: "info",
+        })
+      );
       const linkUrl = window.URL.createObjectURL(new Blob([blob]));
       const link = document.createElement("a");
       link.href = linkUrl;
@@ -151,7 +160,7 @@ export const saveSearchResults = ({ options, format = "tsv" }) => {
       if (getController(state).signal.aborted) {
         dispatch(
           setMessage({
-            message: `Cancelled`,
+            message: `Cancelled ${format.toUpperCase()} file download`,
             duration: 5000,
             severity: "warning",
           })
@@ -160,7 +169,7 @@ export const saveSearchResults = ({ options, format = "tsv" }) => {
       } else {
         dispatch(
           setMessage({
-            message: `Failed to fetch ${report} report`,
+            message: `Unable to download ${format.toUpperCase()} file`,
             duration: 5000,
             severity: "error",
           })
@@ -171,6 +180,12 @@ export const saveSearchResults = ({ options, format = "tsv" }) => {
       dispatch(resetController());
       return false;
     }
+    dispatch(
+      setMessage({
+        duration: 0,
+        severity: "info",
+      })
+    );
     return true;
   };
 };

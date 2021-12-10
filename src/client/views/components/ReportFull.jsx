@@ -18,6 +18,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import classnames from "classnames";
 import { compose } from "recompose";
 import dispatchReport from "../hocs/dispatchReport";
+import { sortReportQuery } from "../selectors/report";
 import styles from "./Styles.scss";
 import { useStyles } from "./ReportModal";
 import useWindowDimensions from "../hooks/useWindowDimensions";
@@ -84,7 +85,7 @@ export const ReportFull = ({
     reportComponent = (
       <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
         <ReportCode
-          reportId={queryString}
+          reportId={reportId}
           report={report}
           queryString={queryString}
         />
@@ -93,7 +94,7 @@ export const ReportFull = ({
   } else {
     reportComponent = (
       <Report
-        reportId={queryString}
+        reportId={reportId}
         report={report}
         queryString={queryString}
         inModal

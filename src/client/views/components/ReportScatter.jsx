@@ -39,24 +39,6 @@ const COLORS = [
   "#cab2d6",
 ];
 
-// const CustomShape = (props, chartProps) => {
-//   let h = props.yAxis.height / chartProps.yLength;
-//   let w = props.xAxis.width / chartProps.xLength;
-//   console.log(props);
-//   return (
-//     <Rectangle
-//       {...props}
-//       height={h}
-//       width={w}
-//       mask={`url(#mask-stripe-${chartProps.n}-${chartProps.i})`}
-//       fill={props.fill}
-//       x={props.cx}
-//       y={props.cy - h}
-//       fillOpacity={props.zAxis.scale(props.payload.z)}
-//     />
-//   );
-// };
-
 const scales = {
   linear: scaleLinear,
   log10: scaleLog,

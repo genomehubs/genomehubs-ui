@@ -29,7 +29,7 @@ const DownloadMessage = ({ message, setMessage, controller }) => {
       return;
     }
     if (reason === "timeout") {
-      setMessage(null);
+      setMessage({ severity });
       setOpen(false);
       return;
     }

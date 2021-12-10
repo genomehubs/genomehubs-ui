@@ -12,4 +12,4 @@ const withTreeThreshold = (WrappedComponent) => (props) => {
   return <Connected {...props} />;
 };
 
-export default treeThreshold;
+export default withTreeThreshold;

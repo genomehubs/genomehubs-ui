@@ -7,7 +7,6 @@ const dispatchMessage = (WrappedComponent) => (props) => {
 
   const mapDispatchToProps = (dispatch) => ({
     setMessage: (message) => {
-      console.log(message);
       dispatch(setMessage(message));
     },
   });

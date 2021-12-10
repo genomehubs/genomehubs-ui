@@ -6,12 +6,13 @@ import classnames from "classnames";
 import { compose } from "recompose";
 import dispatchLookup from "../hocs/dispatchLookup";
 import qs from "qs";
+import { sortReportQuery } from "../selectors/report";
 import styles from "./Styles.scss";
 
 const ReportPage = ({ location, setLookupTerm, topLevel, ...props }) => {
   let queryString = location.search.replace(/^\?/, "");
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
-  let query = qs.parse(queryString);
+  // let query = sortReportQuery({ queryString });
 
   useEffect(() => {
     setLookupTerm(hashTerm);
@@ -26,8 +27,8 @@ const ReportPage = ({ location, setLookupTerm, topLevel, ...props }) => {
   let content = (
     <div className={css}>
       <ReportFull
-        reportId={queryString}
-        report={query.report}
+        reportId={sortReportQuery({ queryString })}
+        report={qs.parse(queryString).report}
         queryString={queryString}
         topLevel={topLevel}
       />

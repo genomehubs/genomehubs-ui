@@ -59,6 +59,7 @@ export const queryPropList = {
     { prop: "y", label: `c_value` },
     "includeEstimates",
     "treeStyle",
+    "treeThreshold",
   ],
   xInY: ["report", ["x"], "y", rankSettings, "includeEstimates"],
   xPerRank: ["report", "x", rankSettings, "includeEstimates"],

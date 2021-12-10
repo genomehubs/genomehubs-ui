@@ -142,7 +142,6 @@ const CustomBackground = ({ chartProps, ...props }) => {
   if (chartProps.i > 0) {
     return null;
   }
-  // console.log(props);
   let h = props.background.height;
   let w = props.width * chartProps.n;
   let xBounds = [
