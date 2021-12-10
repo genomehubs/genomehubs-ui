@@ -190,6 +190,25 @@ const ReportTreePaths = ({
   const [nodes, setNodes] = useState([]);
   const [labels, setLabels] = useState([]);
   const [regions, setRegions] = useState([]);
+  const [portion, setPortion] = useState(0);
+  const updateCache = (index, value) => {
+    const updatedCache = [...portionCache];
+    updatedCache[index] = value;
+    setPortionCache(updatedCache);
+  };
+  const [portionCache, setPortionCache] = useState([]);
+
+  const portionHeight = 10000;
+  const portionOverlap = 10000;
+
+  useEffect(() => {
+    let visiblePortion = Math.floor(
+      Math.max(0, scrollPosition.y) / portionHeight
+    );
+    if (visiblePortion != portion) {
+      setPortion(visiblePortion);
+    }
+  }, [scrollPosition.y]);
 
   let mouseDownTimeout;
 
@@ -199,118 +218,134 @@ const ReportTreePaths = ({
       let newNodes = [];
       let newLabels = [];
       let newRegions = [];
-      lines.forEach((segment) => {
-        newPaths.push(
-          <Line
-            key={`h-${segment.taxon_id}`}
-            points={[
-              segment.xStart,
-              segment.yStart,
-              segment.xEnd,
-              segment.yStart,
-            ]}
-            stroke={segment.color}
-          />
-        );
-        if (segment.scientific_name == "parent") {
+      if (portionCache[portion]) {
+        ({ newNodes, newPaths, newLabels, newRegions } = portionCache[portion]);
+      } else {
+        let lowerY = portionHeight * portion - portionOverlap;
+        let upperY = portionHeight * (portion + 1) + portionOverlap;
+        for (let segment of lines) {
+          if (segment.yMin > upperY || segment.yMax < lowerY) {
+            continue;
+          }
           newPaths.push(
             <Line
-              key={`v-${segment.taxon_id}`}
+              key={`h-${segment.taxon_id}`}
               points={[
-                segment.xStart + 10,
-                segment.yMin,
                 segment.xStart,
                 segment.yStart,
-                segment.xStart + 10,
-                segment.yMax,
+                segment.xEnd,
+                segment.yStart,
               ]}
               stroke={segment.color}
             />
           );
-        } else if (segment.vLine) {
-          newPaths.push(
-            <Line
-              key={`v-${segment.taxon_id}`}
-              points={[segment.xEnd, segment.yMin, segment.xEnd, segment.yMax]}
-              stroke={segment.color}
-            />
-          );
-        }
-        newRegions.push(
-          <Rect
-            key={`r-${segment.taxon_id}`}
-            x={segment.xStart}
-            y={segment.yMin}
-            width={
-              segment.tip ? segment.labelWidth + segment.width : segment.width
-            }
-            height={segment.height}
-            fill={"rgba(0,0,0,0)"}
-            onMouseEnter={(e) => showTooltip(e, segment)}
-            onTouchStart={(e) => showTooltip(e, segment)}
-            onMouseMove={(e) => showTooltip(e, segment)}
-            onTouchMove={(e) => showTooltip(e, segment)}
-            onMouseLeave={(e) => showTooltip(e)}
-            onTouchEnd={(e) => showTooltip(e)}
-            onMouseDown={(e) => {
-              mouseDownTimeout = setTimeout(() => {
-                handleSearch({
+          if (segment.scientific_name == "parent") {
+            newPaths.push(
+              <Line
+                key={`v-${segment.taxon_id}`}
+                points={[
+                  segment.xStart + 10,
+                  segment.yMin,
+                  segment.xStart,
+                  segment.yStart,
+                  segment.xStart + 10,
+                  segment.yMax,
+                ]}
+                stroke={segment.color}
+              />
+            );
+          } else if (segment.vLine) {
+            newPaths.push(
+              <Line
+                key={`v-${segment.taxon_id}`}
+                points={[
+                  segment.xEnd,
+                  segment.yMin,
+                  segment.xEnd,
+                  segment.yMax,
+                ]}
+                stroke={segment.color}
+              />
+            );
+          }
+          newRegions.push(
+            <Rect
+              key={`r-${segment.taxon_id}`}
+              x={segment.xStart}
+              y={segment.yMin}
+              width={
+                segment.tip ? segment.labelWidth + segment.width : segment.width
+              }
+              height={segment.height}
+              fill={"rgba(0,0,0,0)"}
+              onMouseEnter={(e) => showTooltip(e, segment)}
+              onTouchStart={(e) => showTooltip(e, segment)}
+              onMouseMove={(e) => showTooltip(e, segment)}
+              onTouchMove={(e) => showTooltip(e, segment)}
+              onMouseLeave={(e) => showTooltip(e)}
+              onTouchEnd={(e) => showTooltip(e)}
+              onMouseDown={(e) => {
+                mouseDownTimeout = setTimeout(() => {
+                  handleSearch({
+                    root: segment.taxon_id,
+                    name: segment.scientific_name,
+                    depth: segment.depth,
+                  });
+                }, 500);
+              }}
+              onMouseUp={() => {
+                clearTimeout(mouseDownTimeout);
+                handleNavigation({
                   root: segment.taxon_id,
                   name: segment.scientific_name,
                   depth: segment.depth,
                 });
-              }, 500);
-            }}
-            onMouseUp={() => {
-              clearTimeout(mouseDownTimeout);
-              handleNavigation({
-                root: segment.taxon_id,
-                name: segment.scientific_name,
-                depth: segment.depth,
-              });
-            }}
-          />
-        );
-        if (
-          segment.scientific_name == "parent" ||
-          (!segment.tip && segment.childCount == 1)
-        ) {
-          newNodes.push(
-            <Circle
-              x={segment.xEnd}
-              y={segment.yStart}
-              radius={4}
-              fill="white"
-              stroke={segment.color}
-              key={`c-${segment.taxon_id}`}
+              }}
             />
           );
-        }
-
-        {
-          segment.label &&
-            newLabels.push(
-              <Text
-                key={`t-${segment.taxon_id}`}
-                text={segment.label}
-                fontSize={10}
-                x={segment.tip ? segment.xEnd + 10 : segment.xStart - 6}
-                y={segment.tip ? segment.yMin : segment.yStart - 11}
-                width={segment.tip ? segment.labelWidth : segment.width}
-                height={segment.height}
-                fill={segment.color}
-                align={segment.tip ? "left" : "right"}
-                verticalAlign={segment.tip ? "middle" : "top"}
+          if (
+            segment.scientific_name == "parent" ||
+            (!segment.tip && segment.childCount == 1)
+          ) {
+            newNodes.push(
+              <Circle
+                x={segment.xEnd}
+                y={segment.yStart}
+                radius={4}
+                fill="white"
+                stroke={segment.color}
+                key={`c-${segment.taxon_id}`}
               />
             );
+          }
+
+          {
+            segment.label &&
+              newLabels.push(
+                <Text
+                  key={`t-${segment.taxon_id}`}
+                  text={segment.label}
+                  fontSize={10}
+                  x={segment.tip ? segment.xEnd + 10 : segment.xStart - 6}
+                  y={segment.tip ? segment.yMin : segment.yStart - 11}
+                  width={segment.tip ? segment.labelWidth : segment.width}
+                  height={segment.height}
+                  fill={segment.color}
+                  align={segment.tip ? "left" : "right"}
+                  verticalAlign={segment.tip ? "middle" : "top"}
+                />
+              );
+          }
         }
-      });
+        updateCache(portion, { newNodes, newPaths, newLabels, newRegions });
+      }
+
       setNodes(newNodes);
       setPaths(newPaths);
       setLabels(newLabels);
       setRegions(newRegions);
     }
-  }, [lines]);
+  }, [lines, portion]);
 
   let index = "";
   css = undefined;
