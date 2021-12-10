@@ -1,21 +1,21 @@
+import { fetchSearchResults, saveSearchResults } from "../selectors/search";
+import {
+  getPreferSearchTerm,
+  getPreviousSearchTerm,
+  getSearchIndex,
+  getSearchResultArray,
+  getSearchResultById,
+  getSearchResults,
+  getSearchTerm,
+  resetSearch,
+  setPreferSearchTerm,
+  setPreviousSearchTerm,
+  setSearchIndex,
+  setSearchTerm,
+} from "../reducers/search";
+
 import React from "react";
 import { connect } from "react-redux";
-import {
-  getSearchTerm,
-  setSearchTerm,
-  getSearchIndex,
-  setSearchIndex,
-  getPreferSearchTerm,
-  setPreferSearchTerm,
-  getPreviousSearchTerm,
-  setPreviousSearchTerm,
-  getSearchResults,
-  getSearchResultArray,
-  saveSearchResults,
-  getSearchResultById,
-  resetSearch,
-} from "../reducers/search";
-import { fetchSearchResults } from "../selectors/search";
 
 const withSearch = (WrappedComponent) => (props) => {
   const mapStateToProps = (state) => ({
@@ -43,7 +43,8 @@ const withSearch = (WrappedComponent) => (props) => {
     setPreferSearchTerm: (bool) => dispatch(setPreferSearchTerm(bool)),
     setPreviousSearchTerm: (options) =>
       dispatch(setPreviousSearchTerm(options)),
-    saveSearchResults: (options, format) => saveSearchResults(options, format),
+    saveSearchResults: ({ options, format }) =>
+      dispatch(saveSearchResults({ options, format })),
   });
 
   const Connected = connect(

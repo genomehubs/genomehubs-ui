@@ -160,8 +160,8 @@ const RadialBarComponent = ({ data, height, width }) => {
           x={cx}
           y={cy - viewBox.innerRadius - fontSize + 2}
           textAnchor="middle"
-          dominantBaseLine="middle"
-          alignmentBaseLine="middle"
+          dominantBaseline="middle"
+          alignmentBaseline="middle"
         >
           {pct1(value)}
         </text>
@@ -169,8 +169,8 @@ const RadialBarComponent = ({ data, height, width }) => {
           transform={`translate(0,${cy + (data.index + 1) * fontSize * 0.7})`}
           fill={background}
           style={{ fontSize: fontSize * 0.7, fontFamily: "sans-serif" }}
-          dominantBaseLine="hanging"
-          alignmentBaseLine="hanging"
+          dominantBaseline="hanging"
+          alignmentBaseline="hanging"
         >
           <text x={cx - viewBox.outerRadius} textAnchor="left" fill={data.fill}>
             {data.xValue}

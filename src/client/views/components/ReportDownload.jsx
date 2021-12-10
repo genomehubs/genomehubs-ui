@@ -1,4 +1,3 @@
-import { downloadReport, saveReport } from "../selectors/report";
 import { saveSvgAsPng, svgAsDataUri } from "save-svg-as-png";
 
 import DownloadButton from "./DownloadButton";
@@ -6,8 +5,8 @@ import GetAppIcon from "@material-ui/icons/GetApp";
 import Grid from "@material-ui/core/Grid";
 import React from "react";
 import { compose } from "recompose";
+import dispatchReport from "../hocs/dispatchReport";
 import qs from "qs";
-import withApiUrl from "../hocs/withApiUrl";
 import withReportById from "../hocs/withReportById";
 
 export const ReportDownload = ({
@@ -15,7 +14,7 @@ export const ReportDownload = ({
   report,
   chartRef,
   code,
-  apiUrl,
+  saveReport,
   queryString,
 }) => {
   if (!reportById.report || !reportById.report[report]) {
@@ -60,12 +59,12 @@ export const ReportDownload = ({
         success = true;
       }
     } else if (format) {
-      success = await saveReport(options, format);
+      success = await saveReport({ options, format });
     }
     return success;
   };
 
-  const handleClick = async (options, format) => {
+  const handleClick = async ({ options, format }) => {
     let success = false;
     if (format) {
       success = exportChart({ options, format });
@@ -111,4 +110,4 @@ export const ReportDownload = ({
   );
 };
 
-export default compose(withApiUrl, withReportById)(ReportDownload);
+export default compose(dispatchReport, withReportById)(ReportDownload);

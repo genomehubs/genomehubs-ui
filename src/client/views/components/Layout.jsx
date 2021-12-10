@@ -1,5 +1,6 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 
+import DownloadMessage from "./DownloadMessage";
 import Footer from "./Footer";
 import Grid from "@material-ui/core/Grid";
 import Header from "./Header";
@@ -12,6 +13,7 @@ import { compose } from "recompose";
 import loadable from "@loadable/component";
 import { makeStyles } from "@material-ui/core/styles";
 import styles from "./Styles.scss";
+import withTypes from "../hocs/withTypes";
 
 // const ReportPage = loadable(() => import("./ReportPage"));
 
@@ -34,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DefaultLayout = () => {
+const DefaultLayout = ({ types }) => {
   const classes = useStyles();
   return (
     <Grid
@@ -47,7 +49,12 @@ const DefaultLayout = () => {
         <Header />
       </Grid>
       <Grid item className={classes.item} xs={true}>
-        <Main />
+        {types && Object.keys(types).length > 0 && (
+          <>
+            <Main />
+            <DownloadMessage />
+          </>
+        )}
       </Grid>
       <Grid item className={classes.item} xs={1}>
         <Footer />
@@ -69,12 +76,16 @@ const SearchLayout = (props) => {
   );
 };
 
-const Layout = () => {
-  let paths = [
-    <DefaultLayout path="/*" />,
-    <ReportLayout path="/reporturl" />,
-    <SearchLayout path="/searchurl" />,
-  ];
+const Layout = ({ types }) => {
+  const [paths, setPaths] = useState([]);
+  let typeString = JSON.stringify(types);
+  useEffect(() => {
+    setPaths([
+      <DefaultLayout path="/*" key={0} types={types} />,
+      <ReportLayout path="/reporturl" key={1} />,
+      <SearchLayout path="/searchurl" key={2} />,
+    ]);
+  }, [typeString]);
   return (
     <>
       <Router className={styles.fillParent} basepath={basename} primary={false}>
@@ -84,4 +95,4 @@ const Layout = () => {
   );
 };
 
-export default compose(memo)(Layout);
+export default compose(memo, withTypes)(Layout);

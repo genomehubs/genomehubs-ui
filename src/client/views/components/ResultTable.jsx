@@ -73,15 +73,17 @@ const TableCell = withStyles((theme) => ({
   },
 }))(MuiTableCell);
 
-const StyledCheckbox = (props) => {
+const StyledCheckbox = ({ color, ...props }) => {
   return (
     <Checkbox
       style={{
         padding: "1px",
         color: props.color,
       }}
-      icon={<CheckBoxOutlineBlankIcon style={{ fontSize: "small" }} />}
-      checkedIcon={<CheckBoxIcon style={{ fontSize: "small" }} />}
+      icon={
+        <CheckBoxOutlineBlankIcon style={{ fontSize: "small", fill: color }} />
+      }
+      checkedIcon={<CheckBoxIcon style={{ fontSize: "small", fill: color }} />}
       {...props}
     />
   );
@@ -157,12 +159,14 @@ const SortableCell = ({
               title={"Toggle directly measured values"}
               arrow
             >
-              <StyledCheckbox
-                checked={!excludeDirect.hasOwnProperty(name)}
-                onChange={() => handleToggleExclusion({ toggleDirect: name })}
-                color={"green"}
-                inputProps={{ "aria-label": "direct checkbox" }}
-              />
+              <span>
+                <StyledCheckbox
+                  checked={!excludeDirect.hasOwnProperty(name)}
+                  onChange={() => handleToggleExclusion({ toggleDirect: name })}
+                  color={"green"}
+                  inputProps={{ "aria-label": "direct checkbox" }}
+                />
+              </span>
             </Tooltip>
           )}
           {showExcludeBoxes == "all" && (
@@ -171,14 +175,16 @@ const SortableCell = ({
               title={"Toggle values inferred from descendant taxa"}
               arrow
             >
-              <StyledCheckbox
-                checked={!excludeDescendant.hasOwnProperty(name)}
-                onChange={() =>
-                  handleToggleExclusion({ toggleDescendant: name })
-                }
-                color={"orange"}
-                inputProps={{ "aria-label": "descendant checkbox" }}
-              />
+              <span>
+                <StyledCheckbox
+                  checked={!excludeDescendant.hasOwnProperty(name)}
+                  onChange={() =>
+                    handleToggleExclusion({ toggleDescendant: name })
+                  }
+                  color={"orange"}
+                  inputProps={{ "aria-label": "descendant checkbox" }}
+                />
+              </span>
             </Tooltip>
           )}
           {showExcludeBoxes == "all" && (
@@ -187,23 +193,27 @@ const SortableCell = ({
               title={"Toggle values inferred from ancestral taxa"}
               arrow
             >
-              <StyledCheckbox
-                checked={!excludeAncestral.hasOwnProperty(name)}
-                onChange={() =>
-                  handleToggleExclusion({ toggleAncestral: name })
-                }
-                color={"red"}
-                inputProps={{ "aria-label": "ancestral checkbox" }}
-              />
+              <span>
+                <StyledCheckbox
+                  checked={!excludeAncestral.hasOwnProperty(name)}
+                  onChange={() =>
+                    handleToggleExclusion({ toggleAncestral: name })
+                  }
+                  color={"red"}
+                  inputProps={{ "aria-label": "ancestral checkbox" }}
+                />
+              </span>
             </Tooltip>
           )}
           <Tooltip key={"missing"} title={"Toggle missing values"} arrow>
-            <StyledCheckbox
-              checked={!excludeMissing.hasOwnProperty(name)}
-              onChange={() => handleToggleExclusion({ toggleMissing: name })}
-              color={"black"}
-              inputProps={{ "aria-label": "missing checkbox" }}
-            />
+            <span>
+              <StyledCheckbox
+                checked={!excludeMissing.hasOwnProperty(name)}
+                onChange={() => handleToggleExclusion({ toggleMissing: name })}
+                color={"black"}
+                inputProps={{ "aria-label": "missing checkbox" }}
+              />
+            </span>
           </Tooltip>
         </span>
       )) || <span className={css}></span>}
@@ -386,8 +396,11 @@ const ResultTable = ({
       options.query = options.query.replace("tax_name", "tax_tree");
     }
     options.offset = 0;
-    setPreferSearchTerm(true);
-    setSearchTerm(options);
+    // setPreferSearchTerm(true);
+    // setSearchTerm(options);
+    navigate(
+      `${location.pathname}?${qs.stringify(options)}${location.hash || ""}`
+    );
   };
   let rows = searchResults.results.map((result) => {
     let name = result.result.scientific_name;
@@ -398,18 +411,16 @@ const ResultTable = ({
       name = <em>{name}</em>;
     }
     let cells = [
-      <Tooltip title={"Click to view record"} arrow>
+      <Tooltip title={"Click to view record"} arrow key={"name"}>
         <TableCell
-          key={"name"}
           style={{ cursor: "pointer" }}
           onClick={() => handleRecordClick(result.result)}
         >
           {name}
         </TableCell>
       </Tooltip>,
-      <Tooltip title={"Click to view record"} arrow>
+      <Tooltip title={"Click to view record"} arrow key={"taxon_id"}>
         <TableCell
-          key={"taxon_id"}
           style={{ cursor: "pointer" }}
           onClick={() => handleRecordClick(result.result)}
         >
@@ -450,9 +461,8 @@ const ResultTable = ({
     });
     if (searchIndex == "assembly") {
       cells.push(
-        <Tooltip title={"Click to view record"} arrow>
+        <Tooltip title={"Click to view record"} arrow key={"assembly_id"}>
           <TableCell
-            key={"assembly_id"}
             style={{ cursor: "pointer" }}
             onClick={() => handleRecordClick(result.result)}
           >
@@ -463,7 +473,10 @@ const ResultTable = ({
     }
     displayTypes.forEach((type) => {
       if (type.name != "sex_determination_system") {
-        if (result.result.fields.hasOwnProperty(type.name)) {
+        if (
+          result.result.fields &&
+          result.result.fields.hasOwnProperty(type.name)
+        ) {
           let field = result.result.fields[type.name];
           let value = field.value;
           if (Array.isArray(value)) {
@@ -507,8 +520,8 @@ const ResultTable = ({
       }
     });
     cells.push(
-      <Tooltip title={"Click to view record"} arrow>
-        <TableCell key={"go to record"}>
+      <Tooltip title={"Click to view record"} arrow key={"go to record"}>
+        <TableCell>
           <IconButton
             aria-label="go to record"
             size="small"
@@ -529,6 +542,7 @@ const ResultTable = ({
       sortOrder={sortOrder}
       sortDirection={sortBy === "scientific_name" ? sortOrder : false}
       handleTableSort={handleTableSort}
+      key={"scientific_name"}
     />,
     <SortableCell
       name={"taxon_id"}
@@ -537,12 +551,14 @@ const ResultTable = ({
       sortOrder={sortOrder}
       sortDirection={sortBy === "taxon_id" ? sortOrder : false}
       handleTableSort={handleTableSort}
+      key={"taxon_id"}
     />,
   ];
   Object.keys(activeNameClasses).forEach((nameClass) => {
     heads.push(
       <SortableCell
         name={nameClass}
+        key={nameClass}
         classes={classes}
         sortBy={sortBy}
         sortOrder={sortOrder}
@@ -555,6 +571,7 @@ const ResultTable = ({
     heads.push(
       <SortableCell
         name={rank}
+        key={rank}
         classes={classes}
         sortBy={sortBy}
         sortOrder={sortOrder}
@@ -567,6 +584,7 @@ const ResultTable = ({
     heads.push(
       <SortableCell
         name={"assembly_id"}
+        key={"assembly_id"}
         classes={classes}
         sortBy={sortBy}
         sortOrder={sortOrder}
@@ -580,6 +598,7 @@ const ResultTable = ({
       let sortDirection = sortBy === type.name ? sortOrder : false;
       heads.push(
         <SortableCell
+          key={type.name}
           name={type.name}
           classes={classes}
           sortBy={sortBy}
@@ -633,7 +652,7 @@ const ResultTable = ({
       <Grid
         container
         alignItems="center"
-        justify="center"
+        justifyContent="center"
         direction="row"
         spacing={1}
         className={classes.root}

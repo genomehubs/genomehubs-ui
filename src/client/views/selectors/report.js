@@ -1,5 +1,10 @@
 import { apiUrl, setApiStatus } from "../reducers/api";
 import {
+  getController,
+  resetController,
+  setMessage,
+} from "../reducers/message";
+import {
   getReports,
   getReportsFetching,
   receiveReport,
@@ -12,15 +17,75 @@ import {
 } from "../reducers/search";
 
 import { byIdSelectorCreator } from "../reducers/selectorCreators";
+import { checkProgress } from "./checkProgress";
 import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
+// import { format } from "d3-format";
 import { getTypes } from "../reducers/types";
+import { nanoid } from "nanoid";
 import { processTree } from "./tree";
 import qs from "qs";
 import store from "../store";
 import { treeThreshold } from "../reducers/tree";
 
-export function fetchReport({ queryString, reportId, reload }) {
+export const sortReportQuery = ({ queryString, options, ui = true }) => {
+  const reportTerms = {
+    result: true,
+    report: true,
+    query: { not: new Set(["sources"]), as: "x" },
+    x: { not: new Set(["sources"]) },
+    y: { in: new Set(["scatter", "tree", "xInY"]) },
+    z: { in: new Set(["scatter"]) },
+    cat: { not: new Set(["sources", "xInY"]) },
+    rank: { not: new Set(["sources", "tree"]) },
+    ranks: { in: new Set(["tree"]) },
+    names: { in: new Set(["tree"]) },
+    includeEstimates: true,
+    excludeAncestral: true,
+    excludeDescendant: true,
+    excludeMissing: true,
+    excludeDirect: true,
+    taxonomy: true,
+    xOpts: { in: new Set(["histogram", "scatter"]) },
+    yOpts: { in: new Set(["scatter"]) },
+    scatterThreshold: { in: new Set(["scatter"]) },
+    treeStyle: { in: new Set(["tree"]), ui: true },
+    yScale: { in: new Set(["histogram"]), ui: true },
+    zScale: { in: new Set(["scatter"]), ui: true },
+    stacked: { in: new Set(["histogram"]), ui: true },
+    cumulative: { in: new Set(["histogram"]), ui: true },
+    treeThreshold: { in: new Set(["tree"]) },
+    queryId: { in: new Set(["histogram", "scatter", "tree", "xInY"]) },
+    release: true,
+    indent: false,
+  };
+  if (!options) {
+    options = qs.parse(queryString);
+  }
+  let newOptions = {};
+  let report = options.report;
+  Object.entries(options).forEach(([key, value]) => {
+    if (reportTerms[key]) {
+      if (reportTerms[key] === true) {
+        newOptions[key] = value;
+      } else if (ui || !reportTerms[key].ui) {
+        let newKey = reportTerms[key].as || key;
+        if (reportTerms[key].in) {
+          if (reportTerms[key].in.has(report)) {
+            newOptions[newKey] = value;
+          }
+        } else {
+          if (!reportTerms[key].not.has(report)) {
+            newOptions[newKey] = value;
+          }
+        }
+      }
+    }
+  });
+  return qs.stringify(newOptions);
+};
+
+export function fetchReport({ reportId, reload, report, hideMessage }) {
   return async function (dispatch) {
     const state = store.getState();
     const fetching = getReportsFetching(state);
@@ -31,26 +96,106 @@ export function fetchReport({ queryString, reportId, reload }) {
       }
     }
     dispatch(requestReport(reportId));
-    // TODO: use terms
+    let queryString = reportId;
     if (
       queryString.match("report=tree") &&
       !queryString.match("treeThreshold")
     ) {
       queryString += `&treeThreshold=${treeThreshold}`;
     }
-    let url = `${apiUrl}/report?${queryString.replace(/^\?/, "")}`;
+    let apiQueryString = sortReportQuery({ queryString, ui: false });
+    const queryId = nanoid(10);
+    let url = `${apiUrl}/report?${apiQueryString.replace(
+      /^\?/,
+      ""
+    )}&queryId=${queryId}`;
     try {
       let json;
+      let status;
+      const interval = checkProgress({
+        queryId,
+        delay: 1000,
+        dispatch,
+        message: hideMessage ? undefined : `Fetching ${report} report`,
+      });
       try {
-        const response = await fetch(url);
+        // dispatch(
+        //   setMessage({
+        //     message: `Fetching ${report} report`,
+        //     duration: 5000,
+        //     severity: "info",
+        //   })
+        // );
+        const response = await fetch(url, {
+          signal: getController(state).signal,
+        });
         json = await response.json();
+        clearInterval(interval);
       } catch (error) {
-        json = console.log("An error occured.", error);
+        clearInterval(interval);
+        if (getController(state).signal.aborted && !hideMessage) {
+          dispatch(
+            setMessage({
+              message: `Cancelled`,
+              duration: 5000,
+              severity: "warning",
+            })
+          );
+          status = { success: false, error: "Request cancelled" };
+        } else {
+          if (!hideMessage) {
+            dispatch(
+              setMessage({
+                message: `Failed to fetch ${report} report`,
+                duration: 5000,
+                severity: "error",
+              })
+            );
+          }
+
+          status = { success: false, error: "Unexpected error" };
+          console.log(error);
+        }
+        dispatch(resetController());
+        json = {
+          status,
+          report: {
+            name: report,
+            report: { queryString, tree: { status } },
+          },
+        };
+        dispatch(receiveReport({ json, reportId }));
       }
-      if (json.report && json.report.report) {
-        json.report.report.queryString = queryString;
+      if (!status) {
+        clearInterval(interval);
+        // let success;
+        if (json.report && json.report.report) {
+          json.report.report.queryString = queryString;
+          // if (json.report.report[report] && json.report.report[report].status) {
+          //   success = json.report.report[report].status.success;
+          // }
+        }
+        // if (success) {
+        //   dispatch(
+        //     setMessage({
+        //       message: `Parsing ${report} report`,
+        //       duration: 5000,
+        //       severity: "info",
+        //     })
+        //   );
+        // } else {
+        if (!hideMessage) {
+          dispatch(
+            setMessage({
+              duration: 0,
+              severity: "info",
+            })
+          );
+        }
+
+        // }
+        dispatch(receiveReport({ json, reportId }));
       }
-      dispatch(receiveReport({ json, reportId }));
     } catch (err) {
       return dispatch(setApiStatus(false));
     }
@@ -337,35 +482,76 @@ export const getReportDefaults = createSelector(
   }
 );
 
-export const saveReport = async (options, format = "json") => {
-  const filename = `report.${format}`;
-  options.filename = filename;
-  const queryString = qs.stringify(options);
-  const formats = {
-    json: "application/json",
-    nwk: "text/x-nh",
-    xml: "application/xml",
-    zip: "application/zip",
-  };
-  try {
-    let url = `${apiUrl}/report?${queryString}`;
-    let response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: formats[format],
-      },
+export const saveReport = ({ options, format = "json" }) => {
+  return async function (dispatch) {
+    const filename = `report.${format}`;
+    options.filename = filename;
+    const queryString = sortReportQuery({ options });
+    const formats = {
+      json: "application/json",
+      nwk: "text/x-nh",
+      xml: "application/xml",
+      zip: "application/zip",
+    };
+    const queryId = nanoid(10);
+    const state = store.getState();
+    let url = `${apiUrl}/report?${queryString}&queryId=${queryId}`;
+    let status;
+    const interval = checkProgress({
+      queryId,
+      delay: 1000,
+      dispatch,
+      message: `Preparing ${format.toUpperCase()} file for download`,
     });
-    let blob = await response.blob();
+    try {
+      let response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: formats[format],
+        },
+        signal: getController(state).signal,
+      });
+      clearInterval(interval);
+      let blob = await response.blob();
 
-    const linkUrl = window.URL.createObjectURL(new Blob([blob]));
-    const link = document.createElement("a");
-    link.href = linkUrl;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
-  } catch (err) {
-    return false;
-  }
-  return true;
+      const linkUrl = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = linkUrl;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (err) {
+      clearInterval(interval);
+      if (getController(state).signal.aborted) {
+        dispatch(
+          setMessage({
+            message: `Cancelled ${format.toUpperCase()} file download`,
+            duration: 5000,
+            severity: "warning",
+          })
+        );
+        status = { success: false, error: "Request cancelled" };
+      } else {
+        dispatch(
+          setMessage({
+            message: `Failed to prepare ${format.toUpperCase()} file for download`,
+            duration: 5000,
+            severity: "error",
+          })
+        );
+        status = { success: false, error: "Unexpected error" };
+        console.log(error);
+      }
+      dispatch(resetController());
+      return false;
+    }
+    dispatch(
+      setMessage({
+        duration: 0,
+        severity: "info",
+      })
+    );
+    return true;
+  };
 };

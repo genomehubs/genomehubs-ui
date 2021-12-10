@@ -8,6 +8,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import Paper from "@material-ui/core/Paper";
 import React from "react";
+// import { compose } from "recompose";
+// import dispatchMessage from "../hocs/dispatchMessage";
 import { withStyles } from "@material-ui/core/styles";
 
 const ColorButtonGroup = withStyles((theme) => ({
@@ -36,19 +38,19 @@ const DownloadButton = ({
   onButtonClick,
   searchTerm,
   options = defaultOptions,
+  // setMessage,
 }) => {
   const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const handleClick = async () => {
     let key = Object.keys(options)[selectedIndex];
-    setMessage({
-      message: `Downloading ${key} file`,
-      duration: 60000,
-      severity: "info",
-    });
+    // setMessage({
+    //   message: `Downloading ${key} file`,
+    //   duration: 60000,
+    //   severity: "info",
+    // });
     let format = options[key].format;
     let fullOptions = {
       ...searchTerm,
@@ -58,20 +60,28 @@ const DownloadButton = ({
     };
     delete fullOptions.format;
     delete fullOptions.image;
-    let success = await onButtonClick(fullOptions, format);
-    if (success) {
-      setMessage({
-        message: `${key} file downloaded`,
-        duration: 5000,
-        severity: "success",
+    let success;
+    try {
+      success = await onButtonClick({
+        options: fullOptions,
+        format,
       });
-    } else {
-      setMessage({
-        message: `${key} file download failed`,
-        duration: 5000,
-        severity: "error",
-      });
+    } catch (err) {
+      console.log(err);
     }
+    // if (success) {
+    //   setMessage({
+    //     message: `${key} file downloaded`,
+    //     duration: 5000,
+    //     severity: "success",
+    //   });
+    // } else {
+    //   setMessage({
+    //     message: `${key} file download failed`,
+    //     duration: 5000,
+    //     severity: "error",
+    //   });
+    // }
   };
 
   const handleMenuItemClick = (event, index) => {
@@ -79,8 +89,10 @@ const DownloadButton = ({
     setOpen(false);
   };
 
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpen(!open);
   };
 
   const handleClose = (event) => {
@@ -88,7 +100,6 @@ const DownloadButton = ({
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
-
     setOpen(false);
   };
 
@@ -140,7 +151,6 @@ const DownloadButton = ({
           </MenuList>
         </ClickAwayListener>
       </Paper>
-      {message && <DownloadMessage {...message} />}
     </span>
   );
 };

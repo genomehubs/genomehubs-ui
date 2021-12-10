@@ -18,6 +18,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import classnames from "classnames";
 import { compose } from "recompose";
 import dispatchReport from "../hocs/dispatchReport";
+import { sortReportQuery } from "../selectors/report";
 import styles from "./Styles.scss";
 import { useStyles } from "./ReportModal";
 import useWindowDimensions from "../hooks/useWindowDimensions";
@@ -63,15 +64,6 @@ export const ReportFull = ({
     height *= 0.9;
   }
 
-  const downloadLink = (uri, filename) => {
-    const link = document.createElement("a");
-    link.href = uri;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
-  };
-
   const permaLink = (queryString, toggle) => {
     let path = modal || topLevel ? "report" : toggle ? "reporturl" : "report";
     // TODO: include taxonomy
@@ -93,7 +85,7 @@ export const ReportFull = ({
     reportComponent = (
       <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
         <ReportCode
-          reportId={queryString}
+          reportId={reportId}
           report={report}
           queryString={queryString}
         />
@@ -102,7 +94,7 @@ export const ReportFull = ({
   } else {
     reportComponent = (
       <Report
-        reportId={queryString}
+        reportId={reportId}
         report={report}
         queryString={queryString}
         inModal

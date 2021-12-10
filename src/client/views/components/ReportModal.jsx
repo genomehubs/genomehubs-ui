@@ -5,6 +5,8 @@ import Modal from "@material-ui/core/Modal";
 import ReportFull from "./ReportFull";
 import { compose } from "recompose";
 import { makeStyles } from "@material-ui/core/styles";
+import { sortReportQuery } from "../selectors/report";
+import { useNavigate } from "@reach/router";
 import withApiUrl from "../hocs/withApiUrl";
 
 function getModalStyle() {
@@ -37,24 +39,25 @@ export const ReportModal = ({
   queryString,
   children,
 }) => {
-  // getModalStyle is not a pure function, we roll the style only on the first render
+  const navigate = useNavigate();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
   disableModal = report === "sources" ? true : disableModal;
+  // disableModal = true;
 
   const handleOpen = () => {
     if (!disableModal) {
-      setOpen(true);
+      //setOpen(true);
+      navigate(`/report?${reportId}`);
     }
   };
 
   const handleClose = () => {
     setOpen(false);
   };
-
   const body = (
     <ReportFull
-      reportId={reportId}
+      reportId={sortReportQuery({ queryString: reportId })}
       report={report}
       queryString={queryString}
       modalStyle={modalStyle}

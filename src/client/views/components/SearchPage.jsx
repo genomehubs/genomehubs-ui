@@ -8,15 +8,13 @@ import SearchSummary from "./SearchSummary";
 import TextPanel from "./TextPanel";
 import classnames from "classnames";
 import { compose } from "recompose";
+import dispatchLookup from "../hocs/dispatchLookup";
+import dispatchSearchDefaults from "../hocs/dispatchSearchDefaults";
 import equal from "deep-equal";
 import qs from "qs";
 import shallow from "shallowequal";
 import styles from "./Styles.scss";
-import withLookup from "../hocs/withLookup";
-import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
-import withSearchDefaults from "../hocs/withSearchDefaults";
-import withSetLookup from "../hocs/withSetLookup";
 
 const SearchPage = ({
   searchResults,
@@ -27,14 +25,13 @@ const SearchPage = ({
   setSearchTerm,
   setSearchIndex,
   preferSearchTerm,
-  setPreferSearchTerm,
   previousSearchTerm,
   setPreviousSearchTerm,
   fetchSearchResults,
   searchDefaults,
   setSearchDefaults,
-  setRecordId,
   topLevel,
+  searchIndex,
 }) => {
   let results = [];
   const navigate = useNavigate();
@@ -45,7 +42,7 @@ const SearchPage = ({
   }
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
   let isFetching = searchResults.isFetching;
-  let values = Object.values(options);
+  let values = JSON.stringify(Object.values(options));
   useEffect(() => {
     if (!isFetching) {
       if (options.query && !equal(options, searchTerm)) {
@@ -74,9 +71,6 @@ const SearchPage = ({
               let from = `${location.pathname}?${qs.stringify(
                 previousSearchTerm
               )}`;
-              if (to != from) {
-                // navigate(`${path}#${encodeURIComponent(hashTerm)}`);
-              }
             };
             if (!equal(options, previousSearchTerm)) {
               setPreviousSearchTerm(options);
@@ -104,17 +98,22 @@ const SearchPage = ({
       }
     }
   }, [values, hashTerm, isFetching]);
+  let text = <TextPanel pageId={"search.md"}></TextPanel>;
+
+  if (!searchTerm || searchTerm == "") {
+    return null;
+  }
+
+  let resultCount = searchResults.isFetching ? -1 : searchResults.status.hits;
   results = <ResultTable />;
+  let report;
+  if (searchResultArray.length > 0) {
+    report = <ReportPanel options={options} />;
+  }
+
   if (topLevel) {
     return <Page panels={[{ panel: results, maxWidth: "100%" }]} />;
   }
-  let resultCount;
-  if (searchResults.status && searchResults.status.hasOwnProperty("hits")) {
-    resultCount = searchResults.isFetching ? -1 : searchResults.status.hits;
-  }
-
-  let report = <ReportPanel options={options} />;
-  let text = <TextPanel pageId={"search.md"}></TextPanel>;
 
   return (
     <Page
@@ -131,8 +130,7 @@ const SearchPage = ({
 
 export default compose(
   memo,
-  withSetLookup,
-  withSearch,
-  withSearchDefaults,
-  withRecord
+  dispatchLookup,
+  dispatchSearchDefaults,
+  withSearch
 )(SearchPage);

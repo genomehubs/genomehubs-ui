@@ -10,8 +10,15 @@ import {
   setSearchIndex,
   setSearchTerm,
 } from "../reducers/search";
+import {
+  getController,
+  resetController,
+  setMessage,
+} from "../reducers/message";
 
+import { checkProgress } from "./checkProgress";
 import { getCurrentTaxonomy } from "../reducers/taxonomy";
+import { nanoid } from "nanoid";
 import qs from "qs";
 import { setTreeQuery } from "../reducers/tree";
 import store from "../store";
@@ -102,3 +109,83 @@ export function fetchSearchResults(options, navigate) {
     }
   };
 }
+
+export const saveSearchResults = ({ options, format = "tsv" }) => {
+  return async function (dispatch) {
+    const state = store.getState();
+
+    const filename = `download.${format}`;
+    options.filename = filename;
+    const queryString = qs.stringify(options);
+    const formats = {
+      csv: "text/csv",
+      json: "application/json",
+      tsv: "text/tab-separated-values",
+    };
+    const queryId = nanoid(10);
+    let url = `${apiUrl}/search?${queryString}&queryId=${queryId}`;
+    let status;
+    const interval = checkProgress({
+      queryId,
+      delay: 1000,
+      dispatch,
+      message: `Preparing ${format.toUpperCase()} file for download`,
+    });
+
+    try {
+      let response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Accept: formats[format],
+        },
+        signal: getController(state).signal,
+      });
+      clearInterval(interval);
+      let blob = await response.blob();
+      dispatch(
+        setMessage({
+          duration: 0,
+          severity: "info",
+        })
+      );
+      const linkUrl = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = linkUrl;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (err) {
+      clearInterval(interval);
+      if (getController(state).signal.aborted) {
+        dispatch(
+          setMessage({
+            message: `Cancelled ${format.toUpperCase()} file download`,
+            duration: 5000,
+            severity: "warning",
+          })
+        );
+        status = { success: false, error: "Request cancelled" };
+      } else {
+        dispatch(
+          setMessage({
+            message: `Unable to download ${format.toUpperCase()} file`,
+            duration: 5000,
+            severity: "error",
+          })
+        );
+        status = { success: false, error: "Unexpected error" };
+        console.log(error);
+      }
+      dispatch(resetController());
+      return false;
+    }
+    dispatch(
+      setMessage({
+        duration: 0,
+        severity: "info",
+      })
+    );
+    return true;
+  };
+};

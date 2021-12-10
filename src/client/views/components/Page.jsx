@@ -31,7 +31,7 @@ const Page = ({
   const itemCss = topLevel ? classes.itemFull : classes.item;
   let items = [];
   if (panels && panels.length > 0) {
-    panels.forEach((obj) => {
+    panels.forEach((obj, i) => {
       let styles = {};
       Object.keys(obj).forEach((key) => {
         if (key != "panel") {
@@ -39,7 +39,7 @@ const Page = ({
         }
       });
       items.push(
-        <Grid item className={itemCss} style={styles}>
+        <Grid item className={itemCss} style={styles} key={i}>
           {obj.panel}
         </Grid>
       );
@@ -61,7 +61,7 @@ const Page = ({
       spacing={2}
       direction="column"
       alignItems="center"
-      justify="center"
+      justifyContent="center"
       className={classes.container}
       ref={pageRef}
     >

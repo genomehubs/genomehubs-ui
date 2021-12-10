@@ -34,6 +34,10 @@ export const processProps = (props, newProps = {}) => {
       newProps["class"] = styles[value];
     } else if (key == "src") {
       newProps["src"] = value.match(/\?/) ? value : `${value}?${webpackHash}`;
+    } else if (key == "xs") {
+      newProps["xs"] = value * 1;
+    } else if (key == "spacing") {
+      newProps["spacing"] = value * 1;
     } else {
       newProps[key] = value;
     }

@@ -1,13 +1,13 @@
 import React from "react";
 import classnames from "classnames";
 import { compose } from "recompose";
+import dispatchLookup from "../hocs/dispatchLookup";
 import { format } from "d3-format";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withRecord from "../hocs/withRecord";
 import withSearch from "../hocs/withSearch";
-import withSetLookup from "../hocs/withSetLookup";
 import withTaxonomy from "../hocs/withTaxonomy";
 
 const LineagePanel = ({
@@ -71,7 +71,7 @@ const LineagePanel = ({
 
 export default compose(
   withTaxonomy,
-  withSetLookup,
+  dispatchLookup,
   withSearch,
   withRecord
 )(LineagePanel);

@@ -1,20 +1,20 @@
 import React, { useCallback, useRef, useState } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
-import Grid from "@material-ui/core/Grid";
-import SVGDownloadButton from "./SVGDownloadButton";
+// import Grid from "@material-ui/core/Grid";
+// import SVGDownloadButton from "./SVGDownloadButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import VariableFilter from "./VariableFilter";
+// import VariableFilter from "./VariableFilter";
 import classnames from "classnames";
 import { compose } from "recompose";
-import { formatter } from "../functions/formatter";
+// import { formatter } from "../functions/formatter";
 import { scaleLog } from "d3-scale";
 import styles from "./Styles.scss";
 import { useLongPress } from "use-long-press";
-import withRecord from "../hocs/withRecord";
-import withSearch from "../hocs/withSearch";
-import withSummary from "../hocs/withSummary";
-import withTree from "../hocs/withTree";
+// import withRecord from "../hocs/withRecord";
+// import withSearch from "../hocs/withSearch";
+// import withSummary from "../hocs/withSummary";
+// import withTree from "../hocs/withTree";
 import withTypes from "../hocs/withTypes";
 
 const ReportTreeRings = ({
@@ -55,19 +55,19 @@ const ReportTreeRings = ({
     styles.resultPanel
   );
   // const count = searchResults.status.hits;
-  if (count > 10000) {
-    return (
-      <div className={css}>
-        <div className={styles.header} style={{ cursor: "default" }}>
-          <span className={styles.title}>Tree</span>
-          <span>
-            {" "}
-            (not available for queries returning over 10,000 results)
-          </span>
-        </div>
-      </div>
-    );
-  }
+  // if (count > 10000) {
+  //   return (
+  //     <div className={css}>
+  //       <div className={styles.header} style={{ cursor: "default" }}>
+  //         <span className={styles.title}>Tree</span>
+  //         <span>
+  //           {" "}
+  //           (not available for queries returning over 10,000 results)
+  //         </span>
+  //       </div>
+  //     </div>
+  //   );
+  // }
   const [position, setPosition] = useState({
     x: undefined,
     y: undefined,
@@ -189,6 +189,7 @@ const ReportTreeRings = ({
       );
       text.push(
         <text
+          key={label.taxon_id}
           fill={"white"}
           style={{ pointerEvents: "none" }}
           textAnchor="middle"

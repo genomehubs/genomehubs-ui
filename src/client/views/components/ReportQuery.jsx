@@ -45,7 +45,7 @@ export const ReportQuery = ({
     params.forEach((param) => {
       if (rep[param] > 0 && rep[`${param}Query`]) {
         terms.push(
-          <Grid item style={{ width: "100%" }}>
+          <Grid item style={{ width: "100%" }} key={param}>
             <Grid container direction="row" style={{ width: "100%" }}>
               <Grid item xs={11}>
                 {rep[`${param}Query`].query}

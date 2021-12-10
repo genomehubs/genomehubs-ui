@@ -1,10 +1,12 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
+import { getController, resetController, setMessage } from "./message";
 
 import { apiUrl } from "./api";
 import { createCachedSelector } from "re-reselect";
 import { createSelector } from "reselect";
 import immutableUpdate from "immutable-update";
 import qs from "qs";
+import store from "../store";
 
 export const requestSearch = createAction("REQUEST_SEARCH");
 export const receiveSearch = createAction(
@@ -77,37 +79,7 @@ export const getSearchResultById = createCachedSelector(
   }
 )((_state, searchId) => searchId);
 
-export const saveSearchResults = async (options, format = "tsv") => {
-  const filename = `download.${format}`;
-  options.filename = filename;
-  const queryString = qs.stringify(options);
-  const formats = {
-    csv: "text/csv",
-    json: "application/json",
-    tsv: "text/tab-separated-values",
-  };
-  try {
-    let url = `${apiUrl}/search?${queryString}`;
-    let response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: formats[format],
-      },
-    });
-    let blob = await response.blob();
-
-    const linkUrl = window.URL.createObjectURL(new Blob([blob]));
-    const link = document.createElement("a");
-    link.href = linkUrl;
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
-  } catch (err) {
-    return false;
-  }
-  return true;
-};
+// export let controller = new AbortController();
 
 export const setSearchTerm = createAction("SET_SEARCH_TERM");
 export const searchTerm = handleAction(

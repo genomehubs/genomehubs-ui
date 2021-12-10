@@ -1,13 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "@reach/router";
 
+import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import ReportFull from "./ReportFull";
-import Tooltip from "@material-ui/core/Tooltip";
 import classnames from "classnames";
 import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
 import qs from "qs";
+import { sortReportQuery } from "../selectors/report";
 import styles from "./Styles.scss";
 import withReportDefaults from "../hocs/withReportDefaults";
 
@@ -25,7 +26,6 @@ const ReportPanel = ({ options, reportDefaults }) => {
     styles.textPanel
   );
   const reportRef = useRef(null);
-
   const location = useLocation();
   useEffect(() => {
     if (location.search.match("report=")) {
@@ -35,21 +35,31 @@ const ReportPanel = ({ options, reportDefaults }) => {
 
   const navigate = useNavigate();
   const setReport = (report) => {
+    let newOptions = { ...options };
+    if (report) {
+      newOptions.report = report;
+    } else {
+      delete newOptions.report;
+    }
     navigate(
-      `${location.pathname}?${qs.stringify({ ...options, report })}${
-        location.hash
-      }`
+      `${location.pathname}?${qs.stringify(newOptions)}${location.hash}`
     );
   };
   let { query, ...treeOptions } = options;
   let report = options.report;
-  // console.log(reportDefaults);
   let queryString = qs.stringify({
     ...treeOptions,
     ...reportDefaults[report],
     report,
   });
   // TODO: use mui-grid
+
+  const handleDelete = () => {
+    setReport();
+  };
+  const handleClick = (key) => {
+    setReport(key);
+  };
   return (
     <div className={css} ref={reportRef} style={{ maxHeight: "100%" }}>
       {/* <div className={styles.header}>
@@ -65,24 +75,32 @@ const ReportPanel = ({ options, reportDefaults }) => {
               item
               style={{ cursor: "pointer" }}
               onClick={() => setReport(key)}
+              key={key}
             >
-              {obj.name}
+              <Chip
+                label={obj.name}
+                variant={key == report ? undefined : "outlined"}
+                onClick={() => handleClick(key)}
+                onDelete={key == report ? handleDelete : undefined}
+              />
             </Grid>
           );
         })}
       </Grid>
 
       <Grid container spacing={1} direction="row">
-        <ReportFull
-          reportId={queryString}
-          report={report}
-          queryString={queryString}
-          topLevel={false}
-          inModal={false}
-        />
+        {report && (
+          <ReportFull
+            reportId={sortReportQuery({ queryString })}
+            report={report}
+            queryString={queryString}
+            topLevel={false}
+            inModal={false}
+          />
+        )}
       </Grid>
     </div>
   );
 };
 
-export default compose(withReportDefaults)(ReportPanel);
+export default compose(memo, withReportDefaults)(ReportPanel);

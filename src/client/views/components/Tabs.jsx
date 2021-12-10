@@ -1,18 +1,15 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 
 import Markdown from "./Markdown";
 import Tab from "./Tab";
 import classnames from "classnames";
 import { compose } from "recompose";
-// import withPages from "../hocs/withPages";
-import dispatchRoutes from "../hocs/dispatchRoutes";
 import styles from "./Styles.scss";
-import withFadeInOut from "../hocs/withFadeInOut";
 
-const Tabs = ({ setRoute }) => {
+const Tabs = () => {
+  const [content, setContent] = useState(null);
+
   let css = classnames(styles.tabHolder);
-  // let show = { help: true, about: true, search: true };
-  let tabs = [];
   const components = {
     ul: (props) => {
       return <nav className={css}>{props.children}</nav>;
@@ -22,9 +19,13 @@ const Tabs = ({ setRoute }) => {
       return <Tab routeName={routeName} pageId={`${routeName}.md`} />;
     },
   };
-  return (
-    <Markdown pageId={"tabs.md"} components={components} siteStyles={true} />
-  );
+
+  useEffect(() => {
+    setContent(
+      <Markdown pageId={"tabs.md"} components={components} siteStyles={true} />
+    );
+  }, []);
+  return content;
 };
 
-export default compose(dispatchRoutes)(Tabs);
+export default compose(memo)(Tabs);

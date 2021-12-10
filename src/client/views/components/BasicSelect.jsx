@@ -33,7 +33,7 @@ const BasicSelect = ({
     .sort((a, b) => a.localeCompare(b))
     .forEach((key) => {
       options.push(
-        <MenuItem value={values[key]} style={{ paddingTop: 0 }}>
+        <MenuItem value={values[key]} style={{ paddingTop: 0 }} key={key}>
           {key}
         </MenuItem>
       );
