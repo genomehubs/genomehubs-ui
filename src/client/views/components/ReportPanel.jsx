@@ -27,11 +27,11 @@ const ReportPanel = ({ options, reportDefaults }) => {
   );
   const reportRef = useRef(null);
   const location = useLocation();
-  useEffect(() => {
-    if (location.search.match("report=")) {
-      reportRef.current.scrollIntoView();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (location.search.match("report=")) {
+  //     reportRef.current.scrollIntoView();
+  //   }
+  // }, []);
 
   const navigate = useNavigate();
   const setReport = (report) => {

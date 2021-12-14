@@ -252,7 +252,7 @@ const SearchToggles = ({
               className={classes.formControl}
               style={{ margin: "-8px 0 0", transform: "scale(0.75)" }}
             >
-              <FormHelperText>reset</FormHelperText>
+              <FormHelperText>clear all</FormHelperText>
               <IconButton aria-label="result settings" size="small">
                 <ReplayIcon />
               </IconButton>
