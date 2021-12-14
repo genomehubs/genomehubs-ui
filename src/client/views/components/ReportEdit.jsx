@@ -57,6 +57,7 @@ export const queryPropList = {
     "report",
     { ...xSettings, label: `tax_tree(${suggestedTerm})` },
     { prop: "y", label: `c_value` },
+    catSettings,
     "includeEstimates",
     "treeStyle",
     "treeThreshold",
