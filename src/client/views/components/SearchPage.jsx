@@ -101,7 +101,7 @@ const SearchPage = ({
   let text = <TextPanel pageId={"search.md"}></TextPanel>;
 
   if (!searchTerm || searchTerm == "") {
-    return null;
+    // return null;
   }
 
   let resultCount = searchResults.isFetching ? -1 : searchResults.status.hits;

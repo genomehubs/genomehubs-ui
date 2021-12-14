@@ -7,16 +7,17 @@ import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
-import HelpIcon from "@material-ui/icons/Help";
 import IconButton from "@material-ui/core/IconButton";
 import Modal from "@material-ui/core/Modal";
 import QueryBuilder from "./QueryBuilder";
+import ReplayIcon from "@material-ui/icons/Replay";
 import SearchSettings from "./SearchSettings";
 import Switch from "@material-ui/core/Switch";
 import Terms from "./Terms";
 import TocIcon from "@material-ui/icons/Toc";
 import Tooltip from "@material-ui/core/Tooltip";
 import { compose } from "recompose";
+import dispatchLookup from "../hocs/dispatchLookup";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "qs";
 import withSearch from "../hocs/withSearch";
@@ -45,7 +46,11 @@ export const useStyles = makeStyles((theme) => ({
 
 // const handleValueChange =
 
-const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
+const SearchToggles = ({
+  searchDefaults,
+  setSearchDefaults,
+  setLookupTerm,
+}) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,6 +59,11 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
   const [showExamples, setShowExamples] = useState(false);
   const rootRef = useRef(null);
   let options = qs.parse(location.search.replace(/^\?/, ""));
+  const resetSearch = () => {
+    setSearchDefaults({ includeEstimates: false, includeDescendant: false });
+    setLookupTerm("");
+    navigate(`/search`);
+  };
   return (
     <>
       <Grid container direction="row" ref={rootRef}>
@@ -154,28 +164,7 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
             </FormControl>
           </Grid>
         </Tooltip>
-        <Tooltip
-          title={`Click show example search terms`}
-          arrow
-          placement={"top"}
-        >
-          <Grid
-            item
-            xs={2}
-            onClick={() => setShowExamples(!showExamples)}
-            style={{ cursor: "pointer" }}
-          >
-            <FormControl
-              className={classes.formControl}
-              style={{ margin: "-8px 0 0", transform: "scale(0.75)" }}
-            >
-              <FormHelperText>search examples</FormHelperText>
-              <IconButton aria-label="result settings" size="small">
-                <HelpIcon />
-              </IconButton>
-            </FormControl>
-          </Grid>
-        </Tooltip>
+        <Grid item xs={1}></Grid>
         <Tooltip title={`Click to set result columns`} arrow placement={"top"}>
           <Grid
             item
@@ -248,10 +237,36 @@ const SearchToggles = ({ searchDefaults, setSearchDefaults }) => {
             </Modal>
           </Grid>
         </Tooltip>
+        <Tooltip
+          title={`Click to reset search settings`}
+          arrow
+          placement={"top"}
+        >
+          <Grid
+            item
+            xs={1}
+            onClick={() => resetSearch()}
+            style={{ cursor: "pointer" }}
+          >
+            <FormControl
+              className={classes.formControl}
+              style={{ margin: "-8px 0 0", transform: "scale(0.75)" }}
+            >
+              <FormHelperText>reset</FormHelperText>
+              <IconButton aria-label="result settings" size="small">
+                <ReplayIcon />
+              </IconButton>
+            </FormControl>
+          </Grid>
+        </Tooltip>
       </Grid>
       {showExamples && <Terms />}
     </>
   );
 };
 
-export default compose(withSearch, withSearchDefaults)(SearchToggles);
+export default compose(
+  dispatchLookup,
+  withSearch,
+  withSearchDefaults
+)(SearchToggles);
