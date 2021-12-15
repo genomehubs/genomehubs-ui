@@ -10,7 +10,7 @@ import {
   setRootNode,
   treeThreshold,
 } from "../reducers/tree";
-import { scaleLinear, scalePow } from "d3-scale";
+import { scaleLinear, scaleLog, scalePow } from "d3-scale";
 import {
   schemeGreens,
   schemeGreys,
@@ -480,6 +480,7 @@ const setColor = ({ node, yQuery, recurse }) => {
   let greens = schemeGreens[tonalRange];
   let oranges = schemeOranges[tonalRange];
   let source;
+  let value;
   if (!recurse) {
     color = "white";
     highlightColor = "white";
@@ -487,6 +488,7 @@ const setColor = ({ node, yQuery, recurse }) => {
     let status = node.status ? 1 : 0;
     if (node.fields && node.fields[field]) {
       source = node.fields[field].source;
+      value = node.fields[field].value;
     }
     color = greys[baseTone + status];
     highlightColor = greys[baseTone + 1 + status];
@@ -512,7 +514,7 @@ const setColor = ({ node, yQuery, recurse }) => {
     color = greys[baseTone + 2];
     highlightColor = greys[baseTone + 2];
   }
-  return { color, highlightColor, source };
+  return { color, highlightColor, source, value };
 };
 
 export const processTreeRings = ({ nodes, xQuery, yQuery }) => {
@@ -747,6 +749,12 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
   }
   let { treeNodes, lca } = nodes;
   let field = (yQuery?.yFields || [])[0];
+  let valueScale;
+  if (bounds && bounds.stats) {
+    valueScale = scaleLinear()
+      .domain([bounds.stats.min, bounds.stats.max])
+      .range([0, 8]);
+  }
   if (!lca) return undefined;
   let { maxDepth, taxDepth, taxon_id: rootNode, parent: ancNode } = lca;
   maxDepth = taxDepth ? taxDepth : maxDepth;
@@ -868,11 +876,19 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
     node.yMin = yScale(maxY);
     node.yMax = yScale(minY);
     node.height = node.yMax - node.yMin;
-    let { color, highlightColor, source } = setColor({
+    let { color, highlightColor, source, value } = setColor({
       node,
       yQuery,
       recurse: true,
     });
+    if (value) {
+      if (typeof value === "number" && valueScale) {
+        value = valueScale(value);
+      } else {
+        value = 10;
+      }
+    }
+
     let label;
     if (node.tip) {
       label = node.scientific_name;
@@ -924,6 +940,7 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
       color,
       highlightColor,
       source,
+      value,
     });
   });
   return {
