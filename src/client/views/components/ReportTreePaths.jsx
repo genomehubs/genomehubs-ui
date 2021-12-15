@@ -10,6 +10,19 @@ import styles from "./Styles.scss";
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import withTypes from "../hocs/withTypes";
 
+const COLORS = [
+  "#1f78b4",
+  "#a6cee3",
+  "#33a02c",
+  "#b2df8a",
+  "#e31a1c",
+  "#fb9a99",
+  "#ff7f00",
+  "#fdbf6f",
+  "#6a3d9a",
+  "#cab2d6",
+];
+
 const ReportTreePaths = ({
   // root_id,
   // rootNode,
@@ -32,6 +45,7 @@ const ReportTreePaths = ({
   width,
   height,
   plotHeight,
+  charHeight,
   maxWidth,
   hidePreview,
   reportRef,
@@ -189,6 +203,7 @@ const ReportTreePaths = ({
   const [paths, setPaths] = useState([]);
   const [nodes, setNodes] = useState([]);
   const [labels, setLabels] = useState([]);
+  const [cats, setCats] = useState([]);
   const [regions, setRegions] = useState([]);
   const [overview, setOverview] = useState([]);
   const [portion, setPortion] = useState(0);
@@ -225,8 +240,10 @@ const ReportTreePaths = ({
       let newLabels = [];
       let newRegions = [];
       let newOverview = [];
+      let newCats = [];
       if (portionCache[portion]) {
-        ({ newNodes, newPaths, newLabels, newRegions } = portionCache[portion]);
+        ({ newNodes, newPaths, newLabels, newRegions, newCats } =
+          portionCache[portion]);
       } else {
         let lowerY = portionHeight * portion - portionOverlap;
         let upperY = portionHeight * (portion + 1) + portionOverlap;
@@ -257,6 +274,27 @@ const ReportTreePaths = ({
               stroke={segment.color}
             />
           );
+          if (segment.cats) {
+            segment.cats.forEach((cat, i) => {
+              newCats.push(
+                // <Rect
+                //   key={`cat-${segment.taxon_id}-${cat}`}
+                //   x={segment.xEnd - charHeight * (i + 1) - 5}
+                //   y={segment.yStart - charHeight / 2}
+                //   width={charHeight}
+                //   height={charHeight}
+                //   fill={COLORS[cat]}
+                // />
+                <Circle
+                  key={`cat-${segment.taxon_id}-${cat}-${i}`}
+                  x={segment.xEnd - charHeight * (i + 0.5)}
+                  y={segment.yStart}
+                  radius={charHeight / 2}
+                  fill={COLORS[cat]}
+                />
+              );
+            });
+          }
           if (segment.scientific_name == "parent") {
             newPaths.push(
               <Line
@@ -329,8 +367,8 @@ const ReportTreePaths = ({
               <Circle
                 x={segment.xEnd}
                 y={segment.yStart}
-                radius={4}
-                fill="white"
+                radius={2}
+                fill={segment.color}
                 stroke={segment.color}
                 key={`c-${segment.taxon_id}`}
               />
@@ -355,13 +393,20 @@ const ReportTreePaths = ({
               );
           }
         }
-        updateCache(portion, { newNodes, newPaths, newLabels, newRegions });
+        updateCache(portion, {
+          newNodes,
+          newPaths,
+          newLabels,
+          newRegions,
+          newCats,
+        });
       }
 
       setNodes(newNodes);
       setPaths(newPaths);
       setLabels(newLabels);
       setRegions(newRegions);
+      setCats(newCats);
       if (newOverview.length > 0) {
         setOverview(newOverview);
       }
@@ -498,6 +543,7 @@ const ReportTreePaths = ({
             >
               <Layer>
                 {paths}
+                {cats}
                 <Rect
                   x={0}
                   width={maxWidth}
@@ -611,6 +657,7 @@ const ReportTreePaths = ({
               </Layer>
               <Layer>{paths}</Layer>
               <Layer>
+                <Group>{cats}</Group>
                 <Group>{labels}</Group>
                 <Group>{nodes}</Group>
               </Layer>

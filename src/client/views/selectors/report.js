@@ -40,6 +40,7 @@ export const sortReportQuery = ({ queryString, options, ui = true }) => {
     rank: { not: new Set(["sources", "tree"]) },
     ranks: { in: new Set(["tree"]) },
     names: { in: new Set(["tree"]) },
+    fields: { in: new Set(["tree"]) },
     includeEstimates: true,
     excludeAncestral: true,
     excludeDescendant: true,
@@ -291,14 +292,14 @@ const processReport = (report) => {
   if (!report || !report.name) return {};
   if (report.name == "tree") {
     let { treeStyle } = qs.parse(report.report.queryString);
-    let { tree, xQuery, yQuery } = report.report.tree;
+    let { tree, xQuery, yQuery, bounds } = report.report.tree;
     return {
       ...report,
       report: {
         ...report.report,
         tree: {
           ...report.report.tree,
-          ...processTree({ nodes: tree, xQuery, yQuery, treeStyle }),
+          ...processTree({ nodes: tree, bounds, xQuery, yQuery, treeStyle }),
         },
       },
     };

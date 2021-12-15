@@ -693,8 +693,58 @@ export const processTreeRings = ({ nodes, xQuery, yQuery }) => {
   return { arcs, labels, maxDepth };
 };
 
-export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
+export const setCats = ({ node, cats, cat, other }) => {
+  if (!cat) {
+    return;
+  }
+  if (node.fields && node.fields[cat]) {
+    let catList = node.fields[cat].value;
+    if (!Array.isArray(catList)) {
+      return typeof cats[catList.toLowerCase()] === "number"
+        ? [cats[catList.toLowerCase()]]
+        : other
+        ? [other]
+        : [];
+    } else {
+      let nodeCats = [];
+      let hasOther;
+      catList.forEach((nodeCat) => {
+        if (typeof cats[nodeCat.toLowerCase()] === "number") {
+          nodeCats.push(cats[nodeCat.toLowerCase()]);
+        } else if (other && !hasOther) {
+          nodeCats.push(other);
+          hasOther == true;
+        }
+      });
+      return nodeCats.sort((a, b) => a - b);
+    }
+  } else if (node.cat) {
+    let nodeCat = node.cat;
+    return typeof cats[nodeCat.toLowerCase()] === "number"
+      ? [cats[nodeCat.toLowerCase()]]
+      : other
+      ? [other]
+      : [];
+  }
+};
+
+export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
   if (!nodes) return undefined;
+  const { cat, cats: catArray, showOther } = bounds;
+  let cats = {};
+  let other;
+  if (catArray) {
+    cats = {};
+    catArray.forEach((cat, index) => {
+      if (cat.key) {
+        cats[cat.key] = index;
+      }
+    });
+    if (showOther) {
+      other = catArray.length;
+      cats.other = other;
+    }
+  }
   let { treeNodes, lca } = nodes;
   let field = (yQuery?.yFields || [])[0];
   if (!lca) return undefined;
@@ -721,7 +771,6 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
   let oranges = schemeOranges[tonalRange];
   let line = d3line();
   let visited = {};
-
   let labels = [];
 
   let pathNodes = {};
@@ -746,6 +795,7 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
       depth,
       xStart,
       xEnd,
+      cats: setCats({ node, cat, cats, other }),
       width: xEnd - xStart,
       parent,
       yCoords: [],
@@ -881,12 +931,19 @@ export const processTreePaths = ({ nodes, xQuery, yQuery }) => {
     maxDepth,
     maxWidth,
     plotHeight: yScale(0) - yScale(yMax) + charHeight / 2,
+    charHeight,
   };
 };
 
-export const processTree = ({ nodes, xQuery, yQuery, treeStyle = "rect" }) => {
+export const processTree = ({
+  nodes,
+  bounds,
+  xQuery,
+  yQuery,
+  treeStyle = "rect",
+}) => {
   if (treeStyle == "ring") {
-    return processTreeRings({ nodes, xQuery, yQuery });
+    return processTreeRings({ nodes, bounds, xQuery, yQuery });
   }
-  return processTreePaths({ nodes, xQuery, yQuery });
+  return processTreePaths({ nodes, bounds, xQuery, yQuery });
 };
