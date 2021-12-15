@@ -87,6 +87,7 @@ const ReportTreePaths = ({
   let yScale = scaleLinear();
   let previewYScale = scaleLinear();
   let globalYScale = scaleLinear();
+  let globalYClickScale = scaleLinear();
 
   useEffect(() => {
     setScale(divWidth ? divWidth / (maxWidth || divWidth) : 1);
@@ -155,6 +156,21 @@ const ReportTreePaths = ({
     let x = scrollPosition.x;
     let y = evt.layerY - offset.y;
     y = previewYScale(y) * scale;
+    y = Math.max(Math.min(y, maxY * scale), 0);
+    setScrollPosition({
+      x,
+      y,
+    });
+    scrollContainerRef.current.scrollLeft = x;
+    scrollContainerRef.current.scrollTop = y;
+  };
+
+  const handleGlobalClick = ({ evt, target }) => {
+    const stage = target.getStage();
+    const offset = { x: stage.x(), y: stage.y() };
+    let x = scrollPosition.x;
+    let y = evt.layerY - offset.y;
+    y = globalYClickScale(y) * scale;
     y = Math.max(Math.min(y, maxY * scale), 0);
     setScrollPosition({
       x,
@@ -249,11 +265,22 @@ const ReportTreePaths = ({
         let upperY = portionHeight * (portion + 1) + portionOverlap;
         for (let segment of lines) {
           if (overview.length == 0 && segment.tip && segment.status == 1) {
-            let oveviewY = overviewScale(segment.yStart);
+            let overviewY = overviewScale(segment.yStart);
+            let points;
+            if (segment.value == 10) {
+              points = [5, overviewY, 15, overviewY];
+            } else {
+              points = [
+                5 + segment.value,
+                overviewY,
+                7 + segment.value,
+                overviewY,
+              ];
+            }
             newOverview.push(
               <Line
                 key={`o-${segment.taxon_id}`}
-                points={[5, oveviewY, overviewWidth, oveviewY]}
+                points={points}
                 stroke={segment.color}
                 opacity={0.5}
               />
@@ -430,6 +457,9 @@ const ReportTreePaths = ({
   globalYScale
     .domain([0, plotHeight - divHeight])
     .range([0, divHeight - divHeight * previewRatio]);
+  globalYClickScale
+    .domain([0, divHeight])
+    .range([0 - divHeight / 2, plotHeight - divHeight / 2]);
 
   previewYScale = scaleLinear()
     .domain([0, previewDivHeight / previewRatio])
@@ -450,6 +480,7 @@ const ReportTreePaths = ({
             top: 0,
             left: -overviewWidth,
             pointerEvents: "none",
+            cursor: "pointer",
           }}
         >
           <div
@@ -459,6 +490,7 @@ const ReportTreePaths = ({
               position: "absolute",
               right: 0,
               pointerEvents: "auto",
+              cursor: "pointer",
             }}
           >
             <Stage
@@ -467,14 +499,24 @@ const ReportTreePaths = ({
               pixelRatio={1}
             >
               <Layer>
-                <Group>{overview}</Group>
-                <Rect
+                <Group>
+                  {overview}
+                  <Rect
+                    x={5}
+                    width={10}
+                    y={0}
+                    height={previewDivHeight}
+                    fill={"rgba(0,0,0,0)"}
+                    onClick={handleGlobalClick}
+                  />
+                </Group>
+                <Group
                   x={0}
-                  width={overviewWidth}
+                  // width={overviewWidth}
                   y={globalYScale(scrollPosition.y)}
-                  height={previewDivHeight * previewRatio}
-                  fill={"rgba(125,125,125,0.5)"}
-                  onClick={handlePreviewClick}
+                  // height={previewDivHeight * previewRatio}
+                  // fill={"rgba(125,125,125,0.5)"}
+                  onClick={handleGlobalClick}
                   draggable
                   onDragStart={handleDragStart}
                   onDragMove={(e) =>
@@ -489,7 +531,22 @@ const ReportTreePaths = ({
                       divHeight - previewDivHeight * previewRatio
                     )
                   }
-                />
+                >
+                  <Rect
+                    x={0}
+                    width={overviewWidth - 10}
+                    y={0}
+                    height={previewDivHeight * previewRatio}
+                    fill={"rgba(125,125,125,0.5)"}
+                  />
+                  <Rect
+                    x={overviewWidth - 10}
+                    width={10}
+                    y={0}
+                    height={previewDivHeight * previewRatio}
+                    fill={"rgba(125,125,125,0.1)"}
+                  />
+                </Group>
               </Layer>
             </Stage>
           </div>
