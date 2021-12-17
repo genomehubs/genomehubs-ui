@@ -41,6 +41,9 @@ export function fetchSearchResults(options, navigate) {
     if (!options.hasOwnProperty("result")) {
       options.result = "assembly";
     }
+    if (!options.hasOwnProperty("taxonomy")) {
+      options.taxonomy = taxonomy;
+    }
     if (options.result == "taxon" && !options.query.match(/[\(\)<>=\n\*]/)) {
       if (!options.hasOwnProperty("includeEstimates")) {
         options.includeEstimates = searchDefaults.includeEstimates;
@@ -61,6 +64,7 @@ export function fetchSearchResults(options, navigate) {
     const queryString = qs.stringify(options);
     const endpoint = "search";
     let url = `${apiUrl}/${endpoint}?${queryString}`;
+    console.log(url);
     try {
       let json;
       try {
@@ -124,6 +128,7 @@ export const saveSearchResults = ({ options, format = "tsv" }) => {
     };
     const queryId = nanoid(10);
     let url = `${apiUrl}/search?${queryString}&queryId=${queryId}`;
+    console.log(url);
     let status;
     const interval = checkProgress({
       queryId,

@@ -53,6 +53,7 @@ export function fetchLookup({ lookupTerm, result = "multi", taxonomy }) {
     };
     const queryString = qs.stringify(options);
     let url = `${apiUrl}/lookup?${queryString}`;
+    console.log(url);
     return fetch(url)
       .then(
         (response) => response.json(),

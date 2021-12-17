@@ -118,6 +118,7 @@ const ReportItem = ({
     );
     loading = true;
   } else if (
+    reportById.report[report] &&
     reportById.report[report].status &&
     reportById.report[report].status.success == false
   ) {
@@ -131,7 +132,14 @@ const ReportItem = ({
     //   duration: 5000,
     //   severity: "error",
     // };
-  } else if (reportById.report[report].x == 0) {
+  } else if (reportById.report[report] && reportById.report[report].x == 0) {
+    component = <ReportEmpty report={report} />;
+    // message = {
+    //   message: `No ${report} data to display`,
+    //   duration: 5000,
+    //   severity: "warning",
+    // };
+  } else if (!reportById.report[report]) {
     component = <ReportEmpty report={report} />;
     // message = {
     //   message: `No ${report} data to display`,

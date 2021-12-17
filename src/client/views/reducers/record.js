@@ -1,6 +1,7 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
 
 import { createSelector } from "reselect";
+import { getCurrentTaxonomy } from "../reducers/taxonomy";
 import immutableUpdate from "immutable-update";
 import { setApiStatus } from "./api";
 import store from "../store";
@@ -66,8 +67,12 @@ export function fetchRecord(recordId, result, taxonomy, callback) {
     if (records[recordId]) {
       return;
     }
+    if (!taxonomy) {
+      taxonomy = getCurrentTaxonomy(state);
+    }
     dispatch(requestRecord());
     let url = `${apiUrl}/record?recordId=${recordId}&result=${result}&taxonomy=${taxonomy}`;
+    console.log(url);
     try {
       let json;
       try {

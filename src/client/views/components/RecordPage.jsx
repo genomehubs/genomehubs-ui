@@ -144,6 +144,7 @@ const RecordPage = ({
         key={"analysis"}
         recordId={record.record.record_id}
         result={options.result}
+        taxonomy={options.taxonomy}
       />
     );
 

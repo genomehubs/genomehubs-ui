@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import Skeleton from "@material-ui/lab/Skeleton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -7,7 +7,7 @@ import { formatter } from "../functions/formatter";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
-import { useVisible } from "react-hooks-visible";
+import useVisible from "../hooks/useVisible";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
@@ -29,14 +29,23 @@ const HistogramSVG = ({
   const navigate = useNavigate();
 
   const height = 100;
-  let [targetRef, visible] = useVisible();
+  const targetRef = useRef(null);
+  let visible = useVisible(targetRef);
   let parts = summaryId.split("--");
   useEffect(() => {
+    let mounted = true;
+    let fetchTimeout;
     if (summaryId && visible) {
-      setTimeout(() => {
-        fetchSummary(parts[0], parts[1], parts[2], parts[3], searchIndex);
+      fetchTimeout = setTimeout(() => {
+        if (mounted) {
+          fetchSummary(parts[0], parts[1], parts[2], parts[3], searchIndex);
+        }
       }, sequence * 100);
     }
+    return () => {
+      mounted = false;
+      clearTimeout(fetchTimeout);
+    };
   }, [summaryId, visible]);
   const handleClick = (bucket) => {
     let query = `tax_tree(${parts[0]})`;

@@ -48,6 +48,7 @@ export function fetchNodes(options) {
       y = `&y=${uriEncode(treeOptions.y)}`;
     }
     let url = `${apiUrl}/report?report=tree&x=${x}${y}&result=${treeOptions.result}&taxonomy=${treeOptions.taxonomy}&includeEstimates=${treeOptions.includeEstimates}`;
+    console.log(url);
     try {
       let json;
       try {

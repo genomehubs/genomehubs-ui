@@ -230,7 +230,10 @@ export function fetchTypes(result, taxonomy) {
       return;
     }
     dispatch(requestTypes(result));
-    let url = `${apiUrl}/resultFields?result=${result}&taxonomy=${taxonomy}`;
+    let url = `${apiUrl}/resultFields?result=${result}&taxonomy=${encodeURIComponent(
+      taxonomy
+    )}`;
+    console.log(url);
     try {
       let json;
       try {

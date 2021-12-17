@@ -1,10 +1,12 @@
 import React, { Fragment, useEffect, useRef } from "react";
 
 import ReportItem from "./ReportItem";
+import { compose } from "recompose";
 import qs from "qs";
 import { sortReportQuery } from "../selectors/report";
 import { useLocation } from "@reach/router";
 import useResize from "../hooks/useResize";
+import withTaxonomy from "../hocs/withTaxonomy";
 
 export const queryPropList = [
   "result",
@@ -19,7 +21,14 @@ export const queryPropList = [
   "treeStyle",
 ];
 
-const Report = (props) => {
+const Report = ({
+  taxonomy,
+  taxonomies,
+  taxonomyIsFetching,
+  fetchTaxonomies,
+  setTaxonomy,
+  ...props
+}) => {
   const location = useLocation();
   // const reportRef = useRef();
   let options = qs.parse(location.search.replace(/^\?/, ""));
@@ -27,6 +36,8 @@ const Report = (props) => {
   let queryProps = {};
   if (options.taxonomy) {
     queryProps = { taxonomy: options.taxonomy };
+  } else {
+    queryProps = { taxonomy };
   }
   if (!props.report) {
     return null;
@@ -93,4 +104,4 @@ const Report = (props) => {
   );
 };
 
-export default Report;
+export default compose(withTaxonomy)(Report);

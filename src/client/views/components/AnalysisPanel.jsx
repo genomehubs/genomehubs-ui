@@ -26,6 +26,7 @@ const AnalysisPanel = ({
   analysesByTaxonId,
   analysisQueries,
   fetchAnalyses,
+  taxonomy,
 }) => {
   let css = classnames(
     styles.infoPanel,
@@ -39,7 +40,7 @@ const AnalysisPanel = ({
 
   useEffect(() => {
     let query = `${result}_id==${recordId}`;
-    let options = { query, result: "analysis" };
+    let options = { query, result: "analysis", taxonomy };
     if (!analysisQueries[qs.stringify(options)]) {
       fetchAnalyses(options);
     }

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 
 import Page from "./Page";
 import ResultPanel from "./ResultPanel";
@@ -35,25 +35,30 @@ const ExplorePage = ({
   }
   let options = qs.parse(location.search.replace(/^\?/, ""));
   let hashTerm = decodeURIComponent(location.hash.replace(/^\#/, ""));
+  let optionString = JSON.stringify(options);
   useEffect(() => {
     if (options.taxon_id && !record.isFetching) {
-      if (options.taxon_id != taxon_id || options.field_id != summaryField) {
+      if (!taxon_id) {
+        fetchRecord(options.taxon_id, options.result, options.taxonomy);
+        setRecordId(options.taxon_id);
+      } else if (
+        options.taxon_id != taxon_id ||
+        options.field_id != summaryField
+      ) {
         fetchSearchResults({
           query: `tax_eq(${options.taxon_id})`,
           result: options.result,
           taxonomy: options.taxonomy,
           includeEstimates: true,
         });
-        fetchRecord(options.taxon_id, options.result, options.taxonomy);
-        setRecordId(options.taxon_id);
         setSearchIndex(options.result);
         setSummaryField(options.field_id);
+        if (hashTerm) {
+          setLookupTerm(hashTerm);
+        }
       }
     }
-    if (hashTerm) {
-      setLookupTerm(hashTerm);
-    }
-  }, [taxon_id, options]);
+  }, [taxon_id, optionString]);
 
   let summary;
   if (types[summaryField]) {
@@ -111,6 +116,7 @@ const ExplorePage = ({
 };
 
 export default compose(
+  memo,
   withTaxonomy,
   withRecord,
   withSearch,

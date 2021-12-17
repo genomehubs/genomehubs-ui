@@ -12,6 +12,7 @@ export function checkProgress({
 }) {
   let state = store.getState();
   let url = `${apiUrl}/progress?queryId=${queryId}`;
+  console.log(url);
   let isFetching = false;
 
   const fetchProgress = async () => {

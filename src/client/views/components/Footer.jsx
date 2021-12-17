@@ -11,12 +11,14 @@ import dtolLogo from "./img/dtol-logo.png";
 import qs from "qs";
 import sangerLogo from "./img/sanger-logo.png";
 import styles from "./Styles.scss";
+import withTaxonomy from "../hocs/withTaxonomy";
 import withVersion from "../hocs/withVersion";
 
-const Footer = ({ version, fetchTypes, hidden }) => {
+const Footer = ({ version, fetchTypes, hidden, taxonomy }) => {
   let options = qs.parse(location.search.replace(/^\?/, ""));
+  console.log(options);
   useEffect(() => {
-    fetchTypes("multi", options.taxonomy);
+    fetchTypes("multi", options.taxonomy || taxonomy);
   }, []);
   if (hidden) {
     return null;
@@ -82,5 +84,6 @@ export default compose(
   memo,
   dispatchRecord,
   withVersion,
+  withTaxonomy,
   dispatchTypes
 )(Footer);

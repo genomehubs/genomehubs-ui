@@ -110,6 +110,7 @@ export function fetchReport({ reportId, reload, report, hideMessage }) {
       /^\?/,
       ""
     )}&queryId=${queryId}`;
+    console.log(url);
     try {
       let json;
       let status;
@@ -497,6 +498,7 @@ export const saveReport = ({ options, format = "json" }) => {
     const queryId = nanoid(10);
     const state = store.getState();
     let url = `${apiUrl}/report?${queryString}&queryId=${queryId}`;
+    console.log(url);
     let status;
     const interval = checkProgress({
       queryId,
