@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import ReportEmpty from "./ReportEmpty";
@@ -17,6 +17,7 @@ import dispatchReport from "../hocs/dispatchReport";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
+import useVisible from "../hooks/useVisible";
 import withReportById from "../hocs/withReportById";
 
 const headings = {
@@ -71,10 +72,16 @@ const ReportItem = ({
   });
   const navigate = useNavigate();
   const hideMessage = !inModal && !topLevel;
+  const targetRef = useRef();
+  let visible = useVisible(targetRef);
   // const [hideMessage, sethideMessage] = useState(false);
 
   useEffect(() => {
-    if (reportId && (!reportById || Object.keys(reportById).length == 0)) {
+    if (
+      visible &&
+      reportId &&
+      (!reportById || Object.keys(reportById).length == 0)
+    ) {
       // let hideMessage;
       // if (!inModal && !topLevel) {
       //   sethideMessage(true);
@@ -84,7 +91,7 @@ const ReportItem = ({
         delay
       );
     }
-  }, [reportId]);
+  }, [reportId, visible]);
 
   let status;
   if (reportById && reportById.report && reportById.report[report]) {
@@ -291,7 +298,7 @@ const ReportItem = ({
   //   );
   // }
   return (
-    <Grid id="tmp" style={{ minHeight: minDim }} {...gridProps}>
+    <Grid ref={targetRef} style={{ minHeight: minDim }} {...gridProps}>
       {content}
     </Grid>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import Skeleton from "@material-ui/lab/Skeleton";
 import { TagCloud } from "react-tagcloud";
@@ -6,7 +6,7 @@ import { compose } from "recompose";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
-import { useVisible } from "react-hooks-visible";
+import useVisible from "../hooks/useVisible";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
 import withSummary from "../hocs/withSummary";
@@ -27,7 +27,8 @@ const WordCloud = ({
 }) => {
   const navigate = useNavigate();
   const height = 100;
-  const [targetRef, visible] = useVisible();
+  const targetRef = useRef();
+  let visible = useVisible(targetRef);
   let parts = summaryId.split("--");
   useEffect(() => {
     if (summaryId && visible) {
