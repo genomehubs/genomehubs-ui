@@ -53,7 +53,6 @@ const ReportItem = ({
   scatterThreshold,
   yScale,
   zScale,
-  setEdit,
   treeStyle,
   treeThreshold,
   handleUpdate,
@@ -61,6 +60,8 @@ const ReportItem = ({
   includeEstimates,
   setMessage,
   saveReport,
+  setReportEdit,
+  setReportTerm,
   ...gridProps
 }) => {
   queryString = qs.stringify({
@@ -129,8 +130,8 @@ const ReportItem = ({
     reportById.report[report].status &&
     reportById.report[report].status.success == false
   ) {
-    if (setEdit && !hideMessage) {
-      setTimeout(() => setEdit(true), 500);
+    if (setReportEdit && !hideMessage) {
+      setTimeout(() => setReportEdit(true), 500);
     }
     error = reportById.report[report].status.error;
     component = <ReportError report={report} error={error} />;

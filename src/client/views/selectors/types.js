@@ -233,7 +233,6 @@ export function fetchTypes(result, taxonomy) {
     let url = `${apiUrl}/resultFields?result=${result}&taxonomy=${encodeURIComponent(
       taxonomy
     )}`;
-    console.log(url);
     try {
       let json;
       try {

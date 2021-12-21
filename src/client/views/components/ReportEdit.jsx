@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import Box from "@material-ui/core/Box";
 import FormControl from "@material-ui/core/FormControl";
@@ -14,6 +14,7 @@ import SettingsButton from "./SettingsButton";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import { compose } from "recompose";
+import dispatchReport from "../hocs/dispatchReport";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "qs";
 import withReportById from "../hocs/withReportById";
@@ -78,6 +79,7 @@ export const ReportEdit = ({
   reportId,
   reportById,
   report,
+  setReportEdit,
   fetchReport,
   modal,
   permaLink,
@@ -86,16 +88,17 @@ export const ReportEdit = ({
 }) => {
   const classes = useStyles();
   const formRef = useRef();
-  let fields = [];
-  if (!reportById.report || !reportById.report.queryString) {
-    return null;
-  }
-  let query = qs.parse(reportById.report.queryString);
+  const [values, setValues] = useState({});
+  let query = qs.parse(reportById.report?.queryString);
   if (query.report == "tree" && !query.treeStyle) {
     query.treeStyle = "rect";
   }
+
   const defaultState = () => {
     let obj = {};
+    if (!query || !report || !queryPropList[report]) {
+      return obj;
+    }
     queryPropList[report].forEach((queryProp) => {
       let prop;
       if (Array.isArray(queryProp)) {
@@ -109,7 +112,20 @@ export const ReportEdit = ({
     });
     return obj;
   };
-  let [values, setValues] = useState(defaultState);
+  useEffect(() => {
+    if (Object.keys(values).length == 0) {
+      setValues(defaultState());
+    }
+  }, [query, report, reportById]);
+
+  let fields = [];
+  if (
+    Object.keys(values).length == 0 ||
+    !reportById.report ||
+    !reportById.report.queryString
+  ) {
+    return null;
+  }
 
   const handleChange = (e, queryProp) => {
     e.preventDefault();
@@ -129,6 +145,7 @@ export const ReportEdit = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setReportEdit(false);
     if (!formRef.current.reportValidity()) {
       return;
     }
@@ -368,4 +385,8 @@ export const ReportEdit = ({
   );
 };
 
-export default compose(withTaxonomy, withReportById)(ReportEdit);
+export default compose(
+  withTaxonomy,
+  withReportById,
+  dispatchReport
+)(ReportEdit);

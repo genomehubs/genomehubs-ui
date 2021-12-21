@@ -64,7 +64,6 @@ export function fetchSearchResults(options, navigate) {
     const queryString = qs.stringify(options);
     const endpoint = "search";
     let url = `${apiUrl}/${endpoint}?${queryString}`;
-    console.log(url);
     try {
       let json;
       try {
@@ -128,7 +127,6 @@ export const saveSearchResults = ({ options, format = "tsv" }) => {
     };
     const queryId = nanoid(10);
     let url = `${apiUrl}/search?${queryString}&queryId=${queryId}`;
-    console.log(url);
     let status;
     const interval = checkProgress({
       queryId,

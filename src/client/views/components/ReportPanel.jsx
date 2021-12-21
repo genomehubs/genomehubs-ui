@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "@reach/router";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import ReportFull from "./ReportFull";
+import ReportTerm from "./ReportTerm";
 import classnames from "classnames";
 import { compose } from "recompose";
 import { formatter } from "../functions/formatter";
@@ -68,24 +69,30 @@ const ReportPanel = ({ options, reportDefaults }) => {
 
       {/* {text && <div>{text}</div>} */}
       <Grid container spacing={1} direction="row" style={{ width: "100%" }}>
-        {Object.keys(reportTypes).map((key) => {
-          let obj = reportTypes[key];
-          return (
-            <Grid
-              item
-              style={{ cursor: "pointer" }}
-              onClick={() => setReport(key)}
-              key={key}
-            >
-              <Chip
-                label={obj.name}
-                variant={key == report ? undefined : "outlined"}
-                onClick={() => handleClick(key)}
-                onDelete={key == report ? handleDelete : undefined}
-              />
+        {Object.keys(reportTypes)
+          .map((key) => {
+            let obj = reportTypes[key];
+            return (
+              <Grid
+                item
+                style={{ cursor: "pointer" }}
+                onClick={() => setReport(key)}
+                key={key}
+              >
+                <Chip
+                  label={obj.name}
+                  variant={key == report ? undefined : "outlined"}
+                  onClick={() => handleClick(key)}
+                  onDelete={key == report ? handleDelete : undefined}
+                />
+              </Grid>
+            );
+          })
+          .concat(
+            <Grid item key={"reportTerm"} style={{ marginLeft: "auto" }}>
+              <ReportTerm />
             </Grid>
-          );
-        })}
+          )}
       </Grid>
 
       <Grid container spacing={1} direction="row">

@@ -8,6 +8,7 @@ import { compose } from "recompose";
 import { scaleLinear } from "d3-scale";
 import styles from "./Styles.scss";
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
+import withReportTerm from "../hocs/withReportTerm";
 import withTypes from "../hocs/withTypes";
 
 const COLORS = [
@@ -46,8 +47,12 @@ const ReportTreePaths = ({
   height,
   plotHeight,
   charHeight,
+  locations,
+  other,
   maxWidth,
   hidePreview,
+  reportTerm,
+  setReportTerm,
   reportRef,
   gridRef,
 }) => {
@@ -65,7 +70,13 @@ const ReportTreePaths = ({
   let divWidth = width;
   height = plotHeight;
 
-  const [highlight, setHighlight] = useState();
+  const noHighlight = {
+    main: undefined,
+    overview: undefined,
+    preview: undefined,
+  };
+
+  const [highlight, setHighlight] = useState(noHighlight);
   const [tooltip, setTooltip] = useState({});
   const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
   const [previewOffset, setPreviewOffset] = useState({ x: 0, y: 0 });
@@ -97,14 +108,12 @@ const ReportTreePaths = ({
   useScrollPosition(
     ({ currPos }) => {
       let y = Math.min(currPos.y / scale, maxY);
-      // if (plotHeight > previewHeight) {
       let previewY = 0;
       previewY = yScale(currPos.y / scale);
       setPreviewOffset({
         x: previewOffset.x,
         y: previewY,
       });
-      // }
       setScrollPosition({
         x: currPos.x,
         y,
@@ -116,6 +125,27 @@ const ReportTreePaths = ({
     100,
     scrollContainerRef
   );
+
+  useEffect(() => {
+    let mounted = true;
+    if (reportTerm && locations[reportTerm.toLowerCase()]) {
+      if (mounted) {
+        let x = scrollPosition.x;
+        let y = locations[reportTerm.toLowerCase()].y - divHeight / 2;
+        y = Math.max(0, Math.min(y, maxY));
+        y *= scale;
+        setScrollPosition({
+          x,
+          y,
+        });
+        scrollContainerRef.current.scrollLeft = x;
+        scrollContainerRef.current.scrollTop = y;
+      }
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [reportTerm]);
 
   const handleDragStart = () => {};
   const handleDragMove = (event, limit) => {
@@ -163,6 +193,13 @@ const ReportTreePaths = ({
     });
     scrollContainerRef.current.scrollLeft = x;
     scrollContainerRef.current.scrollTop = y;
+  };
+
+  const handleNavigate = ({ root, name, depth }) => {
+    if (name != "parent") {
+      setReportTerm(name.toLowerCase());
+    }
+    handleNavigation({ root, name, depth });
   };
 
   const handleGlobalClick = ({ evt, target }) => {
@@ -249,6 +286,20 @@ const ReportTreePaths = ({
 
   let mouseDownTimeout;
 
+  const plusRadius = charHeight / 2 - 3;
+  const plusPoints = [
+    -plusRadius,
+    0,
+    plusRadius,
+    0,
+    0,
+    0,
+    0,
+    plusRadius,
+    0,
+    -plusRadius,
+  ];
+
   useEffect(() => {
     if (lines) {
       let newPaths = [];
@@ -264,28 +315,50 @@ const ReportTreePaths = ({
         let lowerY = portionHeight * portion - portionOverlap;
         let upperY = portionHeight * (portion + 1) + portionOverlap;
         for (let segment of lines) {
-          if (overview.length == 0 && segment.tip && segment.status == 1) {
+          if (
+            overview.length == 0 &&
+            ((segment.tip && segment.status == 1) ||
+              (reportTerm &&
+                reportTerm == segment.scientific_name.toLowerCase()))
+          ) {
             let overviewY = overviewScale(segment.yStart);
-            let points;
-            if (segment.value == 10) {
-              points = [5, overviewY, 15, overviewY];
-            } else {
-              points = [
-                5 + segment.value,
-                overviewY,
-                7 + segment.value,
-                overviewY,
-              ];
+            if (segment.tip && segment.status == 1) {
+              let points;
+              if (segment.value == 10) {
+                points = [5, overviewY, 15, overviewY];
+              } else {
+                points = [
+                  5 + segment.value,
+                  overviewY,
+                  7 + segment.value,
+                  overviewY,
+                ];
+              }
+              newOverview.push(
+                <Line
+                  key={`o-${segment.taxon_id}`}
+                  points={points}
+                  stroke={segment.color}
+                  opacity={0.5}
+                />
+              );
             }
-            newOverview.push(
-              <Line
-                key={`o-${segment.taxon_id}`}
-                points={points}
-                stroke={segment.color}
-                opacity={0.5}
-              />
-            );
+            if (
+              reportTerm &&
+              reportTerm == segment.scientific_name.toLowerCase()
+            ) {
+              setHighlight({
+                overview: (
+                  <Line
+                    key={`highlight-${segment.taxon_id}`}
+                    points={[5, overviewY, 15, overviewY]}
+                    stroke={"yellow"}
+                  />
+                ),
+              });
+            }
           }
+
           if (segment.yMin > upperY || segment.yMax < lowerY) {
             continue;
           }
@@ -303,23 +376,28 @@ const ReportTreePaths = ({
           );
           if (segment.cats) {
             segment.cats.forEach((cat, i) => {
+              let xPos = segment.xEnd - charHeight * (i / 2 + 0.5);
               newCats.push(
-                // <Rect
-                //   key={`cat-${segment.taxon_id}-${cat}`}
-                //   x={segment.xEnd - charHeight * (i + 1) - 5}
-                //   y={segment.yStart - charHeight / 2}
-                //   width={charHeight}
-                //   height={charHeight}
-                //   fill={COLORS[cat]}
-                // />
                 <Circle
                   key={`cat-${segment.taxon_id}-${cat}-${i}`}
-                  x={segment.xEnd - charHeight * (i + 0.5)}
+                  x={xPos}
                   y={segment.yStart}
                   radius={charHeight / 2}
                   fill={COLORS[cat]}
                 />
               );
+              if (cat == other) {
+                newNodes.push(
+                  <Line
+                    key={`plus-${segment.taxon_id}-${cat}-${i}`}
+                    x={xPos}
+                    y={segment.yStart}
+                    points={plusPoints}
+                    stroke={"white"}
+                    opacity={0.75}
+                  />
+                );
+              }
             });
           }
           if (segment.scientific_name == "parent") {
@@ -378,7 +456,7 @@ const ReportTreePaths = ({
               }}
               onMouseUp={() => {
                 clearTimeout(mouseDownTimeout);
-                handleNavigation({
+                handleNavigate({
                   root: segment.taxon_id,
                   name: segment.scientific_name,
                   depth: segment.depth,
@@ -402,22 +480,57 @@ const ReportTreePaths = ({
             );
           }
 
-          {
-            segment.label &&
-              newLabels.push(
-                <Text
-                  key={`t-${segment.taxon_id}`}
-                  text={segment.label}
-                  fontSize={10}
-                  x={segment.tip ? segment.xEnd + 10 : segment.xStart - 6}
-                  y={segment.tip ? segment.yMin : segment.yStart - 11}
-                  width={segment.tip ? segment.labelWidth : segment.width}
-                  height={segment.height}
-                  fill={segment.color}
-                  align={segment.tip ? "left" : "right"}
-                  verticalAlign={segment.tip ? "middle" : "top"}
-                />
-              );
+          if (segment.label) {
+            if (
+              reportTerm &&
+              reportTerm == segment.scientific_name.toLowerCase()
+            ) {
+              let labelWidth = segment.labelWidth || segment.width;
+              setHighlight({
+                ...highlight,
+                main: (
+                  <Rect
+                    key={`tr-${segment.taxon_id}`}
+                    x={
+                      segment.tip
+                        ? segment.xEnd + 9
+                        : segment.xEnd - labelWidth - 6
+                    }
+                    y={segment.tip ? segment.yMin - 1 : segment.yStart - 12}
+                    width={labelWidth}
+                    height={charHeight}
+                    fill={"yellow"}
+                  />
+                ),
+                preview: (
+                  <Rect
+                    x={
+                      segment.tip
+                        ? segment.xEnd - 10
+                        : segment.xEnd - labelWidth - 10
+                    }
+                    y={segment.yStart - charHeight}
+                    width={labelWidth + 20}
+                    height={charHeight * 2}
+                    fill={"yellow"}
+                  />
+                ),
+              });
+            }
+            newLabels.push(
+              <Text
+                key={`t-${segment.taxon_id}`}
+                text={segment.label}
+                fontSize={10}
+                x={segment.tip ? segment.xEnd + 10 : segment.xStart - 6}
+                y={segment.tip ? segment.yMin : segment.yStart - 11}
+                width={segment.tip ? segment.labelWidth : segment.width}
+                height={segment.height}
+                fill={segment.color}
+                align={segment.tip ? "left" : "right"}
+                verticalAlign={segment.tip ? "middle" : "top"}
+              />
+            );
           }
         }
         updateCache(portion, {
@@ -439,6 +552,38 @@ const ReportTreePaths = ({
       }
     }
   }, [lines, portion]);
+
+  useEffect(() => {
+    if (locations[reportTerm]) {
+      let { x, y, tip, width } = locations[reportTerm];
+      let overviewY = overviewScale(y);
+      setHighlight({
+        main: (
+          <Rect
+            x={tip ? x + tip + 9 : x + 6}
+            y={tip ? y - charHeight / 2 - 1 : y - 12}
+            width={tip ? width : width - 12}
+            height={charHeight}
+            fill={"yellow"}
+          />
+        ),
+        overview: (
+          <Line points={[5, overviewY, 15, overviewY]} stroke={"yellow"} />
+        ),
+        preview: (
+          <Rect
+            x={tip ? x + tip - 10 : x - 10}
+            y={y - charHeight}
+            width={tip ? width + 20 : width + 20}
+            height={charHeight * 2}
+            fill={"yellow"}
+          />
+        ),
+      });
+    } else {
+      setHighlight(noHighlight);
+    }
+  }, [reportTerm]);
 
   let index = "";
   css = undefined;
@@ -501,6 +646,7 @@ const ReportTreePaths = ({
               <Layer>
                 <Group>
                   {overview}
+                  {highlight.overview}
                   <Rect
                     x={5}
                     width={10}
@@ -600,6 +746,7 @@ const ReportTreePaths = ({
             >
               <Layer>
                 {paths}
+                {highlight.preview}
                 {cats}
                 <Rect
                   x={0}
@@ -715,6 +862,7 @@ const ReportTreePaths = ({
               <Layer>{paths}</Layer>
               <Layer>
                 <Group>{cats}</Group>
+                {highlight.main}
                 <Group>{labels}</Group>
                 <Group>{nodes}</Group>
               </Layer>
@@ -731,4 +879,4 @@ const ReportTreePaths = ({
   );
 };
 
-export default compose(withTypes)(ReportTreePaths);
+export default compose(withTypes, withReportTerm)(ReportTreePaths);

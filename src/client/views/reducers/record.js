@@ -72,7 +72,6 @@ export function fetchRecord(recordId, result, taxonomy, callback) {
     }
     dispatch(requestRecord());
     let url = `${apiUrl}/record?recordId=${recordId}&result=${result}&taxonomy=${taxonomy}`;
-    console.log(url);
     try {
       let json;
       try {

@@ -23,7 +23,6 @@ export function fetchTaxonomies() {
     }
     dispatch(requestTaxonomies());
     let url = `${apiUrl}/taxonomies`;
-    console.log(url);
     try {
       let json;
       try {

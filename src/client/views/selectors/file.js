@@ -18,7 +18,6 @@ export function fetchFiles(options) {
     dispatch(requestFiles());
     const queryString = qs.stringify(options);
     let url = `${apiUrl}/search?${queryString}`;
-    console.log(url);
     try {
       let json;
       try {

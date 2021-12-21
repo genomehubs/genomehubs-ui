@@ -25,7 +25,6 @@ export function fetchSummary(lineage, field, summary, taxonomy, result) {
     }
     dispatch(requestSummary(`${lineage}--${field}--${summary}--${taxonomy}`));
     let url = `${apiUrl}/summary?recordId=${lineage}&result=${result}&taxonomy=${taxonomy}&summary=${summary}&fields=${field}`;
-    console.log(url);
     try {
       let json;
       try {

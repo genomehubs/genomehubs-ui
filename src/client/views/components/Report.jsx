@@ -73,7 +73,6 @@ const Report = ({
   reportProps.permaLink = props.permaLink;
   reportProps.handleUpdate = props.handleUpdate;
   reportProps.chartRef = props.chartRef;
-  reportProps.setEdit = props.setEdit;
   reportProps.delay = props.delay;
   reportProps.containerRef = props.containerRef;
   reportProps.reportRef = props.reportRef;

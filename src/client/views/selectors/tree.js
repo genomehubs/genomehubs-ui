@@ -48,7 +48,6 @@ export function fetchNodes(options) {
       y = `&y=${uriEncode(treeOptions.y)}`;
     }
     let url = `${apiUrl}/report?report=tree&x=${x}${y}&result=${treeOptions.result}&taxonomy=${treeOptions.taxonomy}&includeEstimates=${treeOptions.includeEstimates}`;
-    console.log(url);
     try {
       let json;
       try {
@@ -711,14 +710,22 @@ export const setCats = ({ node, cats, cat, other }) => {
     } else {
       let nodeCats = [];
       let hasOther;
-      catList.forEach((nodeCat) => {
-        if (typeof cats[nodeCat.toLowerCase()] === "number") {
-          nodeCats.push(cats[nodeCat.toLowerCase()]);
+      for (let nodeCat of catList) {
+        let catString = nodeCat.toLowerCase();
+        if (catString == "other") {
+          if (hasOther) {
+            continue;
+          }
+          hasOther = true;
+        }
+        let catIndex = cats[catString];
+        if (typeof catIndex === "number") {
+          nodeCats.push(catIndex);
         } else if (other && !hasOther) {
           nodeCats.push(other);
-          hasOther == true;
+          hasOther = true;
         }
-      });
+      }
       return nodeCats.sort((a, b) => a - b);
     }
   } else if (node.cat) {
@@ -850,6 +857,7 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
     });
   }
   let y = 0;
+  let locations = {};
 
   sortOrder.forEach((nodeId) => {
     let node = pathNodes[nodeId];
@@ -915,6 +923,14 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
       }
     }
 
+    locations[node.scientific_name.toLowerCase()] = {
+      x: node.xStart,
+      y: node.yStart,
+      tip: node.tip ? node.width : false,
+      width: node.tip ? node.scientific_name.length * charLen : node.width,
+    };
+    locations[node.taxon_id.toLowerCase()] = { x: node.xStart, y: node.yStart };
+
     lines.push({
       ...node,
       hLine: d3line()([
@@ -950,6 +966,8 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
     maxWidth,
     plotHeight: yScale(0) - yScale(yMax) + charHeight / 2,
     charHeight,
+    locations,
+    other,
   };
 };
 
