@@ -61,7 +61,7 @@ export const getReportsFetching = (state) => state.reports.requestedById;
 export const setReportTerm = createAction("SET_REPORT_TERM");
 export const reportTerm = handleAction(
   "SET_REPORT_TERM",
-  (state, action) => action.payload,
+  (state, action) => action.payload || false,
   false
 );
 export const getReportTerm = (state) => state.reportTerm;
@@ -69,7 +69,7 @@ export const getReportTerm = (state) => state.reportTerm;
 export const setReportEdit = createAction("SET_REPORT_EDIT");
 export const reportEdit = handleAction(
   "SET_REPORT_EDIT",
-  (state, action) => action.payload,
+  (state, action) => action.payload || false,
   false
 );
 export const getReportEdit = (state) => state.reportEdit;

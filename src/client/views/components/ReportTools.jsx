@@ -57,7 +57,7 @@ export const ReportTools = ({
   const ReportOverlay = ({ children }) => (
     <div
       style={{
-        height: "calc( 100% - 2em )",
+        maxHeight: "calc( 100% - 2em )",
         width: code ? "800px" : "400px",
         right: "5em",
         padding: "1em",
@@ -209,7 +209,7 @@ export const ReportTools = ({
           style={{
             height: "100%",
             width: "100vw",
-            right: code ? "800px" : "400px",
+            right: "4em",
             top: "2em",
             position: "absolute",
           }}

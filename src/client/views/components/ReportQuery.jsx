@@ -84,7 +84,7 @@ export const ReportQuery = ({
     setValue(value);
     setReportTerm(value ? value.toLowerCase() : false);
   };
-  if (report == "tree") {
+  if (report == "tree" || report == "scatter") {
     searchInReport = (
       <Grid item style={{ width: "100%" }}>
         <Grid container direction="row" alignItems="flex-end">

@@ -219,6 +219,7 @@ const processScatter = (scatter) => {
   let w = heatmaps.buckets[1] - heatmaps.buckets[0];
   let catSums;
   let pointData;
+  let locations = {};
   let hasRawData = heatmaps.rawData ? true : false;
   if (hasRawData) {
     pointData = [];
@@ -254,6 +255,9 @@ const processScatter = (scatter) => {
       chartData.push(catData);
       if (hasRawData) {
         pointData.push(heatmaps.rawData[cat.key]);
+        for (let obj of heatmaps.rawData[cat.key]) {
+          locations[obj.scientific_name.toLowerCase()] = { x: obj.x, y: obj.y };
+        }
       }
     });
   } else {
@@ -283,9 +287,12 @@ const processScatter = (scatter) => {
     chartData.push(catData);
     if (hasRawData) {
       pointData.push(heatmaps.rawData);
+      for (let obj of heatmaps.rawData) {
+        locations[obj.scientific_name.toLowerCase()] = { x: obj.x, y: obj.y };
+      }
     }
   }
-  return { chartData, pointData, cats, catSums };
+  return { chartData, pointData, cats, catSums, locations };
 };
 
 const processReport = (report) => {

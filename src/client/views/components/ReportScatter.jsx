@@ -1,6 +1,7 @@
 // import { RadialChart } from "react-vis";
 import {
   CartesianGrid,
+  Dot,
   Label,
   Legend,
   Rectangle,
@@ -10,7 +11,7 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
 import { useLocation, useNavigate } from "@reach/router";
 
@@ -25,6 +26,7 @@ import { point } from "leaflet";
 import qs from "qs";
 import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";
+import withReportTerm from "../hocs/withReportTerm";
 
 const COLORS = [
   "#1f78b4",
@@ -106,6 +108,20 @@ const searchByCell = ({
   // let hash = encodeURIComponent(query);
   navigate(
     `/search?${queryString.replace(/^\?/, "")}#${encodeURIComponent(query)}`
+  );
+};
+
+const CustomDot = (props, chartProps) => {
+  let { cx, cy, height: r, fill } = props;
+  return (
+    <Dot
+      cx={cx}
+      cy={cy}
+      r={r}
+      stroke={fill}
+      fill={"none"}
+      strokeWidth={r / 2}
+    />
   );
 };
 
@@ -206,6 +222,7 @@ const Heatmap = ({
   xLabel,
   yLabel,
   stacked,
+  highlight,
 }) => {
   let axes = [
     <CartesianGrid key={"grid"} strokeDasharray="3 3" />,
@@ -341,6 +358,19 @@ const Heatmap = ({
             style={{ pointerEvents: "none" }}
           />
         ))}
+      {pointData && highlight && (
+        <Scatter
+          name={"highlight"}
+          legendType="none"
+          key={"highlight"}
+          data={highlight}
+          fill={"yellow"}
+          shape={(props) => CustomDot(props, { ...chartProps })}
+          zAxisId={1}
+          isAnimationActive={false}
+          style={{ pointerEvents: "none" }}
+        />
+      )}
     </ScatterChart>
   );
 };
@@ -352,9 +382,11 @@ const ReportScatter = ({
   ratio,
   zScale = "linear",
   setMessage,
+  reportTerm,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [highlight, setHighlight] = useState([]);
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
@@ -370,6 +402,8 @@ const ReportScatter = ({
       setMessage(null);
     }
   }, [scatter]);
+
+  let locations = {};
   if (scatter && scatter.status) {
     let chart;
     let {
@@ -379,6 +413,16 @@ const ReportScatter = ({
       histograms: heatmaps,
       pointData,
     } = scatter.report.scatter;
+    if (pointData) {
+      ({ locations } = scatter.report.scatter);
+    }
+    useEffect(() => {
+      if (locations[reportTerm]) {
+        setHighlight([locations[reportTerm]]);
+      } else {
+        setHighlight([]);
+      }
+    }, [reportTerm]);
     if (!heatmaps) {
       return null;
     }
@@ -402,6 +446,7 @@ const ReportScatter = ({
         yLabel={yLabel}
         endLabel={endLabel}
         lastIndex={lastIndex}
+        highlight={highlight}
         chartProps={{
           zDomain: heatmaps.zDomain,
           yLength: heatmaps.yBuckets.length - 1,
@@ -435,4 +480,4 @@ const ReportScatter = ({
   }
 };
 
-export default compose(dispatchMessage)(ReportScatter);
+export default compose(dispatchMessage, withReportTerm)(ReportScatter);
