@@ -21,31 +21,7 @@ import formats from "../functions/formats";
 import qs from "qs";
 import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";
-
-// const COLORS = [
-//   "#a6cee3",
-//   "#b2df8a",
-//   "#fb9a99",
-//   "#fdbf6f",
-//   "#cab2d6",
-//   "#1f78b4",
-//   "#33a02c",
-//   "#e31a1c",
-//   "#ff7f00",
-//   "#6a3d9a",
-// ];
-const COLORS = [
-  "#1f78b4",
-  "#a6cee3",
-  "#33a02c",
-  "#b2df8a",
-  "#e31a1c",
-  "#fb9a99",
-  "#ff7f00",
-  "#fdbf6f",
-  "#6a3d9a",
-  "#cab2d6",
-];
+import withColors from "../hocs/withColors";
 
 const renderXTick = (tickProps) => {
   const { x, y, index, endLabel, lastIndex, payload, chartWidth } = tickProps;
@@ -204,6 +180,7 @@ const Histogram = ({
   stacked,
   cumulative,
   chartProps,
+  colors,
 }) => {
   let axes = [
     <CartesianGrid key={"grid"} strokeDasharray="3 3" vertical={false} />,
@@ -234,38 +211,13 @@ const Histogram = ({
         />
       )}
     </YAxis>,
-    // <Tooltip />,
   ];
   if (width > 300) {
     axes.push(
       <Legend key={"legend"} verticalAlign="top" offset={28} height={28} />
     );
   }
-  // return (
-  //   <AreaChart
-  //     width={width}
-  //     height={height}
-  //     data={data}
-  //     margin={{
-  //       top: 5,
-  //       right: 30,
-  //       left: 20,
-  //       bottom: width > 300 ? 25 : 5,
-  //     }}
-  //   >
-  //     {axes}
-  //     {cats.map((cat, i) => (
-  //       <Area
-  //         type={"monotone"}
-  //         dataKey={cat}
-  //         stroke={COLORS[i]}
-  //         fill={COLORS[i]}
-  //         stackId="1"
-  //         isAnimationActive={false}
-  //       />
-  //     ))}
-  //   </AreaChart>
-  // );
+
   return (
     <BarChart
       width={width}
@@ -303,7 +255,7 @@ const Histogram = ({
           dataKey={cat}
           key={i}
           stackId={stacked ? 1 : false}
-          fill={COLORS[i]}
+          fill={colors[i]}
           isAnimationActive={false}
           style={{ pointerEvents: "none" }}
         />
@@ -330,6 +282,7 @@ const ReportHistogram = ({
   cumulative,
   yScale = "linear",
   setMessage,
+  colors,
 }) => {
   const navigate = useNavigate();
   const componentRef = chartRef ? chartRef : useRef();
@@ -421,6 +374,7 @@ const ReportHistogram = ({
         endLabel={endLabel}
         lastIndex={lastIndex}
         stacked={stacked}
+        colors={colors}
         chartProps={{
           zDomain: histograms.zDomain,
           xLength: histograms.buckets.length - 1,
@@ -457,4 +411,4 @@ const ReportHistogram = ({
   }
 };
 
-export default compose(dispatchMessage)(ReportHistogram);
+export default compose(dispatchMessage, withColors)(ReportHistogram);

@@ -6,7 +6,6 @@ import CodeIcon from "@material-ui/icons/Code";
 import EditIcon from "@material-ui/icons/Edit";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import Grid from "@material-ui/core/Grid";
-import HelpIcon from "@material-ui/icons/HelpOutline";
 import LinkIcon from "@material-ui/icons/Link";
 import ReportCode from "./ReportCode";
 import ReportDownload from "./ReportDownload";
@@ -14,6 +13,7 @@ import ReportEdit from "./ReportEdit";
 import ReportInfo from "./ReportInfo";
 import ReportQuery from "./ReportQuery";
 import SearchIcon from "@material-ui/icons/Search";
+import TocIcon from "@material-ui/icons/Toc";
 import { compose } from "recompose";
 import { useStyles } from "./ReportModal";
 import withReportTerm from "../hocs/withReportTerm";
@@ -152,14 +152,14 @@ export const ReportTools = ({
             </Grid>
           )}
           <Grid item align="right">
-            <HelpIcon
+            <TocIcon
               onClick={() => {
                 setInfo(!info);
                 setReportEdit(false);
                 setDownload(false);
                 setQuery(false);
               }}
-              style={{ cursor: "pointer" }}
+              style={{ transform: "scaleX(-1)", cursor: "pointer" }}
             />
           </Grid>
 

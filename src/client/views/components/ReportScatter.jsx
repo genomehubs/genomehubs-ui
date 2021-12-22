@@ -26,20 +26,8 @@ import { point } from "leaflet";
 import qs from "qs";
 import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";
+import withColors from "../hocs/withColors";
 import withReportTerm from "../hocs/withReportTerm";
-
-const COLORS = [
-  "#1f78b4",
-  "#33a02c",
-  "#e31a1c",
-  "#ff7f00",
-  "#6a3d9a",
-  "#a6cee3",
-  "#b2df8a",
-  "#fb9a99",
-  "#fdbf6f",
-  "#cab2d6",
-];
 
 const scales = {
   linear: scaleLinear,
@@ -223,6 +211,7 @@ const Heatmap = ({
   yLabel,
   stacked,
   highlight,
+  colors,
 }) => {
   let axes = [
     <CartesianGrid key={"grid"} strokeDasharray="3 3" />,
@@ -339,7 +328,7 @@ const Heatmap = ({
           name={cat}
           key={cat}
           data={data[i]}
-          fill={COLORS[i]}
+          fill={colors[i]}
           shape={(props) => CustomShape(props, { ...chartProps, i })}
           isAnimationActive={false}
         />
@@ -351,7 +340,7 @@ const Heatmap = ({
             legendType="none"
             key={i}
             data={pointData[i]}
-            fill={COLORS[i]}
+            fill={colors[i]}
             shape={"circle"}
             zAxisId={1}
             isAnimationActive={false}
@@ -383,6 +372,7 @@ const ReportScatter = ({
   zScale = "linear",
   setMessage,
   reportTerm,
+  colors,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -447,6 +437,7 @@ const ReportScatter = ({
         endLabel={endLabel}
         lastIndex={lastIndex}
         highlight={highlight}
+        colors={colors}
         chartProps={{
           zDomain: heatmaps.zDomain,
           yLength: heatmaps.yBuckets.length - 1,
@@ -480,4 +471,8 @@ const ReportScatter = ({
   }
 };
 
-export default compose(dispatchMessage, withReportTerm)(ReportScatter);
+export default compose(
+  dispatchMessage,
+  withColors,
+  withReportTerm
+)(ReportScatter);

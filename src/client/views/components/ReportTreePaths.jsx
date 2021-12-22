@@ -8,21 +8,9 @@ import { compose } from "recompose";
 import { scaleLinear } from "d3-scale";
 import styles from "./Styles.scss";
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
+import withColors from "../hocs/withColors";
 import withReportTerm from "../hocs/withReportTerm";
 import withTypes from "../hocs/withTypes";
-
-const COLORS = [
-  "#1f78b4",
-  "#a6cee3",
-  "#33a02c",
-  "#b2df8a",
-  "#e31a1c",
-  "#fb9a99",
-  "#ff7f00",
-  "#fdbf6f",
-  "#6a3d9a",
-  "#cab2d6",
-];
 
 const ReportTreePaths = ({
   // root_id,
@@ -53,6 +41,7 @@ const ReportTreePaths = ({
   hidePreview,
   reportTerm,
   setReportTerm,
+  colors,
   reportRef,
   gridRef,
 }) => {
@@ -383,7 +372,7 @@ const ReportTreePaths = ({
                   x={xPos}
                   y={segment.yStart}
                   radius={charHeight / 2}
-                  fill={COLORS[cat]}
+                  fill={colors[cat]}
                 />
               );
               if (cat == other) {
@@ -879,4 +868,4 @@ const ReportTreePaths = ({
   );
 };
 
-export default compose(withTypes, withReportTerm)(ReportTreePaths);
+export default compose(withTypes, withColors, withReportTerm)(ReportTreePaths);

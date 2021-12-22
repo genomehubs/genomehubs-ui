@@ -15,27 +15,16 @@ import {
 import React, { Fragment, useRef } from "react";
 
 import Grid from "@material-ui/core/Grid";
+import { compose } from "recompose";
 import { format } from "d3-format";
 import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";
+import withColors from "../hocs/withColors";
 
-// const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-const COLORS = [
-  "#1f78b4",
-  "#a6cee3",
-  "#33a02c",
-  "#b2df8a",
-  "#e31a1c",
-  "#fb9a99",
-  "#ff7f00",
-  "#fdbf6f",
-  "#6a3d9a",
-  "#cab2d6",
-];
 const pct = format(".0%");
 const pct1 = format(".1%");
 
-const PieComponent = ({ data, height, width }) => {
+const PieComponent = ({ data, height, width, colors }) => {
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({
     cx,
@@ -88,7 +77,7 @@ const PieComponent = ({ data, height, width }) => {
           alignmentBaseline="hanging"
           fontSize={innerRadius / 4.5}
         >
-          <tspan alignmentBaseline="hanging" fill={COLORS[0]}>
+          <tspan alignmentBaseline="hanging" fill={colors[0]}>
             {value2.toLocaleString()}
           </tspan>
           <tspan alignmentBaseline="hanging">
@@ -122,7 +111,7 @@ const PieComponent = ({ data, height, width }) => {
         isAnimationActive={false}
       >
         {data.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
         ))}
         <Label
           width={30}
@@ -146,7 +135,7 @@ const PieComponent = ({ data, height, width }) => {
   );
 };
 
-const RadialBarComponent = ({ data, height, width }) => {
+const RadialBarComponent = ({ data, height, width, colors }) => {
   const renderRadialBarLabel = (props) => {
     const { cx, cy, index, viewBox, fill, value, data, background } = props;
     const fontSize = (viewBox.outerRadius - viewBox.innerRadius) / 2;
@@ -229,7 +218,7 @@ const RadialBarComponent = ({ data, height, width }) => {
   );
 };
 
-const ReportXInY = ({ xInY, chartRef, containerRef, ratio }) => {
+const ReportXInY = ({ xInY, chartRef, containerRef, ratio, colors }) => {
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
@@ -252,12 +241,17 @@ const ReportXInY = ({ xInY, chartRef, containerRef, ratio }) => {
           yValue: y,
           index: i,
           name: rank,
-          fill: COLORS[i % COLORS.length],
+          fill: colors[i % colors.length],
         });
       });
       chartData = chartData.reverse();
       chart = (
-        <RadialBarComponent data={chartData} width={minDim} height={minDim} />
+        <RadialBarComponent
+          data={chartData}
+          width={minDim}
+          height={minDim}
+          colors={colors}
+        />
       );
     } else {
       let { x, y, xTerm, yTerm } = xInY.report.xInY;
@@ -265,7 +259,14 @@ const ReportXInY = ({ xInY, chartRef, containerRef, ratio }) => {
         { value: x, name: xTerm },
         { value: y - x, name: yTerm },
       ];
-      chart = <PieComponent data={chartData} width={minDim} height={minDim} />;
+      chart = (
+        <PieComponent
+          data={chartData}
+          width={minDim}
+          height={minDim}
+          colors={colors}
+        />
+      );
     }
     return (
       <Grid item xs ref={componentRef} style={{ height: "100%" }}>
@@ -277,4 +278,4 @@ const ReportXInY = ({ xInY, chartRef, containerRef, ratio }) => {
   }
 };
 
-export default ReportXInY;
+export default compose(withColors)(ReportXInY);

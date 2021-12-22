@@ -1,5 +1,6 @@
-import React from "react";
 import Grid from "@material-ui/core/Grid";
+import React from "react";
+import ReportLegend from "./ReportLegend";
 import { compose } from "recompose";
 import withReportById from "../hocs/withReportById";
 
@@ -14,8 +15,12 @@ export const ReportInfo = ({ reportById, report }) => {
       container
       direction="column"
       style={{ height: "100%", width: "100%" }}
+      spacing={2}
     >
-      {caption}
+      <Grid item>{caption}</Grid>
+      <Grid item>
+        <ReportLegend reportById={reportById} report={report} />
+      </Grid>
     </Grid>
   );
 };

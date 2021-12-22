@@ -143,6 +143,12 @@ export const ReportEdit = ({
     });
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key == "Enter" || e.keyCode == 13) {
+      handleSubmit(e);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setReportEdit(false);
@@ -339,6 +345,7 @@ export const ReportEdit = ({
           error={required && !values[queryProp]}
           style={{ width: "95%" }}
           onChange={(e) => handleChange(e, queryProp)}
+          onKeyPress={handleKeyPress}
         />
       );
     }
