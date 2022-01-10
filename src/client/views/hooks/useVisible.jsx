@@ -7,7 +7,7 @@ export default (rootElRef, top) => {
     if (rootElRef && rootElRef.current) {
       const ob = new IntersectionObserver(
         ([entry]) => {
-          if (mounted) {
+          if (mounted && !visible) {
             setVisible(entry.isIntersecting);
           }
         },
