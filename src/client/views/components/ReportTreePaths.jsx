@@ -361,6 +361,7 @@ const ReportTreePaths = ({
                 segment.yStart,
               ]}
               stroke={segment.color}
+              // strokeScaleEnabled={false}
             />
           );
           if (segment.cats) {
@@ -373,6 +374,8 @@ const ReportTreePaths = ({
                   y={segment.yStart}
                   radius={charHeight / 2}
                   fill={colors[cat]}
+                  stroke={colors[cat]}
+                  strokeScaleEnabled={false}
                 />
               );
               if (cat == other) {
@@ -415,6 +418,7 @@ const ReportTreePaths = ({
                   segment.yMax,
                 ]}
                 stroke={segment.color}
+                strokeScaleEnabled={false}
               />
             );
           }
