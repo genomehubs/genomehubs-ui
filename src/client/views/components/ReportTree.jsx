@@ -157,7 +157,6 @@ const ReportTree = ({
       />
     );
   }
-
   return (
     <Grid item xs ref={componentRef} style={{ height: "100%" }}>
       {treeComponent}

@@ -178,7 +178,11 @@ export const FileModal = ({ meta, apiUrl, children }) => {
       {children}
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={(event, reason) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setOpen(false);
+        }}
         aria-labelledby="file-modal-title"
         aria-describedby="file-modal-description"
       >

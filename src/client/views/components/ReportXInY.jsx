@@ -136,6 +136,7 @@ const PieComponent = ({ data, height, width, colors }) => {
 };
 
 const RadialBarComponent = ({ data, height, width, colors }) => {
+  console.log("RadialBarComponent");
   const renderRadialBarLabel = (props) => {
     const { cx, cy, index, viewBox, fill, value, data, background } = props;
     const fontSize = (viewBox.outerRadius - viewBox.innerRadius) / 2;
@@ -268,6 +269,7 @@ const ReportXInY = ({ xInY, chartRef, containerRef, ratio, colors }) => {
         />
       );
     }
+
     return (
       <Grid item xs ref={componentRef} style={{ height: "100%" }}>
         {chart}

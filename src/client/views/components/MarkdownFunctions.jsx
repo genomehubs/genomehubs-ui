@@ -51,7 +51,7 @@ export const RehypeComponentsList = {
   hub: (props) => <span {...processProps(props)}>{siteName}</span>,
   img: (props) => (
     <div className={styles.centerContent}>
-      <img {...processProps(props)} />
+      <img {...processProps(props)} alt={props.alt.toString()} />
     </div>
   ),
   item: (props) => (

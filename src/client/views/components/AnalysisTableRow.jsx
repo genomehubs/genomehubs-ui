@@ -84,7 +84,7 @@ const AnalysisTableRow = ({
   title = <TableCell key={title}>{title}</TableCell>;
   if (meta.description) {
     title = (
-      <Tooltip title={meta.description} arrow placement={"top"}>
+      <Tooltip key={"tooltip"} title={meta.description} arrow placement={"top"}>
         {title}
       </Tooltip>
     );
@@ -120,7 +120,7 @@ const AnalysisTableRow = ({
     if (list) {
       if (open) {
         return (
-          <Grid container direction="column">
+          <Grid container direction="column" key={"grid"}>
             <Grid item>
               {list.length} {plural[result]} {icon}
             </Grid>
@@ -130,13 +130,15 @@ const AnalysisTableRow = ({
       } else if (Array.isArray(list)) {
         if (list.length > 1) {
           return (
-            <Fragment>
+            <Fragment key={"fragment"}>
               {list.length} {plural[result]} {icon}
             </Fragment>
           );
         } else {
           return (
-            <Fragment>{list.map((entryId) => entrySpan(entryId))}</Fragment>
+            <Fragment key={"fragment"}>
+              {list.map((entryId) => entrySpan(entryId))}
+            </Fragment>
           );
         }
       } else {
@@ -163,7 +165,7 @@ const AnalysisTableRow = ({
   });
   analysisCells.push(<TableCell key={"taxa"}>{taxContent}</TableCell>);
   return (
-    <Fragment>
+    <Fragment key={analysisId}>
       <TableRow className={classes.root}>{analysisCells}</TableRow>
       {fileOpen && (
         <TableRow>

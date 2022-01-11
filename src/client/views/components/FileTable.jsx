@@ -38,13 +38,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FileTable = ({ analysisId, apiUrl, filesByAnalysisId, fetchFiles }) => {
-  if (!analysisId) {
-    return null;
-  }
+const FileTable = ({
+  analysisId,
+  apiUrl,
+  files,
+  filesByAnalysisId,
+  fetchFiles,
+}) => {
   useEffect(() => {
     if (analysisId) {
-      if (!filesByAnalysisId) {
+      if (!files.isFetching && !filesByAnalysisId) {
         let query = `analysis_id==${analysisId}`;
         let result = "file";
         fetchFiles({ query, result });
@@ -52,13 +55,17 @@ const FileTable = ({ analysisId, apiUrl, filesByAnalysisId, fetchFiles }) => {
     }
   }, [analysisId, filesByAnalysisId]);
   const classes = useStyles();
+  if (!analysisId) {
+    return null;
+  }
+
   let tableRows;
   if (filesByAnalysisId) {
     tableRows = filesByAnalysisId.map((meta) => {
       let previewLink = `${apiUrl}/download?recordId=${meta.file_id}&preview=true&streamFile=true`;
       let downloadLink = `${apiUrl}/download?recordId=${meta.file_id}&filename=${meta.name}`;
       return (
-        <TableRow className={classes.tableRow}>
+        <TableRow key={meta.title} className={classes.tableRow}>
           <TableCell>{meta.title}</TableCell>
           <TableCell>
             <FileModal meta={meta}>

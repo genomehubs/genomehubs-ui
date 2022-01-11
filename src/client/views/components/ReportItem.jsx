@@ -58,6 +58,7 @@ const ReportItem = ({
   handleUpdate,
   dispatch,
   includeEstimates,
+  includeDescendants,
   setMessage,
   saveReport,
   setReportEdit,

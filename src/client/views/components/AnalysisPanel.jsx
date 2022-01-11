@@ -54,6 +54,7 @@ const AnalysisPanel = ({
           analysisId={analysis.analysis_id}
           currentResult={result}
           meta={analysis}
+          key={analysis.analysis_id}
         />
       );
     });
