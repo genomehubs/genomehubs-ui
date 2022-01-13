@@ -47,6 +47,7 @@ export const sortReportQuery = ({ queryString, options, ui = true }) => {
     excludeMissing: true,
     excludeDirect: true,
     taxonomy: true,
+    caption: true,
     xOpts: { in: new Set(["histogram", "scatter"]) },
     yOpts: { in: new Set(["scatter"]) },
     scatterThreshold: { in: new Set(["scatter"]) },

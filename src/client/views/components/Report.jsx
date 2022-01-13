@@ -48,6 +48,9 @@ const Report = ({
     reportProps.result = "taxon";
     queryProps.result = "taxon";
   }
+  if (props.caption) {
+    queryProps.caption = props.caption;
+  }
   if (!reportProps.queryString) {
     //   reportProps.queryString = sortReportQuery({
     //     queryString: reportProps.queryString,
@@ -88,6 +91,8 @@ const Report = ({
   reportProps.yOpts = props.yOpts;
   reportProps.scatterThreshold = props.scatterThreshold;
   reportProps.treeThreshold = props.treeThreshold;
+  reportProps.caption =
+    props.caption || qs.parse(reportProps.queryString).caption;
 
   const componentRef = useRef();
   const { width, height } = useResize(componentRef);
