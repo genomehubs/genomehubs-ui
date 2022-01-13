@@ -252,7 +252,13 @@ const ReportItem = ({
   }
 
   heading = heading || headings[report];
-  caption = reportById?.report?.caption;
+  if (caption) {
+    if (caption == "none") {
+      caption = undefined;
+    }
+  } else {
+    caption = reportById?.report?.caption;
+  }
   let content = (
     <Grid
       container
