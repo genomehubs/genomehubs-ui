@@ -444,7 +444,7 @@ body,
       color: themed("primary");
       margin: 1em 0 1em 0;
       padding: 0.25em;
-      padding-bottom: 2em;
+      padding-bottom: 5em;
       transition: all 0s ease-in 0s;
 
       .header {
@@ -662,6 +662,11 @@ body,
       .caption {
         font-weight: 600;
         color: mix(themed("primary"), themed("secondary"), 75%);
+      }
+
+      .reportCaption {
+        max-height: 50px;
+        overflow: auto;
       }
 
       .reportContainer {

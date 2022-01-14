@@ -373,6 +373,8 @@ const ReportScatter = ({
   setMessage,
   reportTerm,
   colors,
+  minDim,
+  setMinDim,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -381,12 +383,17 @@ const ReportScatter = ({
   const { width, height } = containerRef
     ? useResize(containerRef)
     : useResize(componentRef);
-  let minDim = Math.floor(width);
-  if (height) {
-    minDim = Math.floor(Math.min(width, height));
-  } else {
-    minDim /= ratio;
-  }
+  // useEffect(() => {
+  //   let newMinDim;
+  //   if (height) {
+  //     newMinDim = Math.floor(Math.min(width, height));
+  //   } else if (width) {
+  //     newMinDim = Math.floor(width) / ratio;
+  //   }
+  //   if (newMinDim) {
+  //     setMinDim(newMinDim);
+  //   }
+  // }, [width, height]);
   useEffect(() => {
     if (scatter && scatter.status) {
       setMessage(null);
@@ -428,7 +435,7 @@ const ReportScatter = ({
         data={chartData}
         pointData={1 ? pointData : []}
         width={width}
-        height={minDim}
+        height={minDim - 50}
         buckets={heatmaps.buckets}
         yBuckets={heatmaps.yBuckets}
         cats={cats}

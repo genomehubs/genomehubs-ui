@@ -26,8 +26,25 @@ const ReportTree = ({
   topLevel,
   permaLink,
   treeStyle,
+  minDim,
+  setMinDim,
 }) => {
   const navigate = useNavigate();
+  const componentRef = chartRef ? chartRef : useRef();
+  const { width, height } = containerRef
+    ? useResize(containerRef)
+    : useResize(componentRef);
+  // useEffect(() => {
+  //   let newMinDim;
+  //   if (height) {
+  //     newMinDim = Math.floor(Math.min(width, height));
+  //   } else if (width) {
+  //     newMinDim = Math.floor(width) / ratio;
+  //   }
+  //   if (newMinDim) {
+  //     setMinDim(newMinDim);
+  //   }
+  // }, [width, height]);
   if (!tree.report) return null;
   let maxDepth = tree.report.tree.maxDepth;
   let queryObj = qs.parse(tree.report.queryString);
@@ -120,23 +137,12 @@ const ReportTree = ({
     );
   };
 
-  const componentRef = chartRef ? chartRef : useRef();
-  const { width, height } = containerRef
-    ? useResize(containerRef)
-    : useResize(componentRef);
-  let minDim = Math.floor(width);
-  if (height) {
-    minDim = Math.floor(Math.min(width, height));
-  } else {
-    minDim /= ratio;
-  }
-
   let treeComponent;
   if (treeStyle == "ring") {
     treeComponent = (
       <ReportTreeRings
         width={width}
-        height={minDim}
+        height={minDim - 50}
         {...tree.report.tree}
         handleNavigation={handleNavigation}
         handleSearch={handleSearch}
@@ -146,7 +152,7 @@ const ReportTree = ({
     treeComponent = (
       <ReportTreePaths
         width={width}
-        height={minDim}
+        height={minDim - 50}
         {...tree.report.tree}
         handleNavigation={handleNavigation}
         handleSearch={handleSearch}

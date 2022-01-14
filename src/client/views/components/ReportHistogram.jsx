@@ -283,18 +283,25 @@ const ReportHistogram = ({
   yScale = "linear",
   setMessage,
   colors,
+  minDim,
+  setMinDim,
 }) => {
   const navigate = useNavigate();
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
     : useResize(componentRef);
-  let minDim = Math.floor(width);
-  if (height) {
-    minDim = Math.floor(Math.min(width, height));
-  } else {
-    minDim /= ratio;
-  }
+  // useEffect(() => {
+  //   let newMinDim;
+  //   if (height) {
+  //     newMinDim = Math.floor(Math.min(width, height));
+  //   } else if (width) {
+  //     newMinDim = Math.floor(width) / ratio;
+  //   }
+  //   if (newMinDim) {
+  //     setMinDim(newMinDim);
+  //   }
+  // }, [width, height]);
   useEffect(() => {
     if (histogram && histogram.status) {
       setMessage(null);
@@ -367,7 +374,7 @@ const ReportHistogram = ({
       <Histogram
         data={chartData}
         width={width}
-        height={minDim}
+        height={minDim - 50}
         cats={cats}
         xLabel={xLabel}
         yLabel={yLabel}

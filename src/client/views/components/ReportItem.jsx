@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import ReportEmpty from "./ReportEmpty";
@@ -17,6 +17,7 @@ import dispatchReport from "../hocs/dispatchReport";
 import qs from "qs";
 import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
+import useResize from "../hooks/useResize";
 import useVisible from "../hooks/useVisible";
 import withReportById from "../hocs/withReportById";
 
@@ -43,8 +44,7 @@ const ReportItem = ({
   reportRef,
   gridRef,
   componentRef,
-  minDim = 0,
-  ratio,
+  ratio = 1,
   delay = 0,
   stacked,
   cumulative,
@@ -76,7 +76,27 @@ const ReportItem = ({
   const hideMessage = !inModal && !topLevel;
   const targetRef = useRef();
   let visible = useVisible(targetRef);
+  const [minDim, basicSetMinDim] = useState(0);
+  let setMinDim;
+
   // const [hideMessage, sethideMessage] = useState(false);
+
+  if (topLevel || inModal) {
+    const { width, height } = useResize(targetRef);
+    // let minDim = Math.floor(width);
+    // if (height) {
+    //   minDim = Math.floor(Math.min(width, height));
+    // } else {
+    //   minDim /= ratio;
+    // }
+    setMinDim = (value) => {
+      // if (!minDim || height > minDim) {
+      basicSetMinDim(value);
+      // }
+    };
+  } else {
+    setMinDim = basicSetMinDim;
+  }
 
   useEffect(() => {
     if (
@@ -117,14 +137,6 @@ const ReportItem = ({
   }, [status]);
   let component, error, loading;
   if (!reportById || Object.keys(reportById).length == 0) {
-    component = (
-      <ReportLoading
-        report={report}
-        chartRef={chartRef}
-        containerRef={containerRef}
-        ratio={ratio}
-      />
-    );
     loading = true;
   } else if (
     reportById.report[report] &&
@@ -170,6 +182,8 @@ const ReportItem = ({
             includeEstimates={includeEstimates}
             // yScale={yScale}
             {...qs.parse(queryString)}
+            minDim={minDim}
+            setMinDim={setMinDim}
           />
         );
         break;
@@ -186,6 +200,8 @@ const ReportItem = ({
             scatterThreshold={scatterThreshold}
             includeEstimates={includeEstimates}
             {...qs.parse(queryString)}
+            minDim={minDim}
+            setMinDim={setMinDim}
           />
         );
         break;
@@ -195,6 +211,8 @@ const ReportItem = ({
             sources={reportById.report.sources}
             chartRef={chartRef}
             containerRef={containerRef}
+            minDim={minDim}
+            setMinDim={setMinDim}
           />
         );
         break;
@@ -224,6 +242,8 @@ const ReportItem = ({
             treeThreshold={treeThreshold}
             hidePreview={hideMessage}
             {...qs.parse(queryString)}
+            minDim={minDim}
+            setMinDim={setMinDim}
           />
         );
         break;
@@ -233,6 +253,8 @@ const ReportItem = ({
             perRank={reportById}
             chartRef={chartRef}
             containerRef={containerRef}
+            minDim={minDim}
+            setMinDim={setMinDim}
           />
         );
         break;
@@ -241,8 +263,10 @@ const ReportItem = ({
           <ReportXInY
             xInY={reportById}
             chartRef={chartRef}
-            containerRef={containerRef}
+            containerRef={targetRef}
             ratio={ratio}
+            minDim={minDim}
+            setMinDim={setMinDim}
           />
         );
         break;
@@ -307,12 +331,22 @@ const ReportItem = ({
   // }
   return (
     <Grid ref={targetRef} style={{ minHeight: minDim }} {...gridProps}>
-      {content}
+      <ReportLoading
+        report={report}
+        chartRef={chartRef}
+        containerRef={containerRef}
+        ratio={ratio}
+        minDim={minDim}
+        setMinDim={setMinDim}
+        loading={loading}
+        content={content}
+      />
     </Grid>
   );
 };
 
 export default compose(
+  memo,
   dispatchMessage,
   dispatchReport,
   withReportById

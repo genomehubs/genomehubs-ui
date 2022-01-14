@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Sector,
 } from "recharts";
-import React, { Fragment, useRef } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import { compose } from "recompose";
@@ -218,17 +218,32 @@ const RadialBarComponent = ({ data, height, width, colors }) => {
   );
 };
 
-const ReportXInY = ({ xInY, chartRef, containerRef, ratio, colors }) => {
+const ReportXInY = ({
+  xInY,
+  chartRef,
+  containerRef,
+  ratio,
+  colors,
+  minDim,
+  setMinDim,
+}) => {
   const componentRef = chartRef ? chartRef : useRef();
   const { width, height } = containerRef
     ? useResize(containerRef)
     : useResize(componentRef);
-  let minDim = Math.floor(width);
-  if (height) {
-    minDim = Math.floor(Math.min(width, height));
-  } else {
-    minDim /= ratio;
-  }
+
+  // useEffect(() => {
+  //   let newMinDim;
+  //   if (height) {
+  //     newMinDim = Math.floor(Math.min(width, height));
+  //   } else if (width) {
+  //     newMinDim = Math.floor(width) / ratio;
+  //   }
+  //   if (newMinDim) {
+  //     setMinDim(newMinDim);
+  //   }
+  // }, [width, height]);
+
   if (xInY && xInY.status) {
     let chartData = [];
     let chart;
@@ -249,7 +264,7 @@ const ReportXInY = ({ xInY, chartRef, containerRef, ratio, colors }) => {
         <RadialBarComponent
           data={chartData}
           width={minDim}
-          height={minDim}
+          height={minDim - 50}
           colors={colors}
         />
       );
@@ -262,8 +277,8 @@ const ReportXInY = ({ xInY, chartRef, containerRef, ratio, colors }) => {
       chart = (
         <PieComponent
           data={chartData}
-          width={minDim}
-          height={minDim}
+          width={minDim - 50}
+          height={minDim - 50}
           colors={colors}
         />
       );
