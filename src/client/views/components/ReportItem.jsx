@@ -283,6 +283,28 @@ const ReportItem = ({
   } else {
     caption = reportById?.report?.caption;
   }
+  const formatCaption = (caption) => {
+    if (caption) {
+      let captionArr = [];
+      let parts = caption.split("**");
+      for (let i = 0; i < parts.length; i++) {
+        if (i % 2 == 0) {
+          captionArr.push(<span key={i}>{parts[i]}</span>);
+        } else {
+          captionArr.push(
+            <span key={i} style={{ color: "black" }}>
+              {parts[i]}
+            </span>
+          );
+        }
+      }
+      return <span>{captionArr}</span>;
+    }
+    return;
+  };
+
+  let formattedCaption = formatCaption(caption);
+
   let content = (
     <Grid
       container
@@ -300,7 +322,7 @@ const ReportItem = ({
       </Grid>
       {!loading && !error && caption && (
         <Grid item xs style={{ textAlign: "center" }}>
-          <span className={styles.reportCaption}>{caption}</span>
+          <span className={styles.reportCaption}>{formattedCaption}</span>
         </Grid>
       )}
     </Grid>

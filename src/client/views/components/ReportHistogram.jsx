@@ -24,7 +24,6 @@ import useResize from "../hooks/useResize";
 import withColors from "../hocs/withColors";
 
 const renderXTick = (tickProps) => {
-  console.log(tickProps);
   const {
     x,
     y,
