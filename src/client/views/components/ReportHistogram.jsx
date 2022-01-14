@@ -24,7 +24,17 @@ import useResize from "../hooks/useResize";
 import withColors from "../hocs/withColors";
 
 const renderXTick = (tickProps) => {
-  const { x, y, index, endLabel, lastIndex, payload, chartWidth } = tickProps;
+  console.log(tickProps);
+  const {
+    x,
+    y,
+    index,
+    endLabel,
+    lastIndex,
+    payload,
+    chartWidth,
+    visibleTicksCount,
+  } = tickProps;
   const { value, offset } = payload;
   // if (month % 3 === 1) {
   //   return <text x={x} y={y - 4} textAnchor="middle">{`Q${quarterNo}`}</text>;
@@ -50,7 +60,7 @@ const renderXTick = (tickProps) => {
   let showTickLabel = true;
   if (chartWidth < 300 && index > 0) {
     showTickLabel = false;
-  } else if (chartWidth < 450) {
+  } else if (chartWidth / visibleTicksCount < 50) {
     if (endTick || index % 2 != 0) {
       showTickLabel = false;
     }
