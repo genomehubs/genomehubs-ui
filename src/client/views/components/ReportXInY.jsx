@@ -155,9 +155,9 @@ const RadialBarComponent = ({ data, height, width, colors }) => {
           {pct1(value)}
         </text>
         <g
-          transform={`translate(0,${cy + (data.index + 1) * fontSize * 0.7})`}
+          transform={`translate(0,${cy + (data.index + 1) * fontSize})`}
           fill={background}
-          style={{ fontSize: fontSize * 0.7, fontFamily: "sans-serif" }}
+          style={{ fontSize: fontSize, fontFamily: "sans-serif" }}
           dominantBaseline="hanging"
           alignmentBaseline="hanging"
         >
