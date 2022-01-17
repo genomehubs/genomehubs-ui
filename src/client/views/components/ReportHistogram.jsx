@@ -33,6 +33,7 @@ const renderXTick = (tickProps) => {
     payload,
     chartWidth,
     visibleTicksCount,
+    showTickLabels,
   } = tickProps;
   const { value, offset } = payload;
   // if (month % 3 === 1) {
@@ -48,15 +49,17 @@ const renderXTick = (tickProps) => {
     pathX = Math.floor(x + offset) + 0.5;
     endTick = (
       <>
-        <text x={pathX} y={y + 14} textAnchor="middle" fill="#666">
-          {endLabel}
-        </text>
+        {showTickLabels && (
+          <text x={pathX} y={y + 14} textAnchor="middle" fill="#666">
+            {endLabel}
+          </text>
+        )}
         <path d={`M${pathX},${y - 8}v${6}`} stroke="#666" />
       </>
     );
   }
   pathX = Math.floor(x - offset) + 0.5;
-  let showTickLabel = true;
+  let showTickLabel = showTickLabels;
   if (chartWidth < 300 && index > 0) {
     showTickLabel = false;
   } else if (chartWidth / visibleTicksCount < 50) {
@@ -200,7 +203,13 @@ const Histogram = ({
       interval={0}
       tickLine={false}
       tick={(props) =>
-        renderXTick({ ...props, endLabel, lastIndex, chartWidth: width })
+        renderXTick({
+          ...props,
+          endLabel,
+          lastIndex,
+          chartWidth: width,
+          showTickLabels: chartProps.showTickLabels,
+        })
       }
     >
       {width > 300 && (
@@ -294,6 +303,7 @@ const ReportHistogram = ({
   colors,
   minDim,
   setMinDim,
+  xOpts,
 }) => {
   const navigate = useNavigate();
   const componentRef = chartRef ? chartRef : useRef();
@@ -323,7 +333,8 @@ const ReportHistogram = ({
     if (!histograms) {
       return null;
     }
-    let xLabel = histogram.report.xLabel;
+    let xOptions = (xOpts || "").split(",");
+    let xLabel = xOptions[4] || histogram.report.xLabel;
     let yLabel = histogram.report.yLabel;
     let valueType = histograms.valueType;
     if (yScale == "log10") {
@@ -397,8 +408,13 @@ const ReportHistogram = ({
           n: cats.length,
           yScale: yScale,
           xQuery: histogram.report.xQuery,
-          xLabel: histogram.report.xLabel,
+          xLabel,
           fields: histograms.fields,
+          showTickLabels: xOptions[2]
+            ? xOptions[2] >= 0
+              ? true
+              : false
+            : true,
           ranks: histograms.ranks,
           buckets: histograms.buckets,
           xFormat: (value) => formats(value, valueType),

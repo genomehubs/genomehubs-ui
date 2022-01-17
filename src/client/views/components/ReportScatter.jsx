@@ -224,7 +224,7 @@ const Heatmap = ({
       domain={[buckets[0], buckets[buckets.length - 1]]}
       range={[buckets[0], buckets[buckets.length - 1]]}
       ticks={buckets}
-      tickFormatter={chartProps.xFormat}
+      tickFormatter={chartProps.showXTickLabels ? chartProps.xFormat : () => ""}
       interval={0}
       style={{ textAnchor: buckets.length > 15 ? "end" : "auto" }}
     >
@@ -243,7 +243,7 @@ const Heatmap = ({
       ticks={yBuckets}
       domain={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
       range={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
-      tickFormatter={chartProps.yFormat}
+      tickFormatter={chartProps.showYTickLabels ? chartProps.yFormat : () => ""}
       interval={0}
     >
       <Label
@@ -375,6 +375,8 @@ const ReportScatter = ({
   colors,
   minDim,
   setMinDim,
+  xOpts,
+  yOpts,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -424,8 +426,10 @@ const ReportScatter = ({
       return null;
     }
     let hasRawData = pointData && pointData.length > 0;
-    let xLabel = scatter.report.xLabel;
-    let yLabel = scatter.report.yLabel;
+    let xOptions = (xOpts || "").split(",");
+    let yOptions = (yOpts || "").split(",");
+    let xLabel = xOptions[4] || scatter.report.xLabel;
+    let yLabel = yOptions[4] || scatter.report.yLabel;
     let valueType = heatmaps.valueType;
     let yValueType = heatmaps.yValueType || "integer";
     let lastIndex = heatmaps.buckets.length - 2;
@@ -456,6 +460,16 @@ const ReportScatter = ({
           yQuery: scatter.report.yQuery,
           xLabel: scatter.report.xLabel,
           yLabel: scatter.report.yLabel,
+          showXTickLabels: xOptions[2]
+            ? xOptions[2] >= 0
+              ? true
+              : false
+            : true,
+          showYTickLabels: yOptions[2]
+            ? yOptions[2] >= 0
+              ? true
+              : false
+            : true,
           xFormat: (value) => formats(value, valueType),
           yFormat: (value) => formats(value, yValueType),
           fields: heatmaps.fields,

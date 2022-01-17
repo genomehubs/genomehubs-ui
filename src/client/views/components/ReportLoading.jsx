@@ -44,7 +44,15 @@ const ReportLoading = ({
       }}
       ref={componentRef}
     >
-      <div style={{ position: "absolute", top: 0, left: 0 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          margin: "0 auto",
+        }}
+      >
         {loading && (
           <Skeleton variant="rect" width={minDim * ratio} height={minDim} />
         )}
