@@ -14,7 +14,7 @@ const ranks = {
   subspecies: { plural: "subspecies" },
 };
 
-const ReportXPerRank = ({ perRank }) => {
+const ReportXPerRank = ({ perRank, minDim, setMinDim }) => {
   let values = [];
   let ranks = [];
   if (perRank && perRank.status) {

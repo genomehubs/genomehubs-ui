@@ -89,6 +89,7 @@ const Report = ({
   reportProps.xOpts = props.xOpts;
   reportProps.treeStyle = props.treeStyle || "rect";
   reportProps.yOpts = props.yOpts;
+  reportProps.highlightArea = props.highlightArea;
   reportProps.scatterThreshold = props.scatterThreshold;
   reportProps.treeThreshold = props.treeThreshold;
   reportProps.levels = props.levels;

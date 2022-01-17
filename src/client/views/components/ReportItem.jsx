@@ -50,6 +50,7 @@ const ReportItem = ({
   cumulative,
   xOpts,
   yOpts,
+  highlightArea,
   scatterThreshold,
   yScale,
   zScale,
@@ -197,6 +198,7 @@ const ReportItem = ({
             ratio={ratio}
             xOpts={xOpts}
             yOpts={yOpts}
+            highlightArea={highlightArea}
             zScale={zScale}
             scatterThreshold={scatterThreshold}
             includeEstimates={includeEstimates}
@@ -255,6 +257,7 @@ const ReportItem = ({
             perRank={reportById}
             chartRef={chartRef}
             containerRef={containerRef}
+            ratio={ratio}
             minDim={minDim}
             setMinDim={setMinDim}
           />

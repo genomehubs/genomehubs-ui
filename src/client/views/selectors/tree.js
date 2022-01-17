@@ -495,24 +495,24 @@ const setColor = ({ node, yQuery, recurse }) => {
 
     if (source == "direct") {
       if (status) {
-        color = greens[baseTone + 1 + status * 2];
-        highlightColor = greens[baseTone + 2 + status * 2];
+        color = greens[baseTone + 2 + status * 2];
+        highlightColor = greens[baseTone + 3 + status * 2];
       } else {
-        color = greys[baseTone + 2];
-        highlightColor = greys[baseTone + 2];
+        color = greys[baseTone + 1];
+        highlightColor = greys[baseTone + 1];
       }
     } else if (source == "descendant") {
       if (status) {
         color = oranges[baseTone + status * 2];
         highlightColor = oranges[baseTone + 2 + status * 2];
       } else {
-        color = greys[baseTone + 2];
+        color = greys[baseTone + 1];
         highlightColor = greys[baseTone + 2];
       }
     }
   } else {
-    color = greys[baseTone + 2];
-    highlightColor = greys[baseTone + 2];
+    color = greys[baseTone];
+    highlightColor = greys[baseTone + 1];
   }
   return { color, highlightColor, source, value };
 };

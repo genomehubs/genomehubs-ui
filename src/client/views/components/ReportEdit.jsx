@@ -52,6 +52,7 @@ export const queryPropList = {
     "zScale",
     "xOpts",
     "yOpts",
+    "highlightArea",
     "scatterThreshold",
   ],
   tree: [

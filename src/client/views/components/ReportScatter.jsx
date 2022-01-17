@@ -207,6 +207,7 @@ const Heatmap = ({
   chartProps,
   endLabel,
   lastIndex,
+  highlightArea,
   xLabel,
   yLabel,
   stacked,
@@ -309,6 +310,22 @@ const Heatmap = ({
   //     ))}
   //   </defs>
   // );
+
+  let highlightRect;
+  // if (highlightArea){
+  //   let parts = highlightArea.split(/[,\s]+/)
+  //   let coords = {x: parts[0], y:}
+
+  //   }
+  //   highlightRect = <Rectangle
+  //     name={"area"}
+  //     key={"area"}
+  //     data={highlightArea}
+  //     fill={colors[i]}
+  //     shape={(props) => CustomShape(props, { ...chartProps, i })}
+  //     isAnimationActive={false}
+  //   />}
+
   return (
     <ScatterChart
       width={width}
@@ -360,6 +377,7 @@ const Heatmap = ({
           style={{ pointerEvents: "none" }}
         />
       )}
+      {highlightRect}
     </ScatterChart>
   );
 };
@@ -377,6 +395,7 @@ const ReportScatter = ({
   setMinDim,
   xOpts,
   yOpts,
+  highlightArea,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -448,6 +467,7 @@ const ReportScatter = ({
         endLabel={endLabel}
         lastIndex={lastIndex}
         highlight={highlight}
+        highlightArea={highlightArea}
         colors={colors}
         chartProps={{
           zDomain: heatmaps.zDomain,
