@@ -30,8 +30,8 @@ export const processProps = (props, newProps = {}) => {
   for (const [key, value] of Object.entries(props)) {
     if (value == "") {
       newProps[key] = true;
-    } else if (key == "class") {
-      newProps["class"] = styles[value];
+    } else if (key == "className") {
+      newProps["className"] = styles[value];
     } else if (key == "src") {
       newProps["src"] = value.match(/\?/) ? value : `${value}?${webpackHash}`;
     } else if (key == "xs") {

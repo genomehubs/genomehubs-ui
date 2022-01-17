@@ -622,6 +622,7 @@ body,
       // }
       // }
     }
+
     .markdown {
       font-family: themed("bodyFont");
       font-size: themed("bodyFontSize");
@@ -655,6 +656,10 @@ body,
         margin-right: 0.5em;
         font-weight: 600;
         font-size: 1.3em;
+      }
+
+      .padded {
+        margin-bottom: 4em;
       }
 
       .reportHeading,
