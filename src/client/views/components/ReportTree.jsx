@@ -26,6 +26,7 @@ const ReportTree = ({
   topLevel,
   permaLink,
   treeStyle,
+  levels,
   minDim,
   setMinDim,
 }) => {
@@ -48,7 +49,7 @@ const ReportTree = ({
   if (!tree.report) return null;
   let maxDepth = tree.report.tree.maxDepth;
   let queryObj = qs.parse(tree.report.queryString);
-  const updateQuery = ({ root, name, depth }) => {
+  const updateQuery = ({ root, name, depth, rank }) => {
     let { query, x, ...options } = tree.report.xQuery;
     if (query && !x) {
       x = query;
@@ -65,12 +66,29 @@ const ReportTree = ({
       if (maxDepth > tree.report.tree.maxDepth) {
         maxDepth = tree.report.tree.maxDepth;
       }
-      // if (depth) {
-      //   maxDepth -= 1;
-      // }
       x = x.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth})`);
       if (y) {
         y = y.replace(/tax_depth\(\d+\)/, `tax_depth(${maxDepth})`);
+      }
+    }
+    if (depth != 0 && levels) {
+      let taxRank = x.match(/tax_rank\((\w+)\)/);
+      if (taxRank) {
+        taxRank = taxRank[1].toLowerCase();
+        let ranks = levels.toLowerCase().split(/[,\s]+/);
+        let index = ranks.indexOf(taxRank);
+        let newRank = taxRank;
+        if (index >= 0) {
+          if (depth < 0 && index < ranks.length - 1) {
+            newRank = ranks[index + 1];
+          } else if (depth > 0 && index > 0) {
+            newRank = ranks[index - 1];
+          }
+        }
+        x = x.replace(/tax_rank\(\w+\)/, `tax_rank(${newRank})`);
+        if (y) {
+          y = y.replace(/tax_rank\(\w+\)/, `tax_rank(${newRank})`);
+        }
       }
     }
     let fields = tree.report.tree.xQuery.fields;
@@ -88,11 +106,12 @@ const ReportTree = ({
   //   }
   // };
 
-  const handleSearch = ({ root, name, depth }) => {
+  const handleSearch = ({ root, name, depth, rank }) => {
     let { options, y, report, x, fields, ...moreOptions } = updateQuery({
       root,
       name,
       depth,
+      rank,
     });
     let query;
     let hash;
@@ -121,9 +140,9 @@ const ReportTree = ({
     );
   };
 
-  const handleNavigation = ({ root, name, depth }) => {
+  const handleNavigation = ({ root, name, depth, rank }) => {
     if (name == "parent") {
-      handleSearch({ root, name, depth });
+      handleSearch({ root, name, depth, rank });
       return;
     }
     let { result, taxonomy } = queryObj;

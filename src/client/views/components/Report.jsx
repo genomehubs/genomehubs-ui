@@ -91,6 +91,7 @@ const Report = ({
   reportProps.yOpts = props.yOpts;
   reportProps.scatterThreshold = props.scatterThreshold;
   reportProps.treeThreshold = props.treeThreshold;
+  reportProps.levels = props.levels;
   reportProps.caption =
     props.caption || qs.parse(reportProps.queryString).caption;
 

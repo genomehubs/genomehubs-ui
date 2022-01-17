@@ -107,6 +107,7 @@ const ReportTreeRings = ({
           root: segment.taxon_id,
           name: segment.scientific_name,
           depth: segment.depth,
+          rank: segment.taxon_rank,
         });
       }, []);
 
@@ -118,6 +119,7 @@ const ReportTreeRings = ({
             root: segment.taxon_id,
             name: segment.scientific_name,
             depth: segment.depth,
+            rank: segment.taxon_rank,
           });
         },
         captureEvent: true,

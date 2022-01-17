@@ -39,6 +39,7 @@ export const sortReportQuery = ({ queryString, options, ui = true }) => {
     cat: { not: new Set(["sources", "xInY"]) },
     rank: { not: new Set(["sources", "tree"]) },
     ranks: { in: new Set(["tree"]) },
+    levels: { in: new Set(["tree"]) },
     names: { in: new Set(["tree"]) },
     fields: { in: new Set(["tree"]) },
     includeEstimates: true,

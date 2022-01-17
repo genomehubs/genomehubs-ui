@@ -184,11 +184,11 @@ const ReportTreePaths = ({
     scrollContainerRef.current.scrollTop = y;
   };
 
-  const handleNavigate = ({ root, name, depth }) => {
+  const handleNavigate = ({ root, name, depth, rank }) => {
     if (name != "parent") {
       setReportTerm(name.toLowerCase());
     }
-    handleNavigation({ root, name, depth });
+    handleNavigation({ root, name, depth, rank });
   };
 
   const handleGlobalClick = ({ evt, target }) => {
@@ -444,6 +444,7 @@ const ReportTreePaths = ({
                     root: segment.taxon_id,
                     name: segment.scientific_name,
                     depth: segment.depth,
+                    rank: segment.taxon_rank,
                   });
                 }, 500);
               }}
@@ -453,6 +454,7 @@ const ReportTreePaths = ({
                   root: segment.taxon_id,
                   name: segment.scientific_name,
                   depth: segment.depth,
+                  rank: segment.taxon_rank,
                 });
               }}
             />

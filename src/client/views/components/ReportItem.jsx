@@ -55,6 +55,7 @@ const ReportItem = ({
   zScale,
   treeStyle,
   treeThreshold,
+  levels,
   handleUpdate,
   dispatch,
   includeEstimates,
@@ -240,6 +241,7 @@ const ReportItem = ({
             dispatch={dispatch}
             includeEstimates={includeEstimates}
             treeThreshold={treeThreshold}
+            levels={levels}
             hidePreview={hideMessage}
             {...qs.parse(queryString)}
             minDim={minDim}
