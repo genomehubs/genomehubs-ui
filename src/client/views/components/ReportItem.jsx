@@ -289,9 +289,9 @@ const ReportItem = ({
     caption = reportById?.report?.caption;
   }
   const formatCaption = (caption) => {
-    if (caption) {
+    if (caption && caption !== true) {
       let captionArr = [];
-      let parts = caption.split("**");
+      let parts = (caption || "").split("**");
       for (let i = 0; i < parts.length; i++) {
         if (i % 2 == 0) {
           captionArr.push(<span key={i}>{parts[i]}</span>);
