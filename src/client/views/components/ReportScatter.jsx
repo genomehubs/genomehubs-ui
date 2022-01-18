@@ -7,6 +7,7 @@ import {
   Rectangle,
   Scatter,
   ScatterChart,
+  Text,
   XAxis,
   YAxis,
   ZAxis,
@@ -196,6 +197,41 @@ const CustomShape = (props, chartProps) => {
   );
 };
 
+const HighlightShape = (props, chartProps) => {
+  let { cx, cy, xAxis, yAxis } = props;
+  let { x, y, xBound, yBound, label } = props.payload;
+  let height = yAxis.scale(yBound) - cy;
+  let width = xAxis.scale(xBound) - cx;
+  let text;
+  let color = "black";
+  if (label) {
+    text = (
+      <Text
+        x={cx + width}
+        y={y > yAxis.domain[0] ? cy + 2 : cy + height - 2}
+        fill={color}
+        dominantBaseline={y > yAxis.domain[0] ? "hanging" : "auto"}
+        textAnchor={"end"}
+      >
+        {label}
+      </Text>
+    );
+  }
+  return (
+    <>
+      {text}
+      <Rectangle
+        height={height}
+        width={width}
+        x={props.cx}
+        y={props.cy}
+        fill={"none"}
+        stroke={color}
+      />
+    </>
+  );
+};
+
 const Heatmap = ({
   data,
   pointData,
@@ -312,19 +348,30 @@ const Heatmap = ({
   // );
 
   let highlightRect;
-  // if (highlightArea){
-  //   let parts = highlightArea.split(/[,\s]+/)
-  //   let coords = {x: parts[0], y:}
+  if (highlightArea) {
+    let parts = highlightArea.split(/(?:,\s*)/);
+    if (parts.length >= 4) {
+      let coords = {
+        x: parts[0] * 1,
+        y: parts[1] * 1,
+        xBound: parts[2] * 1,
+        yBound: parts[3] * 1,
+      };
+      if (parts[4]) {
+        coords.label = parts[4];
+      }
 
-  //   }
-  //   highlightRect = <Rectangle
-  //     name={"area"}
-  //     key={"area"}
-  //     data={highlightArea}
-  //     fill={colors[i]}
-  //     shape={(props) => CustomShape(props, { ...chartProps, i })}
-  //     isAnimationActive={false}
-  //   />}
+      highlightRect = (
+        <Scatter
+          key={"highlightArea"}
+          data={[coords]}
+          shape={(props) => HighlightShape(props, { ...chartProps })}
+          isAnimationActive={false}
+          legendType="none"
+        />
+      );
+    }
+  }
 
   return (
     <ScatterChart

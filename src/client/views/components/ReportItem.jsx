@@ -282,7 +282,12 @@ const ReportItem = ({
 
   heading = heading || headings[report];
   if (caption) {
-    if (caption == "none") {
+    if (
+      caption === true ||
+      caption == "true" ||
+      caption == "" ||
+      caption == "none"
+    ) {
       caption = undefined;
     }
   } else {

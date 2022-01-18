@@ -236,7 +236,11 @@ const processScatter = (scatter) => {
       heatmaps.buckets.forEach((bucket, i) => {
         if (i < heatmaps.buckets.length - 1) {
           heatmaps.yBuckets.forEach((yBucket, j) => {
-            if (j < heatmaps.yBuckets.length - 1) {
+            if (
+              j < heatmaps.yBuckets.length - 1 &&
+              heatmaps.yValuesByCat[cat.key] &&
+              heatmaps.yValuesByCat[cat.key][i]
+            ) {
               let z = heatmaps.yValuesByCat[cat.key][i][j];
               if (z > 0) {
                 catData.push({
@@ -256,7 +260,13 @@ const processScatter = (scatter) => {
         }
       });
       chartData.push(catData);
-      if (hasRawData) {
+      if (
+        hasRawData &&
+        pointData &&
+        heatmaps &&
+        heatmaps.rawData &&
+        heatmaps.rawData[cat.key]
+      ) {
         pointData.push(heatmaps.rawData[cat.key]);
         for (let obj of heatmaps.rawData[cat.key]) {
           locations[obj.scientific_name.toLowerCase()] = { x: obj.x, y: obj.y };

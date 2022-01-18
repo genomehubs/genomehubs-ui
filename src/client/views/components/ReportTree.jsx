@@ -75,7 +75,7 @@ const ReportTree = ({
       let taxRank = x.match(/tax_rank\((\w+)\)/);
       if (taxRank) {
         taxRank = taxRank[1].toLowerCase();
-        let ranks = levels.toLowerCase().split(/[,\s]+/);
+        let ranks = levels.toLowerCase().split(/(?:,\s*)/);
         let index = ranks.indexOf(taxRank);
         let newRank = taxRank;
         if (index >= 0) {
