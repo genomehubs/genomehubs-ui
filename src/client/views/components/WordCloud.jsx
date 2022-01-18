@@ -58,28 +58,29 @@ const WordCloud = ({
   let buckets = [];
   if (summaryById && summaryById.buckets) {
     buckets = summaryById.buckets;
-  }
-  if (buckets.length > 0 && summaryById.max == 0) {
-    return (
-      <svg
-        viewBox={"0 0 1000 25"}
-        preserveAspectRatio="xMinYMin"
-        ref={targetRef}
-      >
-        <text
-          style={{ fontSize: "12px" }}
-          x={1000 / 2}
-          y={25 / 2}
-          fillOpacity={0.5}
-          textAnchor="middle"
-          alignmentBaseline="central"
-          pointerEvents={"none"}
+    if (buckets.length == 0) {
+      return (
+        <svg
+          viewBox={"0 0 1000 25"}
+          preserveAspectRatio="xMinYMin"
+          ref={targetRef}
         >
-          no data
-        </text>
-      </svg>
-    );
+          <text
+            style={{ fontSize: "12px" }}
+            x={1000 / 2}
+            y={25 / 2}
+            fillOpacity={0.5}
+            textAnchor="middle"
+            alignmentBaseline="central"
+            pointerEvents={"none"}
+          >
+            no data
+          </text>
+        </svg>
+      );
+    }
   }
+
   if (buckets.length == 0) {
     return (
       <div className={styles.fullWidth} ref={targetRef}>
