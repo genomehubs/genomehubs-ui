@@ -511,8 +511,8 @@ const setColor = ({ node, yQuery, recurse }) => {
       }
     }
   } else {
-    color = greys[baseTone];
-    highlightColor = greys[baseTone + 1];
+    color = greys[baseTone + 3];
+    highlightColor = greys[baseTone + 4];
   }
   return { color, highlightColor, source, value };
 };
