@@ -34,19 +34,21 @@ const KonvaTooltip = ({ e, segment, scale }) => {
         <Text
           text={segment.scientific_name}
           fontSize={12}
-          padding={10}
-          offsetY={5}
+          padding={segment.source ? 10 : 5}
+          offsetY={segment.source ? 5 : 0}
           fill="white"
         />
       </Label>
-      <Group x={x - 15} y={y - 18 - (segment.status ? 2 : 0)}>
-        <Rect height={segment.status ? 5 : 2} width={30} fill={"white"} />
-        <Rect
-          height={segment.status ? 5 : 2}
-          width={colors[segment.source].size * 10}
-          fill={colors[segment.source].color}
-        />
-      </Group>
+      {segment.source && (
+        <Group x={x - 15} y={y - 18 - (segment.status ? 2 : 0)}>
+          <Rect height={segment.status ? 5 : 2} width={30} fill={"white"} />
+          <Rect
+            height={segment.status ? 5 : 2}
+            width={colors[segment.source].size * 10}
+            fill={colors[segment.source].color}
+          />
+        </Group>
+      )}
     </Group>
   );
 };
