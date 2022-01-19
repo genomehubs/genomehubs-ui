@@ -185,14 +185,17 @@ const SearchBox = ({
       // options.query = query.startsWith("tax_") ? query : `tax_tree(${query})`;
       // term = term.startsWith("tax_") ? term : `tax_tree(${term})`;
     }
-    let query = queryString
-      .split(/\s+and\s+/i)
-      .map((term) => wrap_term({ term, taxWrap, result }));
-    queryString = query.join(" AND ");
-    let hash = hashTerm
-      .split(/\s+and\s+/i)
-      .map((term) => wrap_term({ term, taxWrap, result }));
-    hashTerm = hash.join(" AND ");
+    if (!queryString.match("\n")) {
+      let query = queryString
+        .split(/\s+and\s+/i)
+        .map((term) => wrap_term({ term, taxWrap, result }));
+      queryString = query.join(" AND ");
+      let hash = hashTerm
+        .split(/\s+and\s+/i)
+        .map((term) => wrap_term({ term, taxWrap, result }));
+      hashTerm = hash.join(" AND ");
+    }
+
     setSearchIndex(result);
     dispatchSearch({ query: queryString, result, fields }, hashTerm);
     resetLookup();
