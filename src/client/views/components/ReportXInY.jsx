@@ -59,7 +59,7 @@ const PieComponent = ({ data, height, width, colors }) => {
       <g>
         <text
           x={cx}
-          y={cy + innerRadius / 20}
+          y={cy + innerRadius / 20 - 5}
           fill={"#3d405c"}
           className="recharts-text recharts-label"
           textAnchor="middle"
