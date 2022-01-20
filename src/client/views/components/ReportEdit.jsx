@@ -62,6 +62,7 @@ export const queryPropList = {
     catSettings,
     { prop: "levels", label: "family, order, phylum" },
     "includeEstimates",
+    "collapseMonotypic",
     "treeStyle",
     "treeThreshold",
   ],
@@ -270,7 +271,8 @@ export const ReportEdit = ({
     } else if (
       queryProp == "includeEstimates" ||
       queryProp == "stacked" ||
-      queryProp == "cumulative"
+      queryProp == "cumulative" ||
+      queryProp == "collapseMonotypic"
     ) {
       toggles.push(
         <div style={{ float: "left", marginRight: "2em" }} key={queryProp}>

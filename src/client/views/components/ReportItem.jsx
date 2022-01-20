@@ -61,6 +61,7 @@ const ReportItem = ({
   dispatch,
   includeEstimates,
   includeDescendants,
+  collapseMonotypic,
   setMessage,
   saveReport,
   setReportEdit,
@@ -243,6 +244,7 @@ const ReportItem = ({
             dispatch={dispatch}
             includeEstimates={includeEstimates}
             treeThreshold={treeThreshold}
+            collapseMonotypic={collapseMonotypic}
             levels={levels}
             hidePreview={hideMessage}
             {...qs.parse(queryString)}

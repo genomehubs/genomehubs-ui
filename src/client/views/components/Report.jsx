@@ -92,6 +92,7 @@ const Report = ({
   reportProps.highlightArea = props.highlightArea;
   reportProps.scatterThreshold = props.scatterThreshold;
   reportProps.treeThreshold = props.treeThreshold;
+  reportProps.collapseMonotypic = props.collapseMonotypic;
   reportProps.levels = props.levels;
   reportProps.caption =
     props.caption || qs.parse(reportProps.queryString).caption;

@@ -128,7 +128,7 @@ const ReportTreeRings = ({
 
       paths.push(
         <Tooltip
-          key={segment.taxon_id}
+          key={`tt-${segment.taxon_id}`}
           title={segment.scientific_name}
           onPointerMove={(e) => setPosition({ x: e.clientX, y: e.clientY })}
           PopperProps={{
@@ -166,7 +166,7 @@ const ReportTreeRings = ({
   let highlightPath;
   if (highlight) {
     highlightPath = (
-      <g style={{ pointerEvents: "none" }}>
+      <g key={"highlight"} style={{ pointerEvents: "none" }}>
         <path
           fill={"white"}
           strokeWidth={3}
