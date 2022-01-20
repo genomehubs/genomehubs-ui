@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import AddIcon from "@material-ui/icons/Add";
-import BasicComplete from "./BasicComplete";
 import BasicSelect from "./BasicSelect";
 import BasicTextField from "./BasicTextField";
 import Button from "@material-ui/core/Button";
@@ -18,7 +16,6 @@ import VariableFilter from "./VariableFilter";
 import { compose } from "recompose";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "qs";
-import styles from "./Styles.scss";
 import { useNavigate } from "@reach/router";
 import withLookup from "../hocs/withLookup";
 import withSearch from "../hocs/withSearch";
@@ -46,15 +43,9 @@ export const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const handleValueChange =
-
 const QueryBuilder = ({
   searchTerm,
-  searchResults,
-  fetchSearchResults,
-  setLookupTerm,
   searchIndex,
-  setSearchIndex,
   setSearchDefaults,
   setPreferSearchTerm,
   taxonomy,
@@ -81,14 +72,12 @@ const QueryBuilder = ({
     level: null,
   };
   const [index, setIndex] = useState(searchIndex);
-  let [varFilters, setVarFilters] = useState({});
-  let [varSummaries, setVarSummaries] = useState({});
+  let [attrFilters, setAttrFilters] = useState([]);
   let [taxFilter, setTaxFilter] = useState(taxFilters);
   let bool = false;
 
   useEffect(() => {
-    let filters = {};
-    let summaries = {};
+    let attributes = [];
     if (searchTerm.query) {
       searchTerm.query.split(/\s*AND\s*/).forEach((term) => {
         let taxQuery = term.match(/tax_(\w+)\((.+?)\)/);
@@ -104,38 +93,17 @@ const QueryBuilder = ({
           }
         } else {
           let parts = term.split(/\s*([\>\<=]+)\s*/);
-          if (types[parts[0]]) {
-            if (!filters[parts[0]]) {
-              filters[parts[0]] = {};
-            }
-            if (!summaries[parts[0]]) {
-              summaries[parts[0]] = {};
-            }
-            filters[parts[0]][parts[1]] = parts[2];
-            summaries[parts[0]][parts[1]] = "value";
-          } else {
-            let [summary, attr] = term.split(/[\(\))]/);
-            if (types[attr]) {
-              if (!filters[attr]) {
-                filters[attr] = {};
-              }
-              if (!summaries[attr]) {
-                summaries[attr] = {};
-              }
-              filters[attr][parts[1]] = parts[2];
-              summaries[attr][parts[1]] = summary;
-            }
+          if (parts[0].endsWith("!")) {
+            parts[1] = `!${parts[1]}`;
+            parts[0] = parts[0].replace("!", "");
           }
+          attributes.push(parts);
         }
       });
     }
-    setVarFilters(filters);
-    setVarSummaries(summaries);
+    setAttrFilters(attributes);
     setTaxFilter(taxFilters);
   }, []);
-
-  // let index = searchIndex;
-  // let setIndex = setSearchIndex;
 
   const handleIndexChange = (e) => {
     e.stopPropagation();
@@ -164,22 +132,8 @@ const QueryBuilder = ({
     }
     let newFilters = "";
     let newFilterArray = [];
-    Object.keys(varFilters).forEach((key, i) => {
-      Object.keys(varFilters[key]).forEach((operator) => {
-        if (operator && varFilters[key][operator]) {
-          if (varSummaries[key][operator] != "value") {
-            newFilterArray.push(
-              `${varSummaries[key][operator]}(${key})${operator}${varFilters[key][operator]}`
-            );
-          } else {
-            newFilterArray.push(
-              `${key}${operator}${varFilters[key][operator]}`
-            );
-          }
-        } else {
-          newFilterArray.push(key);
-        }
-      });
+    attrFilters.forEach((parts, i) => {
+      newFilterArray.push(parts.join(""));
     });
     if (newFilterArray.length > 0) {
       newFilters = taxFilter.taxon || taxFilter.rank ? " AND " : "";
@@ -189,57 +143,34 @@ const QueryBuilder = ({
     return query;
   };
 
-  const handleVariableChange = (e, key, operator) => {
-    e.stopPropagation();
-    let value;
-    let summary;
-    let prevState;
-    let summState;
-    if (key && operator) {
-      value = varFilters[key][operator];
-      summary = varSummaries[key][operator];
-      prevState = {
-        ...varFilters,
-        [key]: {
-          ...varFilters[key],
-        },
-      };
-      summState = {
-        ...varSummaries,
-        [key]: {
-          ...varSummaries[key],
-        },
-      };
-      delete prevState[key][operator];
-      delete summState[key][operator];
-    } else {
-      operator = "";
-      prevState = {
-        ...varFilters,
-      };
-      summState = {
-        ...varSummaries,
-      };
+  const handleChange = (e, i, action) => {
+    let attributes = [...attrFilters];
+    let attribute = attributes[i] || [""];
+    if (action == "summary") {
+      attribute[0] = attribute[0]
+        .replace(/\w+\s*\(\s*/, "")
+        .replace(/\s*\)\s*$/, "");
+      if (e.target.value != "value") {
+        attribute[0] = `${e.target.value}(${attribute[0]})`;
+      }
+    } else if (action == "variable") {
+      let [summary, attr] = attribute[0].split(/\s*[\(\)]\s*/);
+      if (attr) {
+        attribute[0] = `${summary}(${attribute[0]})`;
+      } else {
+        attribute[0] = e.target.value;
+      }
+    } else if (action == "operator") {
+      attribute[1] = e.target.value;
+    } else if (action == "value") {
+      attribute[2] = e.target.value;
     }
-    setVarFilters({
-      ...prevState,
-      // ...(key && {
-      //   [key]: {
-      //     ...prevState[key],
-      //   },
-      // }),
-      [e.target.value]: {
-        ...prevState[e.target.value],
-        [operator]: value,
-      },
-    });
-    setVarSummaries({
-      ...summState,
-      [e.target.value]: {
-        ...summState[e.target.value],
-        [operator]: summary ? summary : "value",
-      },
-    });
+    if (action == "dismiss") {
+      delete attributes[i];
+    } else {
+      attributes[i] = attribute;
+    }
+    setAttrFilters(attributes);
   };
 
   let filterOptions = [];
@@ -266,95 +197,29 @@ const QueryBuilder = ({
       keywordValues[key] = key;
     }
   });
-  Object.keys(varFilters).forEach((key, i) => {
-    if (variableValues[key]) {
-      Object.keys(varFilters[key]).forEach((operator) => {
-        filterOptions.push(
-          <VariableFilter
-            key={key}
-            field={key}
-            fields={variableValues}
-            operator={operator}
-            value={varFilters[key][operator]}
-            summary={varSummaries[key][operator]}
-            bool={bool}
-            handleVariableChange={(e) => handleVariableChange(e, key, operator)}
-            handleSummaryChange={(e) => {
-              e.stopPropagation();
-              let prevState = {
-                ...varSummaries,
-                [key]: {
-                  ...varSummaries[key],
-                },
-              };
-              setVarSummaries({
-                ...prevState,
-                [key]: {
-                  ...prevState[key],
-                  [operator]: e.target.value,
-                },
-              });
-            }}
-            handleOperatorChange={(e) => {
-              e.stopPropagation();
-              let value = varFilters[key][operator];
-              let summary = varSummaries[key][operator];
-              let prevState = {
-                ...varFilters,
-                [key]: {
-                  ...varFilters[key],
-                },
-              };
-              let summState = {
-                ...varSummaries,
-                [key]: {
-                  ...varSummaries[key],
-                },
-              };
-              delete prevState[key][operator];
-              delete summState[key][operator];
-              setVarFilters({
-                ...prevState,
-                [key]: {
-                  ...prevState[key],
-                  [e.target.value]: value,
-                },
-              });
-              setVarSummaries({
-                ...summState,
-                [key]: {
-                  ...summState[key],
-                  [e.target.value]: summary,
-                },
-              });
-            }}
-            handleValueChange={(e) => {
-              e.stopPropagation();
-              setVarFilters({
-                ...varFilters,
-                [key]: {
-                  ...varFilters[key],
-                  [operator]: e.target.value,
-                },
-              });
-            }}
-            handleDismiss={(e) => {
-              e.stopPropagation();
-              let prevState = {
-                ...varFilters,
-                [key]: {
-                  ...varFilters[key],
-                },
-              };
-              delete prevState[key][operator];
-              setVarFilters({
-                ...prevState,
-                [key]: { ...prevState[key] },
-              });
-            }}
-          />
-        );
-      });
+  attrFilters.forEach((parts, i) => {
+    let summary = "value";
+    let attr = parts[0];
+    if (!types[attr]) {
+      [summary, attr] = attr.split(/[\(\))]/);
+    }
+    if (attr) {
+      filterOptions.push(
+        <VariableFilter
+          key={i}
+          field={attr}
+          fields={variableValues}
+          operator={parts[1]}
+          value={parts[2]}
+          summary={summary}
+          bool={bool}
+          handleVariableChange={(e) => handleChange(e, i, "variable")}
+          handleSummaryChange={(e) => handleChange(e, i, "summary")}
+          handleOperatorChange={(e) => handleChange(e, i, "operator")}
+          handleValueChange={(e) => handleChange(e, i, "value")}
+          handleDismiss={(e) => handleChange(e, i, "dismiss")}
+        />
+      );
     }
   });
   filterOptions.push(
@@ -368,22 +233,13 @@ const QueryBuilder = ({
         <BasicSelect
           current={""}
           id={`new-variable-select`}
-          handleChange={handleVariableChange}
+          handleChange={(e) => handleChange(e, attrFilters.length, "variable")}
           helperText={"field"}
           values={allValues}
         />
       </Grid>
     </Grid>
   );
-  // if (searchTerm.query) {
-  //   const parts = searchTerm.query.split(/\s*AND\s*/);
-  //   parts.forEach((part, i) => {
-  //     if (part.match(/^tax_\w+\(/)) {
-  //       currentTaxon = part.replace(/^tax_\w+\(/, "").replace(/\)/, "");
-  //       currentFilter = part.replace(/\(.+/, "");
-  //     }
-  //   });
-  // }
 
   let [moreOptions, setMoreOptions] = useState(() => {
     let opts = { ...searchTerm };
@@ -394,10 +250,6 @@ const QueryBuilder = ({
     }
     opts.offset = 0;
     delete opts.query;
-    // delete opts.excludeAncestral;
-    // delete opts.excludeDescendant;
-    // delete opts.excludeDirect;
-    // delete opts.excludeMissing;
     return opts;
   });
 

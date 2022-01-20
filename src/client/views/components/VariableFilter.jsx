@@ -33,6 +33,7 @@ const VariableFilter = ({
     "<=": "<=",
     "=": "=",
     "==": "==",
+    "!=": "!=",
     contains: "contains",
   };
   operator = operator == "undefined" ? "" : operator;
