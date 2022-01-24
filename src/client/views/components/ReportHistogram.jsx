@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from "@reach/router";
 import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
+import axisScales from "../functions/axisScales";
 import { compose } from "recompose";
 import dispatchMessage from "../hocs/dispatchMessage";
 import formats from "../functions/formats";
@@ -194,29 +195,44 @@ const Histogram = ({
   chartProps,
   colors,
 }) => {
+  let buckets = chartProps.buckets;
   let axes = [
     <CartesianGrid key={"grid"} strokeDasharray="3 3" vertical={false} />,
     <XAxis
       xAxisId={0}
+      type="category"
       dataKey="x"
       key={"x"}
-      interval={0}
+      angle={buckets.length > 15 ? -90 : 0}
       tickLine={false}
       tick={(props) =>
         renderXTick({
           ...props,
           endLabel,
-          lastIndex,
+          lastIndex: lastIndex,
           chartWidth: width,
           showTickLabels: chartProps.showTickLabels,
         })
       }
+      tickFormatter={chartProps.showXTickLabels ? chartProps.xFormat : () => ""}
+      interval={0}
+      style={{ textAnchor: buckets.length > 15 ? "end" : "auto" }}
     >
-      {width > 300 && (
-        <Label value={xLabel} offset={5} position="bottom" fill="#666" />
-      )}
+      <Label
+        value={xLabel}
+        offset={buckets.length > 15 ? 10 : 0}
+        position="bottom"
+        fill="#666"
+      />
     </XAxis>,
-    <XAxis xAxisId={1} dataKey="x" key={"hidden-x"} hide={true}></XAxis>,
+    <XAxis
+      xAxisId={1}
+      type="category"
+      interval={0}
+      dataKey="x"
+      key={"hidden-x"}
+      hide={true}
+    ></XAxis>,
     <YAxis allowDecimals={false} key={"y"}>
       {width > 300 && (
         <Label
@@ -235,7 +251,6 @@ const Histogram = ({
       <Legend key={"legend"} verticalAlign="top" offset={28} height={28} />
     );
   }
-
   return (
     <BarChart
       width={width}
@@ -310,17 +325,6 @@ const ReportHistogram = ({
   const { width, height } = containerRef
     ? useResize(containerRef)
     : useResize(componentRef);
-  // useEffect(() => {
-  //   let newMinDim;
-  //   if (height) {
-  //     newMinDim = Math.floor(Math.min(width, height));
-  //   } else if (width) {
-  //     newMinDim = Math.floor(width) / ratio;
-  //   }
-  //   if (newMinDim) {
-  //     setMinDim(newMinDim);
-  //   }
-  // }, [width, height]);
   useEffect(() => {
     if (histogram && histogram.status) {
       setMessage(null);
@@ -329,7 +333,7 @@ const ReportHistogram = ({
   if (histogram && histogram.status) {
     let chartData = [];
     let chart;
-    let histograms = histogram.report.histogram.histograms;
+    let { histograms, bounds } = histogram.report.histogram;
     if (!histograms) {
       return null;
     }
@@ -409,6 +413,7 @@ const ReportHistogram = ({
           yScale: yScale,
           xQuery: histogram.report.xQuery,
           xLabel,
+          bounds,
           fields: histograms.fields,
           showTickLabels: xOptions[2]
             ? xOptions[2] >= 0

@@ -13,12 +13,12 @@ import {
   ZAxis,
 } from "recharts";
 import React, { useEffect, useRef, useState } from "react";
-import { scaleLinear, scaleLog, scaleSqrt } from "d3-scale";
 import { useLocation, useNavigate } from "@reach/router";
 
 import CellInfo from "./CellInfo";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
+import axisScales from "../functions/axisScales";
 import { compose } from "recompose";
 import dispatchMessage from "../hocs/dispatchMessage";
 import { format } from "d3-format";
@@ -29,13 +29,6 @@ import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";
 import withColors from "../hocs/withColors";
 import withReportTerm from "../hocs/withReportTerm";
-
-const scales = {
-  linear: scaleLinear,
-  log10: scaleLog,
-  sqrt: scaleSqrt,
-  proportion: scaleLinear,
-};
 
 const searchByCell = ({
   xQuery,
@@ -161,7 +154,7 @@ const CustomShape = (props, chartProps) => {
   );
   if (!chartProps.hasRawData) {
     let z = props.payload.z;
-    let scale = scales[chartProps.zScale]();
+    let scale = axisScales[chartProps.zScale]();
     let domain = [1, chartProps.zDomain[1]];
     scale.domain(domain).range([2, w]);
     if (chartProps.n == 1) {
@@ -256,7 +249,7 @@ const Heatmap = ({
       type="number"
       dataKey="x"
       key={"x"}
-      scale="log"
+      scale={axisScales[chartProps.bounds.scale]()}
       angle={buckets.length > 15 ? -90 : 0}
       domain={[buckets[0], buckets[buckets.length - 1]]}
       range={[buckets[0], buckets[buckets.length - 1]]}
@@ -276,7 +269,7 @@ const Heatmap = ({
       type="number"
       dataKey="y"
       key={"y"}
-      scale="log"
+      scale={axisScales[chartProps.yBounds.scale]()}
       ticks={yBuckets}
       domain={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
       range={[yBuckets[0], yBuckets[yBuckets.length - 1]]}
@@ -472,6 +465,8 @@ const ReportScatter = ({
   if (scatter && scatter.status) {
     let chart;
     let {
+      bounds,
+      yBounds,
       cats,
       catSums,
       chartData,
@@ -541,6 +536,8 @@ const ReportScatter = ({
           yFormat: (value) => formats(value, yValueType),
           fields: heatmaps.fields,
           ranks: heatmaps.ranks,
+          bounds,
+          yBounds,
           valueType,
           yValueType,
           hasRawData,

@@ -93,6 +93,10 @@ const Report = ({
   reportProps.scatterThreshold = props.scatterThreshold;
   reportProps.treeThreshold = props.treeThreshold;
   reportProps.collapseMonotypic = props.collapseMonotypic;
+  reportProps.excludeAncestral = props.excludeAncestral;
+  reportProps.excludeDescendant = props.excludeDescendant;
+  reportProps.excludeDirect = props.excludeDirect;
+  reportProps.excludeMissing = props.excludeMissing;
   reportProps.levels = props.levels;
   reportProps.caption =
     props.caption || qs.parse(reportProps.queryString).caption;
