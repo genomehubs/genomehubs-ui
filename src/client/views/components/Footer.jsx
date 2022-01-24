@@ -71,7 +71,7 @@ const Footer = ({ version, fetchTypes, hidden, taxonomy }) => {
             >
               GenomeHubs
             </a>{" "}
-            <CopyrightIcon fontSize="inherit" /> 2021
+            <CopyrightIcon fontSize="inherit" /> {new Date().getFullYear()}
           </span>
         </Grid>
       </Grid>
