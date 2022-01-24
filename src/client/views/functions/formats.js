@@ -34,21 +34,23 @@ const formatMillisecond = timeFormat(".%L"),
   formatYear = timeFormat("%Y");
 
 function multiFormat(date) {
-  return (timeSecond(date) < date
-    ? formatMillisecond
-    : timeMinute(date) < date
-    ? formatSecond
-    : timeHour(date) < date
-    ? formatMinute
-    : timeDay(date) < date
-    ? formatHour
-    : timeMonth(date) < date
-    ? timeWeek(date) < date
-      ? formatDay
-      : formatWeek
-    : timeYear(date) < date
-    ? formatMonth
-    : formatYear)(date);
+  return (
+    timeSecond(date) < date
+      ? formatMillisecond
+      : timeMinute(date) < date
+      ? formatSecond
+      : timeHour(date) < date
+      ? formatMinute
+      : timeDay(date) < date
+      ? formatHour
+      : timeMonth(date) < date
+      ? timeWeek(date) < date
+        ? formatDay
+        : formatWeek
+      : timeYear(date) < date
+      ? formatMonth
+      : formatYear
+  )(date);
 }
 
 export const formats = (value, valueType) => {

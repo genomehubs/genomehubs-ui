@@ -313,14 +313,21 @@ const processReport = (report) => {
   if (!report || !report.name) return {};
   if (report.name == "tree") {
     let { treeStyle } = qs.parse(report.report.queryString);
-    let { tree, xQuery, yQuery, bounds } = report.report.tree;
+    let { tree, xQuery, yQuery, bounds, yBounds } = report.report.tree;
     return {
       ...report,
       report: {
         ...report.report,
         tree: {
           ...report.report.tree,
-          ...processTree({ nodes: tree, bounds, xQuery, yQuery, treeStyle }),
+          ...processTree({
+            nodes: tree,
+            bounds,
+            yBounds,
+            xQuery,
+            yQuery,
+            treeStyle,
+          }),
         },
       },
     };

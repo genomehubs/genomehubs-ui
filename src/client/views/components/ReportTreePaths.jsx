@@ -13,22 +13,7 @@ import withReportTerm from "../hocs/withReportTerm";
 import withTypes from "../hocs/withTypes";
 
 const ReportTreePaths = ({
-  // root_id,
-  // rootNode,
-  // setRootNode,
-  types,
-  // treeRings,
-  // searchTerm,
-  // searchResults,
-  // fetchNodes,
-  // treeHighlight,
-  // setTreeHighlight,
-  // treeQuery,
-  // setTreeQuery,
-  // newickString,
-  count,
   lines,
-  // labels,
   handleNavigation,
   handleSearch,
   width,
@@ -37,23 +22,18 @@ const ReportTreePaths = ({
   charHeight,
   locations,
   other,
+  maxTip,
+  yField,
   maxWidth,
+  dataWidth,
   hidePreview,
   reportTerm,
   setReportTerm,
   colors,
-  reportRef,
-  gridRef,
 }) => {
   if (!lines || lines.length == 0) {
     return null;
   }
-
-  let css = classnames(
-    styles.infoPanel,
-    styles[`infoPanel1Column`],
-    styles.resultPanel
-  );
 
   let divHeight = height;
   let divWidth = width;
@@ -71,11 +51,11 @@ const ReportTreePaths = ({
   const [previewOffset, setPreviewOffset] = useState({ x: 0, y: 0 });
   const [scrollBarWidth, setScrollBarWidth] = useState(0);
   const [scale, setScale] = useState(
-    divWidth ? divWidth / (maxWidth || divWidth) : 1
+    divWidth ? divWidth / (maxWidth + dataWidth + 10 || divWidth) : 1
   );
   const padding = 500;
   let previewScale = 1;
-  let previewWidth = maxWidth;
+  let previewWidth = maxWidth + dataWidth + 10;
   let previewHeight = plotHeight;
   let previewRatio = 1;
   let previewDivHeight = divHeight;
@@ -90,8 +70,8 @@ const ReportTreePaths = ({
   let globalYClickScale = scaleLinear();
 
   useEffect(() => {
-    setScale(divWidth ? divWidth / (maxWidth || divWidth) : 1);
-  }, [maxWidth, divWidth]);
+    setScale(divWidth ? divWidth / (maxWidth + dataWidth + 10 || divWidth) : 1);
+  }, [maxWidth, dataWidth, divWidth]);
 
   // Element scroll position
   useScrollPosition(
@@ -222,7 +202,6 @@ const ReportTreePaths = ({
     if (treeRef.current) {
       let dimensions = getDimensions(treeRef);
       setTreeDimensions(dimensions);
-      // setScale(divWidth / (maxWidth || divWidth));
     }
     if (stageRef.current) {
       setScrollBarWidth(
@@ -231,7 +210,7 @@ const ReportTreePaths = ({
     }
   }, [treeRef, stageRef]);
 
-  const showTooltip = (e, segment) => {
+  const showTooltip = (e, segment, field) => {
     if (segment) {
       const container = e.target.getStage().container();
       container.style.cursor = "pointer";
@@ -239,7 +218,7 @@ const ReportTreePaths = ({
       const container = e.target.getStage().container();
       container.style.cursor = "default";
     }
-    setTooltip({ e, segment });
+    setTooltip({ e, segment, field });
   };
 
   const [paths, setPaths] = useState([]);
@@ -247,6 +226,9 @@ const ReportTreePaths = ({
   const [labels, setLabels] = useState([]);
   const [cats, setCats] = useState([]);
   const [regions, setRegions] = useState([]);
+  const [connectors, setConnectors] = useState([]);
+  const [bars, setBars] = useState([]);
+  const [errorBars, setErrorBars] = useState([]);
   const [overview, setOverview] = useState([]);
   const [portion, setPortion] = useState(0);
   const updateCache = (index, value) => {
@@ -296,10 +278,21 @@ const ReportTreePaths = ({
       let newLabels = [];
       let newRegions = [];
       let newOverview = [];
+      let newConnectors = [];
+      let newBars = [];
+      let newErrorBars = [];
       let newCats = [];
       if (portionCache[portion]) {
-        ({ newNodes, newPaths, newLabels, newRegions, newCats } =
-          portionCache[portion]);
+        ({
+          newNodes,
+          newPaths,
+          newLabels,
+          newRegions,
+          newConnectors,
+          newBars,
+          newErrorBars,
+          newCats,
+        } = portionCache[portion]);
       } else {
         let lowerY = portionHeight * portion - portionOverlap;
         let upperY = portionHeight * (portion + 1) + portionOverlap;
@@ -427,9 +420,10 @@ const ReportTreePaths = ({
               key={`r-${segment.taxon_id}`}
               x={segment.xStart}
               y={segment.yMin}
-              width={
-                segment.tip ? segment.labelWidth + segment.width : segment.width
-              }
+              // width={
+              //   segment.tip ? segment.labelWidth + segment.width : segment.width
+              // }
+              width={segment.tip ? maxWidth - segment.xStart : segment.width}
               height={segment.height}
               fill={"rgba(0,0,0,0)"}
               onMouseEnter={(e) => showTooltip(e, segment)}
@@ -517,7 +511,8 @@ const ReportTreePaths = ({
                 key={`t-${segment.taxon_id}`}
                 text={segment.label}
                 fontSize={10}
-                x={segment.tip ? segment.xEnd + 10 : segment.xStart - 6}
+                // x={segment.tip ? segment.xEnd + 10 : segment.xStart - 6}
+                x={segment.tip ? maxTip + 10 : segment.xStart - 6}
                 y={segment.tip ? segment.yMin : segment.yStart - 11}
                 width={segment.tip ? segment.labelWidth : segment.width}
                 height={segment.height}
@@ -526,6 +521,94 @@ const ReportTreePaths = ({
                 verticalAlign={segment.tip ? "middle" : "top"}
               />
             );
+            if (segment.tip) {
+              newConnectors.push(
+                <Line
+                  key={`cl-${segment.taxon_id}`}
+                  points={[
+                    segment.xEnd + 10,
+                    segment.yStart,
+                    maxTip,
+                    segment.yStart,
+                  ]}
+                  stroke={"#dddddd"}
+                  dash={[2, 5]}
+                />
+              );
+              if (segment.bar && segment.bar.length > 0) {
+                newBars.push(
+                  <Rect
+                    key={`val-${segment.taxon_id}`}
+                    x={0}
+                    y={segment.yMin}
+                    width={segment.bar[0]}
+                    height={charHeight}
+                    fill={segment.color}
+                  />
+                );
+                newRegions.push(
+                  <Rect
+                    key={`rval-${segment.taxon_id}`}
+                    x={maxWidth}
+                    y={segment.yMin}
+                    // width={
+                    //   segment.tip ? segment.labelWidth + segment.width : segment.width
+                    // }
+                    width={maxWidth - maxTip}
+                    height={segment.height}
+                    fill={"rgba(0,0,0,0)"}
+                    onMouseEnter={(e) => showTooltip(e, segment, yField)}
+                    onTouchStart={(e) => showTooltip(e, segment, yField)}
+                    onMouseMove={(e) => showTooltip(e, segment, yField)}
+                    onTouchMove={(e) => showTooltip(e, segment, yField)}
+                    onMouseLeave={(e) => showTooltip(e)}
+                    onTouchEnd={(e) => showTooltip(e)}
+                  />
+                );
+                if (
+                  segment.bar.length >= 2 &&
+                  segment.bar[1] < segment.bar[0] - 1
+                ) {
+                  newErrorBars.push(
+                    <Line
+                      key={`max-${segment.taxon_id}`}
+                      points={[
+                        segment.bar[0],
+                        segment.yStart,
+                        segment.bar[2],
+                        segment.yStart,
+                        segment.bar[2],
+                        segment.yStart - charHeight / 4,
+                        segment.bar[2],
+                        segment.yStart + charHeight / 4,
+                      ]}
+                      stroke={segment.color}
+                    />
+                  );
+                  if (
+                    segment.bar.length >= 2 &&
+                    segment.bar[0] < segment.bar[2] - 1
+                  ) {
+                    newErrorBars.push(
+                      <Line
+                        key={`min-${segment.taxon_id}`}
+                        points={[
+                          segment.bar[0],
+                          segment.yStart,
+                          segment.bar[1],
+                          segment.yStart,
+                          segment.bar[1],
+                          segment.yStart - charHeight / 4,
+                          segment.bar[1],
+                          segment.yStart + charHeight / 4,
+                        ]}
+                        stroke={"white"}
+                      />
+                    );
+                  }
+                }
+              }
+            }
           }
         }
         updateCache(portion, {
@@ -533,6 +616,9 @@ const ReportTreePaths = ({
           newPaths,
           newLabels,
           newRegions,
+          newConnectors,
+          newBars,
+          newErrorBars,
           newCats,
         });
       }
@@ -541,6 +627,9 @@ const ReportTreePaths = ({
       setPaths(newPaths);
       setLabels(newLabels);
       setRegions(newRegions);
+      setConnectors(newConnectors);
+      setBars(newBars);
+      setErrorBars(newErrorBars);
       setCats(newCats);
       if (newOverview.length > 0) {
         setOverview(newOverview);
@@ -581,7 +670,6 @@ const ReportTreePaths = ({
   }, [reportTerm]);
 
   let index = "";
-  css = undefined;
   previewHeight = Math.min(10000, plotHeight);
   previewRatio = previewHeight / plotHeight;
   previewScale = divHeight / previewHeight;
@@ -740,12 +828,13 @@ const ReportTreePaths = ({
               pixelRatio={1}
             >
               <Layer>
-                {paths}
+                <Group>{paths}</Group>
                 {highlight.preview}
-                {cats}
+                <Group>{cats}</Group>
+                <Group x={maxTip + 10}>{bars}</Group>
                 <Rect
                   x={0}
-                  width={maxWidth}
+                  width={maxWidth + dataWidth}
                   y={0}
                   height={plotHeight}
                   fill={"rgba(0,0,0,0)"}
@@ -755,7 +844,7 @@ const ReportTreePaths = ({
               <Layer>
                 <Rect
                   x={0}
-                  width={maxWidth}
+                  width={maxWidth + dataWidth}
                   y={yScale.invert(previewOffset.y)}
                   height={divHeight / scale}
                   fill={"rgba(0,0,255,0.1)"}
@@ -859,7 +948,10 @@ const ReportTreePaths = ({
                 <Group>{cats}</Group>
                 {highlight.main}
                 <Group>{labels}</Group>
+                <Group>{connectors}</Group>
                 <Group>{nodes}</Group>
+                <Group x={maxWidth}>{bars}</Group>
+                <Group x={maxWidth}>{errorBars}</Group>
               </Layer>
               <Layer>
                 <KonvaTooltip {...tooltip} scale={scale} />

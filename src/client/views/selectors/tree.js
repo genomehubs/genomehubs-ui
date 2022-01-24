@@ -20,6 +20,7 @@ import {
 } from "d3-scale-chromatic";
 
 import { apiUrl } from "../reducers/api";
+import axisScales from "../functions/axisScales";
 import { createSelector } from "reselect";
 import qs from "qs";
 import store from "../store";
@@ -125,6 +126,8 @@ const setColor = ({ node, yQuery, recurse }) => {
   let oranges = schemeOranges[tonalRange];
   let source;
   let value;
+  let min;
+  let max;
   if (!recurse) {
     color = "white";
     highlightColor = "white";
@@ -133,6 +136,8 @@ const setColor = ({ node, yQuery, recurse }) => {
     if (node.fields && node.fields[field]) {
       source = node.fields[field].source;
       value = node.fields[field].value;
+      min = node.fields[field].min;
+      max = node.fields[field].max;
     }
     color = greys[baseTone + status];
     highlightColor = greys[baseTone + 1 + status];
@@ -158,7 +163,7 @@ const setColor = ({ node, yQuery, recurse }) => {
     color = greys[baseTone + 3];
     highlightColor = greys[baseTone + 4];
   }
-  return { color, highlightColor, source, value };
+  return { color, highlightColor, source, value, min, max };
 };
 
 export const processTreeRings = ({ nodes, xQuery, yQuery }) => {
@@ -382,7 +387,13 @@ export const setCats = ({ node, cats, cat, other }) => {
   }
 };
 
-export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
+export const processTreePaths = ({
+  nodes,
+  bounds = {},
+  yBounds = {},
+  xQuery,
+  yQuery,
+}) => {
   if (!nodes) return undefined;
   const { cat, cats: catArray, showOther } = bounds;
   let cats = {};
@@ -400,19 +411,23 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
     }
   }
   let { treeNodes, lca } = nodes;
-  let field = (yQuery?.yFields || [])[0];
+  let yField = (yQuery?.yFields || [])[0];
   let valueScale;
-  if (bounds && bounds.stats) {
-    valueScale = scaleLinear()
-      .domain([bounds.stats.min, bounds.stats.max])
-      .range([0, 8]);
+  let targetWidth = 1000;
+  let dataWidth = 0;
+  if (yBounds && yBounds.stats) {
+    valueScale = axisScales[yBounds.scale]()
+      .domain([yBounds.stats.min, yBounds.stats.max])
+      .range([0, 100]);
+    dataWidth = 120;
+    targetWidth -= 120;
   }
   if (!lca) return undefined;
   let { maxDepth, taxDepth, taxon_id: rootNode, parent: ancNode } = lca;
   maxDepth = taxDepth ? taxDepth : maxDepth;
   if (!treeNodes || !rootNode) return undefined;
   let maxWidth = 0;
-  let targetWidth = 1000;
+  let maxTip = 0;
   let charLen = 6.5;
   let charHeight = charLen * 2;
   let xScale = scaleLinear()
@@ -521,14 +536,22 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
     node.yMin = yScale(maxY);
     node.yMax = yScale(minY);
     node.height = node.yMax - node.yMin;
-    let { color, highlightColor, source, value } = setColor({
+    let { color, highlightColor, source, value, min, max } = setColor({
       node,
       yQuery,
       recurse: true,
     });
+    let bar = [];
     if (value) {
       if (typeof value === "number" && valueScale) {
-        value = valueScale(value);
+        bar[0] = valueScale(value);
+        if (min !== undefined) {
+          bar[1] = valueScale(min);
+        }
+        if (max !== undefined) {
+          bar[2] = valueScale(max);
+        }
+        value = bar[0] / 12.5;
       } else {
         value = 10;
       }
@@ -541,6 +564,7 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
         maxWidth,
         node.xEnd + 10 + node.scientific_name.length * charLen
       );
+      maxTip = Math.max(maxTip, node.xEnd + 10);
     } else if (node.scientific_name != "parent" && node.width > charLen * 5) {
       label = node.scientific_name;
       if (label.length * charLen - 2 > node.width) {
@@ -594,12 +618,16 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
       highlightColor,
       source,
       value,
+      bar,
     });
   });
   return {
     lines,
     maxDepth,
     maxWidth,
+    maxTip,
+    yField,
+    dataWidth,
     plotHeight: yScale(0) - yScale(yMax) + charHeight / 2,
     charHeight,
     locations,
@@ -610,12 +638,13 @@ export const processTreePaths = ({ nodes, bounds = {}, xQuery, yQuery }) => {
 export const processTree = ({
   nodes,
   bounds,
+  yBounds,
   xQuery,
   yQuery,
   treeStyle = "rect",
 }) => {
   if (treeStyle == "ring") {
-    return processTreeRings({ nodes, bounds, xQuery, yQuery });
+    return processTreeRings({ nodes, bounds, yBounds, xQuery, yQuery });
   }
-  return processTreePaths({ nodes, bounds, xQuery, yQuery });
+  return processTreePaths({ nodes, bounds, yBounds, xQuery, yQuery });
 };
