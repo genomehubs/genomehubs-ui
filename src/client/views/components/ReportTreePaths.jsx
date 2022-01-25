@@ -480,11 +480,7 @@ const ReportTreePaths = ({
                 main: (
                   <Rect
                     key={`tr-${segment.taxon_id}`}
-                    x={
-                      segment.tip
-                        ? segment.xEnd + 9
-                        : segment.xEnd - labelWidth - 6
-                    }
+                    x={segment.tip ? maxTip + 9 : segment.xEnd - labelWidth - 6}
                     y={segment.tip ? segment.yMin - 1 : segment.yStart - 12}
                     width={labelWidth}
                     height={charHeight}
@@ -541,7 +537,7 @@ const ReportTreePaths = ({
                     key={`val-${segment.taxon_id}`}
                     x={0}
                     y={segment.yMin}
-                    width={segment.bar[0]}
+                    width={segment.bar[0] + 1}
                     height={charHeight}
                     fill={segment.color}
                   />
@@ -563,6 +559,25 @@ const ReportTreePaths = ({
                     onTouchMove={(e) => showTooltip(e, segment, yField)}
                     onMouseLeave={(e) => showTooltip(e)}
                     onTouchEnd={(e) => showTooltip(e)}
+                    onMouseDown={(e) => {
+                      mouseDownTimeout = setTimeout(() => {
+                        handleSearch({
+                          root: segment.taxon_id,
+                          name: segment.scientific_name,
+                          depth: segment.depth,
+                          rank: segment.taxon_rank,
+                        });
+                      }, 500);
+                    }}
+                    onMouseUp={() => {
+                      clearTimeout(mouseDownTimeout);
+                      handleNavigate({
+                        root: segment.taxon_id,
+                        name: segment.scientific_name,
+                        depth: segment.depth,
+                        rank: segment.taxon_rank,
+                      });
+                    }}
                   />
                 );
                 if (
@@ -644,7 +659,7 @@ const ReportTreePaths = ({
       setHighlight({
         main: (
           <Rect
-            x={tip ? x + tip + 9 : x + 6}
+            x={tip ? maxTip + 9 : x + 6}
             y={tip ? y - charHeight / 2 - 1 : y - 12}
             width={tip ? width : width - 12}
             height={charHeight}
