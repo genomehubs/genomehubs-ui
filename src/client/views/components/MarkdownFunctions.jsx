@@ -32,6 +32,8 @@ export const processProps = (props, newProps = {}) => {
       newProps[key] = true;
     } else if (key == "className") {
       newProps["className"] = styles[value];
+    } else if (key.startsWith("exclude")) {
+      newProps[key] = value.split(",");
     } else if (key == "src") {
       newProps["src"] = value.match(/\?/) ? value : `${value}?${webpackHash}`;
     } else if (key == "xs") {
