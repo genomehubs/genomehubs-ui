@@ -308,9 +308,9 @@ const ReportItem = ({
           captionArr.push(<span key={i}>{parts[i]}</span>);
         } else {
           captionArr.push(
-            <span key={i} style={{ color: "black" }}>
+            <b key={i} style={{ color: "black" }}>
               {parts[i]}
-            </span>
+            </b>
           );
         }
       }

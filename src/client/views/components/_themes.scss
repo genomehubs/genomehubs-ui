@@ -1,4 +1,9 @@
-@import url(web-fonts-url("Open Sans", "Signika"));
+@import url(web-fonts-url(
+  (
+    "Open Sans": "300,400,600,700",
+  ),
+  "Signika"
+));
 
 $titleFontFamily: "Signika", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $bodyFontFamily: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
