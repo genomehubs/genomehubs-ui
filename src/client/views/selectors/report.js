@@ -51,7 +51,7 @@ export const sortReportQuery = ({ queryString, options, ui = true }) => {
     taxonomy: true,
     caption: true,
     xOpts: { in: new Set(["histogram", "scatter"]) },
-    yOpts: { in: new Set(["scatter"]) },
+    yOpts: { in: new Set(["scatter", "tree"]) },
     highlightArea: { in: new Set(["scatter"]), ui: true },
     scatterThreshold: { in: new Set(["scatter"]) },
     treeStyle: { in: new Set(["tree"]), ui: true },

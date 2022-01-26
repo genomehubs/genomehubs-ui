@@ -415,9 +415,9 @@ export const processTreePaths = ({
   let valueScale;
   let targetWidth = 1000;
   let dataWidth = 0;
-  if (yBounds && yBounds.stats) {
+  if (yBounds && yBounds.domain) {
     valueScale = axisScales[yBounds.scale]()
-      .domain([yBounds.stats.min, yBounds.stats.max])
+      .domain(yBounds.domain)
       .range([0, 100]);
     dataWidth = 120;
     targetWidth -= 120;

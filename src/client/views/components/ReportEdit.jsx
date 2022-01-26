@@ -63,6 +63,7 @@ export const queryPropList = {
     { prop: "levels", label: "family, order, phylum" },
     "includeEstimates",
     "collapseMonotypic",
+    "yOpts",
     "treeStyle",
     "treeThreshold",
   ],
