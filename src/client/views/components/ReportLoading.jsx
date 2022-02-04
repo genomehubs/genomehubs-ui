@@ -31,7 +31,6 @@ const ReportLoading = ({
       setMinDim(newMinDim);
     }
   }, [width, height]);
-  console.log(minDim);
   return (
     <Grid
       item

@@ -51,6 +51,7 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@fontsource/open-sans": "^4.5.3",
+    "@fontsource/roboto-mono": "^4.5.1",
     "@fontsource/signika": "^4.5.2",
     "@inlet/react-pixi": "^5.2.0",
     "@loadable/component": "^5.15.0",
