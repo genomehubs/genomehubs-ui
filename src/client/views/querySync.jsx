@@ -1,8 +1,8 @@
-import { history } from "./reducers/history";
-import { getQueryValue } from "./reducers/location";
-import qs from "qs";
-import convert from "color-convert";
 import { batchActions } from "redux-batched-actions";
+import convert from "color-convert";
+import { getQueryValue } from "./reducers/location";
+import { history } from "./reducers/history";
+import qs from "qs";
 
 export const userColors = [
   "rgb(166,206,227)",
@@ -141,6 +141,9 @@ export const defaultValue = (param) =>
   mapDispatchToQuery[param].default || false;
 
 export const qsDefault = (param) => {
+  console.log(param);
+  console.log(getQueryValue);
+  console.log(defaultValue);
   return getQueryValue(param) || defaultValue(param);
 };
 

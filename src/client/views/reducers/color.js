@@ -1,22 +1,11 @@
 import { createAction, handleAction, handleActions } from "redux-actions";
 import { createSelector, createSelectorCreator } from "reselect";
+
 import immutableUpdate from "immutable-update";
 import store from "../store";
-import { queryToStore, colorToRGB, qsDefault, userColors } from "../querySync";
 
 export const addPalette = createAction("ADD_PALETTE");
 export const editPalette = createAction("EDIT_PALETTE");
-
-const qsPalette = () => {
-  let colors = userColors.slice(0);
-  for (let i = 0; i < colors.length; i++) {
-    let qsColor = qsDefault("color" + i);
-    if (qsColor) {
-      colors[i] = colorToRGB(qsColor) || colors[i];
-    }
-  }
-  return colors;
-};
 
 export const palettes = handleActions(
   {
@@ -52,9 +41,8 @@ export const palettes = handleActions(
         "rgb(202,178,214)",
         "rgb(106,61,154)",
       ],
-      user: qsPalette(),
     },
-    allIds: ["default", "user"],
+    allIds: ["default"],
   }
 );
 
@@ -64,31 +52,30 @@ export const selectPalette = createAction("SELECT_PALETTE");
 export const selectedPalette = handleAction(
   "SELECT_PALETTE",
   (state, action) => action.payload,
-  qsDefault("palette")
+  "default"
 );
 
-export const choosePalette = (palette) => {
-  return function (dispatch) {
-    let values = { palette };
-    dispatch(queryToStore({ values }));
-  };
-};
+// export const choosePalette = (palette) => {
+//   return function (dispatch) {
+//     let values = { palette };
+//     dispatch(queryToStore({ values }));
+//   };
+// };
 
-export const chooseColors = (colors) => {
-  return function (dispatch) {
-    let existing = getColorPalette(store.getState());
-    let values = { colors: { colors, existing } };
-    dispatch(queryToStore({ values }));
-  };
-};
+// export const chooseColors = (colors) => {
+//   return function (dispatch) {
+//     let existing = getColorPalette(store.getState());
+//     let values = { colors: { colors, existing } };
+//     dispatch(queryToStore({ values }));
+//   };
+// };
 
 export const getAllPalettes = (state) => state.palettes;
 
 export const getColorPalette = createSelector(
   getSelectedPalette,
   getAllPalettes,
-  (id, palettes, qsPalette) => {
-    id = qsPalette || id;
+  (id, palettes) => {
     let colors = palettes ? palettes.byId[id] : [];
     return { id, colors };
   }

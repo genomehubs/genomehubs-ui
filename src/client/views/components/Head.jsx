@@ -26,10 +26,10 @@ const Head = ({ siteName }) => {
         href="/favicon-16x16.png"
       />
       <link rel="manifest" href="/manifest.json" />
-      <link
+      {/* <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css"
-      />
+      /> */}
     </Helmet>
   );
 };

@@ -200,6 +200,17 @@ const config = {
           publicPath: main.mode == "production" ? main.basename + "/" : "/",
         },
       },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "fonts/[hash].[ext]",
+            },
+          },
+        ],
+      },
     ],
   },
 };

@@ -23,7 +23,7 @@ import { compose } from "recompose";
 import dispatchMessage from "../hocs/dispatchMessage";
 import { format } from "d3-format";
 import formats from "../functions/formats";
-import { point } from "leaflet";
+// import { point } from "leaflet";
 import qs from "qs";
 import styles from "./Styles.scss";
 import useResize from "../hooks/useResize";

@@ -1,3 +1,5 @@
+import * as htmlToImage from "html-to-image";
+
 import { saveSvgAsPng, svgAsDataUri } from "save-svg-as-png";
 
 import DownloadButton from "./DownloadButton";
@@ -35,26 +37,38 @@ export const ReportDownload = ({
     let success = false;
     if (format == "png" || format == "svg") {
       if (chartRef.current && chartRef.current.children) {
-        chartSVG = chartRef.current.childNodes[0].childNodes[0];
+        // chartSVG = chartRef.current.childNodes[0].childNodes[0];
+        chartSVG = chartRef.current.childNodes[0];
+        if (report == "tree" && !queryString.match("=ring")) {
+          chartSVG =
+            chartRef.current.childNodes[0].childNodes[1].childNodes[0]
+              .childNodes[0].childNodes[0].childNodes[0];
+        }
       } else {
         return;
       }
-      chartSVG = React.Children.only(chartSVG);
-      let { x: left, y: top, height, width } = chartSVG.viewBox.baseVal;
+      // chartSVG = React.Children.only(chartSVG);
+      // let { x: left, y: top, height, width } = chartSVG.viewBox.baseVal;
+      // let opts = {
+      //   excludeCss: true,
+      //   scale: 2,
+      //   backgroundColor: "white",
+      //   left,
+      //   top,
+      //   height,
+      //   width,
+      // };
       let opts = {
-        excludeCss: true,
-        scale: 2,
         backgroundColor: "white",
-        left,
-        top,
-        height,
-        width,
       };
       if (format == "png") {
-        await saveSvgAsPng(chartSVG, `${filename}.png`, opts);
+        // await saveSvgAsPng(chartSVG, `${filename}.png`, opts);
+        let uri = await htmlToImage.toPng(chartSVG, opts);
+        await downloadLink(uri, `${filename}.png`);
         success = true;
       } else if (format == "svg") {
-        let uri = await svgAsDataUri(chartSVG, opts);
+        // let uri = await svgAsDataUri(chartSVG, opts);
+        let uri = await htmlToImage.toSvg(chartSVG, opts);
         await downloadLink(uri, `${filename}.svg`);
         success = true;
       }
