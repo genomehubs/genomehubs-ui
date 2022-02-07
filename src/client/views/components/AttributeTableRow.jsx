@@ -279,7 +279,7 @@ const AttributeTableRow = ({
 
     if (meta.aggregation_source) {
       let css;
-      let icon;
+      let icons = [];
 
       source = meta["aggregation_source"];
       css = classnames(
@@ -287,9 +287,14 @@ const AttributeTableRow = ({
         styles[`underscore${confidence[source]}`]
       );
       aggSource = formatter(source);
+      let altCss = classnames(
+        styles.underscore,
+        styles[`underscore${confidence["descendant"]}`]
+      );
+      let altAggSource = formatter("descendant");
       if (source == "direct") {
-        icon = (
-          <span className={styles.disableTheme}>
+        icons.push(
+          <span key="direct" className={styles.disableTheme}>
             <IconButton
               aria-label="expand row"
               size="small"
@@ -299,9 +304,10 @@ const AttributeTableRow = ({
             </IconButton>
           </span>
         );
-      } else if (source == "descendant") {
-        icon = (
-          <span className={styles.disableTheme}>
+      }
+      if (source == "descendant" || meta.has_descendants) {
+        icons.push(
+          <span key="descendant" className={styles.disableTheme}>
             <IconButton
               aria-label="show descendant values"
               size="small"
@@ -312,8 +318,8 @@ const AttributeTableRow = ({
           </span>
         );
       } else if (source == "ancestor") {
-        icon = (
-          <span className={styles.disableTheme}>
+        icons.push(
+          <span key="ancestor" className={styles.disableTheme}>
             <IconButton
               aria-label="show ancestral values"
               size="small"
@@ -341,7 +347,12 @@ const AttributeTableRow = ({
       fieldValues.push(
         <TableCell key={"aggregation_source"} style={{ whiteSpace: "nowrap" }}>
           <span className={css}>{aggSource}</span>
-          {icon}
+          {icons[0]}
+          {icons[1] && (
+            <>
+              <span className={altCss}>{altAggSource}</span> {icons[1]}
+            </>
+          )}
         </TableCell>
       );
       colSpan++;
