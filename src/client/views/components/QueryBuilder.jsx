@@ -1,3 +1,4 @@
+import { ListSubheader, MenuItem } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 
 import BasicSelect from "./BasicSelect";
@@ -155,11 +156,13 @@ const QueryBuilder = ({
       }
     } else if (action == "variable") {
       let [summary, attr] = attribute[0].split(/\s*[\(\)]\s*/);
-      if (attr) {
-        attribute[0] = `${summary}(${attribute[0]})`;
-      } else {
-        attribute[0] = e.target.value;
-      }
+      // if (attr) {
+      //   attribute[0] = `${summary}(${attribute[0]})`;
+      // } else {
+      attribute[0] = e.target.value;
+      attribute[1] = "";
+      attribute[2] = "";
+      // }
     } else if (action == "operator") {
       attribute[1] = e.target.value;
     } else if (action == "value") {
@@ -197,6 +200,33 @@ const QueryBuilder = ({
       keywordValues[key] = key;
     }
   });
+  let variables = [];
+  let sortedTypes = Object.entries(types).sort(([aKey, aVal], [bKey, bVal]) => {
+    let group = aVal.display_group.localeCompare(bVal.display_group);
+    if (group == 0) {
+      return aKey.localeCompare(bKey);
+    }
+    return group;
+  });
+  let groupedTypes = sortedTypes.reduce((grouped, [key, obj]) => {
+    let group = obj.display_group || "other";
+    if (!grouped[group]) {
+      grouped[group] = [];
+    }
+    grouped[group].push(key);
+    return grouped;
+  }, {});
+  Object.entries(groupedTypes).forEach(([group, values]) => {
+    variables.push(<ListSubheader key={group}>{group}</ListSubheader>);
+    values.forEach((value) => {
+      variables.push(
+        <MenuItem key={value} value={value}>
+          {value}
+        </MenuItem>
+      );
+    });
+  });
+
   attrFilters.forEach((parts, i) => {
     let summary = "value";
     let attr = parts[0];
@@ -208,11 +238,12 @@ const QueryBuilder = ({
         <VariableFilter
           key={i}
           field={attr}
-          fields={variableValues}
+          fields={variables}
           operator={parts[1]}
           value={parts[2]}
           summary={summary}
           bool={bool}
+          types={types}
           handleVariableChange={(e) => handleChange(e, i, "variable")}
           handleSummaryChange={(e) => handleChange(e, i, "summary")}
           handleOperatorChange={(e) => handleChange(e, i, "operator")}
@@ -235,7 +266,7 @@ const QueryBuilder = ({
           id={`new-variable-select`}
           handleChange={(e) => handleChange(e, attrFilters.length, "variable")}
           helperText={"field"}
-          values={allValues}
+          values={variables}
         />
       </Grid>
     </Grid>

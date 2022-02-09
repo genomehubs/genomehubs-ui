@@ -29,15 +29,20 @@ const BasicSelect = ({
 }) => {
   const classes = useStyles;
   let options = [];
-  Object.keys(values)
-    .sort((a, b) => a.localeCompare(b))
-    .forEach((key) => {
-      options.push(
-        <MenuItem value={values[key]} style={{ paddingTop: 0 }} key={key}>
-          {key}
-        </MenuItem>
-      );
-    });
+  if (Array.isArray(values)) {
+    options = values;
+  } else {
+    Object.keys(values)
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((key) => {
+        options.push(
+          <MenuItem value={values[key]} style={{ paddingTop: 0 }} key={key}>
+            {key}
+          </MenuItem>
+        );
+      });
+  }
+
   return (
     <FormControl className={classes.formControl}>
       {label && <InputLabel id={`${id}-label`}>{label}</InputLabel>}
