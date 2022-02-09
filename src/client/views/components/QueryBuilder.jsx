@@ -145,6 +145,9 @@ const QueryBuilder = ({
   };
 
   const handleChange = (e, i, action) => {
+    if (!e.target.value) {
+      return;
+    }
     let attributes = [...attrFilters];
     let attribute = attributes[i] || [""];
     if (action == "summary") {
@@ -202,7 +205,9 @@ const QueryBuilder = ({
   });
   let variables = [];
   let sortedTypes = Object.entries(types).sort(([aKey, aVal], [bKey, bVal]) => {
-    let group = aVal.display_group.localeCompare(bVal.display_group);
+    let group = (aVal.display_group || "ZZZ").localeCompare(
+      bVal.display_group || "ZZZ"
+    );
     if (group == 0) {
       return aKey.localeCompare(bKey);
     }
@@ -217,7 +222,7 @@ const QueryBuilder = ({
     return grouped;
   }, {});
   Object.entries(groupedTypes).forEach(([group, values]) => {
-    variables.push(<ListSubheader key={group}>{group}</ListSubheader>);
+    variables.push(<ListSubheader key={`g-${group}`}>{group}</ListSubheader>);
     values.forEach((value) => {
       variables.push(
         <MenuItem key={value} value={value}>
