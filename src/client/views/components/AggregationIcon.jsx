@@ -4,7 +4,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import classnames from "classnames";
 import styles from "./Styles.scss";
 
-const AggregationIcon = ({ method }) => {
+const AggregationIcon = ({ method, hasDescendants }) => {
   const colors = {
     direct: "green",
     descendant: "orange",
@@ -20,31 +20,41 @@ const AggregationIcon = ({ method }) => {
     descendant: "Estimated value inferred from descendant taxa",
     ancestor: "Estimated value inferred from ancestral taxa",
   };
-  return (
-    <Tooltip title={tooltips[method] || ""} arrow placement={"top"}>
-      <Grid
-        style={{
-          minHeight: "1.02em",
-          minWidth: "0.34em",
-          maxWidth: "0.34em",
-          backgroundColor: "#dddddd",
-        }}
-        container
-        spacing={0}
-        direction="column"
-      >
+  const column = (method) => {
+    return (
+      <span style={{ width: "0.34em", display: "inline-block" }}>
         <Grid
-          item
-          xs={1}
           style={{
-            backgroundColor: colors[method],
-            minHeight: heights[method],
+            minHeight: "1.02em",
             minWidth: "0.34em",
             maxWidth: "0.34em",
-            marginTop: "auto",
+            backgroundColor: "#dddddd",
           }}
-        ></Grid>
-      </Grid>
+          container
+          spacing={0}
+          direction="column"
+        >
+          <Grid
+            item
+            xs={1}
+            style={{
+              backgroundColor: colors[method],
+              minHeight: heights[method],
+              minWidth: "0.34em",
+              maxWidth: "0.34em",
+              marginTop: "auto",
+            }}
+          ></Grid>
+        </Grid>
+      </span>
+    );
+  };
+  return (
+    <Tooltip title={tooltips[method] || ""} arrow placement={"top"}>
+      <span>
+        {column(method)}
+        {hasDescendants && column("descendant")}
+      </span>
     </Tooltip>
   );
   {

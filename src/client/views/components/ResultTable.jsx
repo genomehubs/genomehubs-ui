@@ -505,7 +505,10 @@ const ResultTable = ({
                 alignItems={"center"}
               >
                 <Grid item>
-                  <AggregationIcon method={field.aggregation_source} />
+                  <AggregationIcon
+                    method={field.aggregation_source}
+                    hasDescendants={field.has_descendants}
+                  />
                 </Grid>
 
                 <Grid item style={{ whiteSpace: "nowrap" }}>

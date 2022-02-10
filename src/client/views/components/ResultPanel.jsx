@@ -98,7 +98,10 @@ const ResultPanel = ({
                   alignItems={"center"}
                 >
                   <Grid item>
-                    <AggregationIcon method={field.aggregation_source} />
+                    <AggregationIcon
+                      method={field.aggregation_source}
+                      hasDescendants={field.has_descendants}
+                    />
                   </Grid>
 
                   <Grid item>{value}</Grid>
