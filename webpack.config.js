@@ -100,19 +100,24 @@ const config = {
         removeAttributeQuotes: true,
       },
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "./src/client/favicon",
-        },
-        {
-          from: main.pagesPath,
-          to: STATIC_DIR,
-        },
-      ],
-    }),
     new webpack.ExtendedAPIPlugin(),
-  ],
+  ].concat(
+    main.pagesUrl.startsWith("http")
+      ? []
+      : [
+          new CopyWebpackPlugin({
+            patterns: [
+              {
+                from: "./src/client/favicon",
+              },
+              {
+                from: main.pagesPath,
+                to: STATIC_DIR,
+              },
+            ],
+          }),
+        ]
+  ),
   module: {
     rules: [
       {

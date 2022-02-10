@@ -23,8 +23,10 @@ import { visit } from "unist-util-visit";
 import withPages from "../hocs/withPages";
 import { withStyles } from "@material-ui/core/styles";
 
-const siteName = SITENAME || "/";
-const webpackHash = __webpack_hash__ || COMMIT_HASH;
+const siteName = SITENAME;
+const pagesUrl = PAGES_URL;
+// const webpackHash = __webpack_hash__ || COMMIT_HASH;
+const webpackHash = COMMIT_HASH;
 
 export const processProps = (props, newProps = {}) => {
   for (const [key, value] of Object.entries(props)) {
@@ -35,7 +37,13 @@ export const processProps = (props, newProps = {}) => {
     } else if (key.startsWith("exclude")) {
       newProps[key] = value.split(",");
     } else if (key == "src") {
-      newProps["src"] = value.match(/\?/) ? value : `${value}?${webpackHash}`;
+      if (PAGES_URL.startsWith("http")) {
+        console.log({ value, pagesUrl });
+        newProps["src"] = `${pagesUrl}${value.replace(/^\/static/, "")}`;
+        console.log(newProps["src"]);
+      } else {
+        newProps["src"] = value.match(/\?/) ? value : `${value}?${webpackHash}`;
+      }
     } else if (key == "xs") {
       newProps["xs"] = value * 1;
     } else if (key == "spacing") {
